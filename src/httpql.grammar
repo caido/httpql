@@ -1,0 +1,82 @@
+@top HTTPQL {
+  Query?
+}
+
+@precedence { or @left, and @left }
+
+// Define tokens for basic syntax elements
+@tokens {
+  // Whitespace and delimiters
+  whitespace { @whitespace }
+  LeftParen { "(" }
+  RightParen { ")" }
+  Dot { "." }
+  Colon { ":" }
+
+  // Logical operators
+  And { "AND" | "and" }
+  Or { "OR" | "or" }
+
+  // Request field names
+  RequestNamespace { "req" }
+  ResponseNamespace { "resp" }
+  PresetNamespace { "preset" }
+  RequestStringFieldName { "ext" | "host" | "method" | "path" | "raw" }
+  RequestIntFieldName { "port" }
+
+  // Response field names
+  ResponseStringFieldName { "raw" }
+  ResponseIntFieldName { "code" }
+
+  // Operators for string and integer types
+  StringOperator { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
+  IntOperator { "eq" | "gt" | "gte" | "lt" | "lte" | "ne" }
+
+  // Value types
+  SymbolValue { $[a-zA-Z-_]+ }
+  IntValue { @digit+ }
+
+}
+
+@local tokens {
+  stringEnd[@name='"'] { '"' }
+  stringEscape { "\\" _ }
+  @else stringContent
+}
+
+@skip {} {
+  StringValue { '"' (stringContent | stringEscape)* stringEnd }
+}
+
+// Define non-token rules for constructing expressions
+@skip { whitespace }
+@detectDelim
+
+Query { StringQuery | GroupQuery | CombinedQuery | SingleQuery }
+
+StringQuery { StringValue }
+GroupQuery { LeftParen Query? RightParen }
+
+LogicalOperator { !and And | !or Or }
+CombinedQuery { Query LogicalOperator Query }
+
+SingleQuery { RequestQuery | ResponseQuery | PresetQuery }
+
+IntExpression { IntOperator Colon IntValue }
+StringExpression { StringOperator Colon StringValue }
+PresetNameExpression { StringValue }
+PresetAliasExpression { SymbolValue }
+
+RequestQuery {
+  RequestNamespace Dot RequestIntFieldName Dot IntExpression |
+  RequestNamespace Dot RequestStringFieldName Dot StringExpression
+}
+
+ResponseQuery {
+  ResponseNamespace Dot ResponseIntFieldName Dot IntExpression |
+  ResponseNamespace Dot ResponseStringFieldName Dot StringExpression
+}
+
+PresetQuery {
+  PresetNamespace Colon (PresetNameExpression | PresetAliasExpression)
+}
