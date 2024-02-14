@@ -7,5 +7,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+thiserror = { version = "1" }
 pest = { version = "2" }
 pest_derive = { version = "2" }
