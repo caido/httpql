@@ -1,0 +1,68 @@
+HTTPQL = { SOI ~ Query? ~ EOI }
+
+// Tokens
+// Delimiters
+LeftParen = { "(" }
+RightParen = { ")" }
+Dot = { "." }
+Colon = { ":" }
+
+// Logical operators
+And = { "AND" | "and" }
+Or = { "OR" | "or" }
+
+// Namespaces
+RequestNamespace = { "req" }
+ResponseNamespace = { "resp" }
+PresetNamespace = { "preset" }
+
+// Request field names
+RequestStringFieldName = { "ext" | "host" | "method" | "path" | "raw" }
+RequestIntFieldName = { "port" }
+
+// Response field names
+ResponseStringFieldName = { "raw" }
+ResponseIntFieldName = { "code" }
+
+// Operators for string and integer types
+StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
+IntOperator = { "eq" | "gt" | "gte" | "lt" | "lte" | "ne" }
+
+// Value types
+SymbolValue = { ('a'..'z' | 'A'..'Z' | "-" | "_")+ }
+IntValue = { ('0'..'9')+ }
+StringEnd = { "\"" }
+StringEscape = { "\\" ~ ANY }
+StringContent = { !"\"" ~ ANY }
+StringValue = { "\"" ~ (StringContent | StringEscape)* ~ StringEnd }
+
+// Define non-token rules for constructing expressions
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+
+// Expression
+IntExpression = ${ IntOperator ~ Colon ~ IntValue }
+StringExpression = ${ StringOperator ~ Colon ~ StringValue }
+PresetNameExpression = { StringValue }
+PresetAliasExpression = { SymbolValue }
+
+// Clause
+StringClause = { StringValue }
+
+RequestClause = ${
+    RequestNamespace ~ Dot ~ RequestIntFieldName ~ Dot ~ IntExpression |
+    RequestNamespace ~ Dot ~ RequestStringFieldName ~ Dot ~ StringExpression
+}
+
+ResponseClause = ${
+    ResponseNamespace ~ Dot ~ ResponseIntFieldName ~ Dot ~ IntExpression |
+    ResponseNamespace ~ Dot ~ ResponseStringFieldName ~ Dot ~ StringExpression
+}
+
+PresetClause = ${
+    PresetNamespace ~ Colon ~ (PresetNameExpression | PresetAliasExpression)
+}
+
+// Query
+Clause = _ { StringClause | RequestClause | ResponseClause | PresetClause | LeftParen ~ Query ~ RightParen }
+LogicalOperator = { And | Or }
+Query = { Clause ~ (LogicalOperator ~ Clause)* }

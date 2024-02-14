@@ -1,0 +1,17 @@
+(
+  req.ext.nlike:"%.apng" AND
+  req.ext.nlike:"%.avif" AND
+  req.ext.nlike:"%.gif" AND
+  req.ext.nlike:"%.jpg" AND
+  req.ext.nlike:"%.jpeg" AND
+  req.ext.nlike:"%.pjpeg" AND
+  req.ext.nlike:"%.pjp" AND
+  req.ext.nlike:"%.png" AND
+  req.ext.nlike:"%.svg" AND
+  req.ext.nlike:"%.webp" AND
+  req.ext.nlike:"%.bmp" AND
+  req.ext.nlike:"%.ico" AND
+  req.ext.nlike:"%.cur" AND
+  req.ext.nlike:"%.tif" AND
+  req.ext.nlike:"%.tiff"
+)
