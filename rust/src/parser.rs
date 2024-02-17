@@ -1,17 +1,13 @@
-use pest::{
-    iterators::{Pair, Pairs},
-    Parser,
-};
+use pest::iterators::Pair;
+use pest::Parser;
 use pest_derive::Parser;
 
-use crate::{
-    ClauseRequest, ClauseResponse, ExprInt, ExprPreset, ExprString, OperatorInt, OperatorString,
-    Query, Result,
-};
+use crate::error::*;
+use crate::primitives::*;
 
 #[derive(Parser)]
 #[grammar = "httpql.pest"]
-pub struct HTTPQLParser;
+struct HTTPQLParser;
 
 fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
     let mut pair = pair.into_inner();
@@ -245,7 +241,7 @@ fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
     Ok(query)
 }
 
-fn parse(input: &str) -> Result<Query> {
+pub fn parse(input: &str) -> Result<Query> {
     let mut pairs = HTTPQLParser::parse(Rule::HTTPQL, input)?;
 
     let pair = pairs.next().unwrap();
@@ -261,7 +257,6 @@ fn parse(input: &str) -> Result<Query> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pest::Parser;
 
     #[test]
     fn parse_1() {
