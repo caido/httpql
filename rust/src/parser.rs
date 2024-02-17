@@ -5,7 +5,8 @@ use pest::{
 use pest_derive::Parser;
 
 use crate::{
-    ClauseRequest, ClauseResponse, ExprInt, ExprString, OperatorInt, OperatorString, Query, Result,
+    ClauseRequest, ClauseResponse, ExprInt, ExprPreset, ExprString, OperatorInt, OperatorString,
+    Query, Result,
 };
 
 #[derive(Parser)]
@@ -58,6 +59,23 @@ fn build_expr_int_ast(pair: Pair<Rule>) -> Result<ExprInt> {
         _ => unreachable!(),
     };
     Ok(ExprInt { value, operator })
+}
+
+fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
+    let mut pair = pair.into_inner();
+    let value = pair.next().unwrap();
+    let expr = match value.as_rule() {
+        Rule::StringValue => {
+            let name = value.into_inner().next().unwrap().as_str().to_string();
+            ExprPreset::Name(name)
+        }
+        Rule::SymbolValue => {
+            let alias = value.as_str().to_string();
+            ExprPreset::Alias(alias)
+        }
+        _ => unreachable!(),
+    };
+    Ok(expr)
 }
 
 fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
@@ -122,6 +140,58 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
     Ok(clause)
 }
 
+fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
+    let mut pair = pair.into_inner();
+
+    let value = pair.next().unwrap();
+    let value = match value.as_rule() {
+        Rule::StringValue => value.into_inner().next().unwrap().as_str().to_string(),
+        _ => unreachable!(),
+    };
+
+    Ok(Query {
+        and: Some((
+            Box::new(Query {
+                request: Some(ClauseRequest {
+                    raw: Some(ExprString {
+                        value: value.clone(),
+                        operator: OperatorString::Cont,
+                    }),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            }),
+            Box::new(Query {
+                response: Some(ClauseResponse {
+                    raw: Some(ExprString {
+                        value,
+                        operator: OperatorString::Cont,
+                    }),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            }),
+        )),
+        ..Default::default()
+    })
+}
+
+fn build_preset_clause_ast(pair: Pair<Rule>) -> Result<Query> {
+    let mut pair = pair.into_inner();
+
+    let expr = pair.next().unwrap();
+    let expr = match expr.as_rule() {
+        Rule::PresetAliasExpression => build_expr_preset_ast(expr)?,
+        Rule::PresetNameExpression => build_expr_preset_ast(expr)?,
+        _ => unreachable!(),
+    };
+
+    Ok(Query {
+        preset: Some(expr),
+        ..Default::default()
+    })
+}
+
 fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     match pair.as_rule() {
         Rule::RequestClause => {
@@ -139,6 +209,8 @@ fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
             Ok(query)
         }
         Rule::Query => build_query_ast(pair),
+        Rule::StringClause => build_string_clause_ast(pair),
+        Rule::PresetClause => build_preset_clause_ast(pair),
         _ => unreachable!(),
     }
 }
