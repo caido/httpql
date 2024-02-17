@@ -34,10 +34,7 @@ fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
         Rule::StringValue => value.into_inner().next().unwrap().as_str().to_string(),
         _ => unreachable!(),
     };
-    Ok(ExprString {
-        value: Some(value),
-        operator,
-    })
+    Ok(ExprString { value, operator })
 }
 
 fn build_expr_int_ast(pair: Pair<Rule>) -> Result<ExprInt> {
@@ -60,10 +57,7 @@ fn build_expr_int_ast(pair: Pair<Rule>) -> Result<ExprInt> {
         Rule::IntValue => value.as_str().parse().unwrap(),
         _ => unreachable!(),
     };
-    Ok(ExprInt {
-        value: Some(value),
-        operator,
-    })
+    Ok(ExprInt { value, operator })
 }
 
 fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
@@ -162,13 +156,13 @@ fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
         match operator.as_rule() {
             Rule::Or => {
                 query = Query {
-                    or: Some(vec![query, clause]),
+                    or: Some((Box::new(query), Box::new(clause))),
                     ..Default::default()
                 }
             }
             Rule::And => {
                 query = Query {
-                    and: Some(vec![query, clause]),
+                    and: Some((Box::new(query), Box::new(clause))),
                     ..Default::default()
                 }
             }
@@ -201,6 +195,6 @@ mod tests {
     fn parse_1() {
         let input = include_str!("../../tests/basic.httpql");
         let query = parse(input).unwrap();
-        println!("query: {:?}", query);
+        println!("query: {}", query);
     }
 }
