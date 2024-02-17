@@ -1,3 +1,4 @@
+#[derive(Clone, Debug, Default)]
 pub struct Query {
     pub preset: Option<ExprPreset>,
     pub request: Option<ClauseRequest>,
@@ -6,11 +7,13 @@ pub struct Query {
     pub or: Option<Vec<Query>>,
 }
 
+#[derive(Clone, Debug, Default)]
 pub struct ClauseResponse {
     pub raw: Option<ExprString>,
     pub status_code: Option<ExprInt>,
 }
 
+#[derive(Clone, Debug, Default)]
 pub struct ClauseRequest {
     pub file_extension: Option<ExprString>,
     pub host: Option<ExprString>,
@@ -21,11 +24,13 @@ pub struct ClauseRequest {
     pub raw: Option<ExprString>,
 }
 
+#[derive(Clone, Debug)]
 pub struct ExprString {
     pub value: Option<String>,
     pub operator: OperatorString,
 }
 
+#[derive(Clone, Debug)]
 pub enum OperatorString {
     Eq,
     Ne,
@@ -37,11 +42,13 @@ pub enum OperatorString {
     Nregex,
 }
 
+#[derive(Clone, Debug)]
 pub struct ExprInt {
     pub value: Option<i32>,
     pub operator: OperatorInt,
 }
 
+#[derive(Clone, Debug)]
 pub enum OperatorInt {
     Lt,
     Lte,
@@ -51,6 +58,7 @@ pub enum OperatorInt {
     Ne,
 }
 
+#[derive(Clone, Debug)]
 pub enum ExprPreset {
     Name(String),
     Alias(String),

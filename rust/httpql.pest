@@ -2,60 +2,62 @@ HTTPQL = { SOI ~ Query? ~ EOI }
 
 // Tokens
 // Delimiters
-LeftParen = { "(" }
-RightParen = { ")" }
-Dot = { "." }
-Colon = { ":" }
+LeftParen  = _{ "(" }
+RightParen = _{ ")" }
+Dot        = _{ "." }
+Colon      = _{ ":" }
 
 // Logical operators
 And = { "AND" | "and" }
-Or = { "OR" | "or" }
+Or  = { "OR" | "or" }
 
 // Namespaces
-RequestNamespace = { "req" }
-ResponseNamespace = { "resp" }
-PresetNamespace = { "preset" }
+RequestNamespace  = _{ "req" }
+ResponseNamespace = _{ "resp" }
+PresetNamespace   = _{ "preset" }
 
 // Request field names
 RequestStringFieldName = { "ext" | "host" | "method" | "path" | "raw" }
-RequestIntFieldName = { "port" }
+RequestIntFieldName    = { "port" }
 
 // Response field names
 ResponseStringFieldName = { "raw" }
-ResponseIntFieldName = { "code" }
+ResponseIntFieldName    = { "code" }
 
 // Operators for string and integer types
 StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
-IntOperator = { "eq" | "gt" | "gte" | "lt" | "lte" | "ne" }
+IntOperator    = { "eq" | "gte" | "gt" | "lte" | "lt" | "ne" }
 
 // Value types
-SymbolValue = { ('a'..'z' | 'A'..'Z' | "-" | "_")+ }
-IntValue = { ('0'..'9')+ }
-StringEnd = { "\"" }
-StringEscape = { "\\" ~ ANY }
-StringContent = { !"\"" ~ ANY }
-StringValue = { "\"" ~ (StringContent | StringEscape)* ~ StringEnd }
+SymbolValue   = @{ ('a'..'z' | 'A'..'Z' | "-" | "_")+ }
+IntValue      = @{ ASCII_DIGIT+ }
+StringValue   = ${ "\"" ~ StringContent ~ "\"" }
+StringContent = @{ StringChar* }
+StringChar    =  {
+    !"\"" ~ ANY
+  | "\\" ~ ANY
+}
 
 // Define non-token rules for constructing expressions
 WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
 
 // Expression
-IntExpression = ${ IntOperator ~ Colon ~ IntValue }
-StringExpression = ${ StringOperator ~ Colon ~ StringValue }
-PresetNameExpression = { StringValue }
-PresetAliasExpression = { SymbolValue }
+IntExpression         = ${ IntOperator ~ Colon ~ IntValue }
+StringExpression      = ${ StringOperator ~ Colon ~ StringValue }
+PresetNameExpression  =  { StringValue }
+PresetAliasExpression =  { SymbolValue }
 
 // Clause
 StringClause = { StringValue }
 
 RequestClause = ${
-    RequestNamespace ~ Dot ~ RequestIntFieldName ~ Dot ~ IntExpression |
-    RequestNamespace ~ Dot ~ RequestStringFieldName ~ Dot ~ StringExpression
+    RequestNamespace ~ Dot ~ RequestIntFieldName ~ Dot ~ IntExpression
+  | RequestNamespace ~ Dot ~ RequestStringFieldName ~ Dot ~ StringExpression
 }
 
 ResponseClause = ${
-    ResponseNamespace ~ Dot ~ ResponseIntFieldName ~ Dot ~ IntExpression |
-    ResponseNamespace ~ Dot ~ ResponseStringFieldName ~ Dot ~ StringExpression
+    ResponseNamespace ~ Dot ~ ResponseIntFieldName ~ Dot ~ IntExpression
+  | ResponseNamespace ~ Dot ~ ResponseStringFieldName ~ Dot ~ StringExpression
 }
 
 PresetClause = ${
@@ -63,6 +65,6 @@ PresetClause = ${
 }
 
 // Query
-Clause = _ { StringClause | RequestClause | ResponseClause | PresetClause | LeftParen ~ Query ~ RightParen }
-LogicalOperator = { And | Or }
-Query = { Clause ~ (LogicalOperator ~ Clause)* }
+Clause          = _{ StringClause | RequestClause | ResponseClause | PresetClause | LeftParen ~ Query ~ RightParen }
+LogicalOperator = _{ And | Or }
+Query           =  { Clause ~ (LogicalOperator ~ Clause)* }
