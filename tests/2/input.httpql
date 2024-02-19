@@ -1,0 +1,3 @@
+(             "some data"               and
+          resp.code.lte:300 and
+req.host.like:"%.google.com" and preset:"test lol" or preset:my_alias)

@@ -10,3 +10,6 @@ edition = "2021"
 thiserror = { version = "1" }
 pest = { version = "2" }
 pest_derive = { version = "2" }
+
+[dev-dependencies]
+rstest = { version = "0.18" }

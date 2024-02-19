@@ -256,12 +256,22 @@ pub fn parse(input: &str) -> Result<Query> {
 
 #[cfg(test)]
 mod tests {
+    use rstest::rstest;
+
     use super::*;
 
-    #[test]
-    fn parse_1() {
-        let input = include_str!("../../tests/basic.httpql");
-        let query = parse(input).unwrap();
-        println!("query: {}", query);
+    fn read_case(case: u32) -> (String, String) {
+        let input = std::fs::read_to_string(format!("../tests/{}/input.httpql", case)).unwrap();
+        let output = std::fs::read_to_string(format!("../tests/{}/output.ast", case)).unwrap();
+        (input, output)
+    }
+
+    #[rstest]
+    #[case(1)]
+    #[case(2)]
+    fn test_parse(#[case] case: u32) {
+        let (input, output) = read_case(case);
+        let query = parse(&input).unwrap();
+        assert_eq!(output, query.to_string());
     }
 }
