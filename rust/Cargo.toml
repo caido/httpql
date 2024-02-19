@@ -1,6 +1,7 @@
 [package]
 name = "httpql"
 authors = ["Caido Labs Inc. <dev@caido.io>"]
+description = "Parser for the HTTPQL language"
 repository = "https://github.com/caido/httpql"
 license = "MIT"
 version = "0.1.0"
