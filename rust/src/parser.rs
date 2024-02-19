@@ -11,7 +11,7 @@ struct HTTPQLParser;
 
 fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
     let mut pair = pair.into_inner();
-    let operator = pair.next().unwrap();
+    let operator = pair.next().required("StringExpression.operator")?;
     let operator = match operator.as_rule() {
         Rule::StringOperator => match operator.as_str() {
             "eq" => OperatorString::Eq,
@@ -22,21 +22,26 @@ fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
             "nlike" => OperatorString::Nlike,
             "regex" => OperatorString::Regex,
             "nregex" => OperatorString::Nregex,
-            _ => unreachable!(),
+            t => unknown!("StringOperator.{}", t),
         },
-        _ => unreachable!(),
+        t => unknown!("StringExpression.operator.{:?}", t),
     };
-    let value = pair.next().unwrap();
+    let value = pair.next().required("StringExpression.value")?;
     let value = match value.as_rule() {
-        Rule::StringValue => value.into_inner().next().unwrap().as_str().to_string(),
-        _ => unreachable!(),
+        Rule::StringValue => value
+            .into_inner()
+            .next()
+            .required("StringValue.content")?
+            .as_str()
+            .to_string(),
+        t => unknown!("StringExpression.value.{:?}", t),
     };
     Ok(ExprString { value, operator })
 }
 
 fn build_expr_int_ast(pair: Pair<Rule>) -> Result<ExprInt> {
     let mut pair = pair.into_inner();
-    let operator = pair.next().unwrap();
+    let operator = pair.next().required("IntExpression.operator")?;
     let operator = match operator.as_rule() {
         Rule::IntOperator => match operator.as_str() {
             "lt" => OperatorInt::Lt,
@@ -45,31 +50,36 @@ fn build_expr_int_ast(pair: Pair<Rule>) -> Result<ExprInt> {
             "gte" => OperatorInt::Gte,
             "eq" => OperatorInt::Eq,
             "ne" => OperatorInt::Ne,
-            _ => unreachable!(),
+            t => unknown!("IntOperator.{}", t),
         },
-        _ => unreachable!(),
+        t => unknown!("IntExpression.operator.{:?}", t),
     };
-    let value = pair.next().unwrap();
+    let value = pair.next().required("IntExpression.value")?;
     let value = match value.as_rule() {
-        Rule::IntValue => value.as_str().parse().unwrap(),
-        _ => unreachable!(),
+        Rule::IntValue => value.as_str().parse().required("IntValue")?,
+        t => unknown!("IntExpression.value.{:?}", t),
     };
     Ok(ExprInt { value, operator })
 }
 
 fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
     let mut pair = pair.into_inner();
-    let value = pair.next().unwrap();
+    let value = pair.next().required("PresetExpression.value")?;
     let expr = match value.as_rule() {
         Rule::StringValue => {
-            let name = value.into_inner().next().unwrap().as_str().to_string();
+            let name = value
+                .into_inner()
+                .next()
+                .required("StringValue.content")?
+                .as_str()
+                .to_string();
             ExprPreset::Name(name)
         }
         Rule::SymbolValue => {
             let alias = value.as_str().to_string();
             ExprPreset::Alias(alias)
         }
-        _ => unreachable!(),
+        t => unknown!("PresetExpression.value.{:?}", t),
     };
     Ok(expr)
 }
@@ -78,14 +88,14 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
     let mut clause = ClauseRequest::default();
 
     let mut pair = pair.into_inner();
-    let field = pair.next().unwrap();
-    let expr = pair.next().unwrap();
+    let field = pair.next().required("RequestClause.field")?;
+    let expr = pair.next().required("RequestClause.expr")?;
     match field.as_rule() {
         Rule::RequestIntFieldName => match field.as_str() {
             "port" => {
                 clause.port = Some(build_expr_int_ast(expr)?);
             }
-            _ => unreachable!(),
+            t => unknown!("RequestIntFieldName.{}", t),
         },
         Rule::RequestStringFieldName => match field.as_str() {
             "ext" => {
@@ -100,12 +110,15 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
             "path" => {
                 clause.path = Some(build_expr_string_ast(expr)?);
             }
+            "query" => {
+                clause.query = Some(build_expr_string_ast(expr)?);
+            }
             "raw" => {
                 clause.raw = Some(build_expr_string_ast(expr)?);
             }
-            _ => unreachable!(),
+            t => unknown!("RequestStringFieldName.{}", t),
         },
-        _ => unreachable!(),
+        t => unknown!("RequestClause.field.{:?}", t),
     };
 
     Ok(clause)
@@ -115,22 +128,22 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
     let mut clause = ClauseResponse::default();
 
     let mut pair = pair.into_inner();
-    let field = pair.next().unwrap();
-    let expr = pair.next().unwrap();
+    let field = pair.next().required("ResponseClause.field")?;
+    let expr = pair.next().required("ResponseClause.expr")?;
     match field.as_rule() {
         Rule::ResponseIntFieldName => match field.as_str() {
             "code" => {
                 clause.status_code = Some(build_expr_int_ast(expr)?);
             }
-            _ => unreachable!(),
+            t => unknown!("ResponseIntFieldName.{}", t),
         },
         Rule::ResponseStringFieldName => match field.as_str() {
             "raw" => {
                 clause.raw = Some(build_expr_string_ast(expr)?);
             }
-            _ => unreachable!(),
+            t => unknown!("ResponseStringFieldName.{}", t),
         },
-        _ => unreachable!(),
+        t => unknown!("ResponseClause.field.{:?}", t),
     };
 
     Ok(clause)
@@ -139,10 +152,15 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
 fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     let mut pair = pair.into_inner();
 
-    let value = pair.next().unwrap();
+    let value = pair.next().required("StringClause.value")?;
     let value = match value.as_rule() {
-        Rule::StringValue => value.into_inner().next().unwrap().as_str().to_string(),
-        _ => unreachable!(),
+        Rule::StringValue => value
+            .into_inner()
+            .next()
+            .required("StringValue.content")?
+            .as_str()
+            .to_string(),
+        t => unknown!("StringClause.value.{:?}", t),
     };
 
     Ok(Query {
@@ -175,11 +193,11 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
 fn build_preset_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     let mut pair = pair.into_inner();
 
-    let expr = pair.next().unwrap();
+    let expr = pair.next().required("PresetClause.expr")?;
     let expr = match expr.as_rule() {
         Rule::PresetAliasExpression => build_expr_preset_ast(expr)?,
         Rule::PresetNameExpression => build_expr_preset_ast(expr)?,
-        _ => unreachable!(),
+        t => unknown!("PresetClause.expr.{:?}", t),
     };
 
     Ok(Query {
@@ -207,18 +225,18 @@ fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
         Rule::Query => build_query_ast(pair),
         Rule::StringClause => build_string_clause_ast(pair),
         Rule::PresetClause => build_preset_clause_ast(pair),
-        _ => unreachable!(),
+        t => unknown!("Clause.{:?}", t),
     }
 }
 
 fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
     let mut pair = pair.into_inner();
 
-    let clause = pair.next().unwrap();
+    let clause = pair.next().required("Query.clause")?;
     let mut query = build_clause_ast(clause)?;
 
     while let Some(operator) = pair.next() {
-        let clause = pair.next().unwrap();
+        let clause = pair.next().required("Query.clause")?;
         let clause = build_clause_ast(clause)?;
 
         match operator.as_rule() {
@@ -234,7 +252,7 @@ fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
                     ..Default::default()
                 }
             }
-            _ => unreachable!(),
+            t => unknown!("Query.operator.{:?}", t),
         }
     }
 
@@ -244,13 +262,13 @@ fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
 pub fn parse(input: &str) -> Result<Query> {
     let mut pairs = HTTPQLParser::parse(Rule::HTTPQL, input)?;
 
-    let pair = pairs.next().unwrap();
+    let pair = pairs.next().required("HTTPQL")?;
     match pair.as_rule() {
         Rule::HTTPQL => {
-            let pair = pair.into_inner().next().unwrap();
+            let pair = pair.into_inner().next().required("HTTPQL.query")?;
             build_query_ast(pair)
         }
-        _ => unreachable!(),
+        t => unknown!("HTTPQL.{:?}", t),
     }
 }
 
