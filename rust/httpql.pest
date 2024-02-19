@@ -17,7 +17,7 @@ ResponseNamespace = _{ "resp" }
 PresetNamespace   = _{ "preset" }
 
 // Request field names
-RequestStringFieldName = { "ext" | "host" | "method" | "path" | "raw" }
+RequestStringFieldName = { "ext" | "host" | "method" | "path" | "query" | "raw" }
 RequestIntFieldName    = { "port" }
 
 // Response field names
@@ -25,7 +25,7 @@ ResponseStringFieldName = { "raw" }
 ResponseIntFieldName    = { "code" }
 
 // Operators for string and integer types
-StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
+StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" | "regex" | "nregex" }
 IntOperator    = { "eq" | "gte" | "gt" | "lte" | "lt" | "ne" }
 
 // Value types
