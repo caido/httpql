@@ -34,8 +34,8 @@ IntValue      = @{ ASCII_DIGIT+ }
 StringValue   = ${ "\"" ~ StringContent ~ "\"" }
 StringContent = @{ StringChar* }
 StringChar    =  {
-    !"\"" ~ ANY
-  | "\\" ~ ANY
+    "\\" ~ ANY
+  | !"\"" ~ ANY
 }
 
 // Define non-token rules for constructing expressions

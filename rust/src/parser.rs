@@ -287,6 +287,7 @@ mod tests {
     #[rstest]
     #[case(1)]
     #[case(2)]
+    #[case(3)]
     fn test_parse(#[case] case: u32) {
         let (input, output) = read_case(case);
         let query = parse(&input).unwrap();
