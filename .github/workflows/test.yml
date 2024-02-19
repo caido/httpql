@@ -1,0 +1,34 @@
+name: Tests
+
+on:
+  pull_request:
+    types:
+      - review_requested
+  push:
+    branches:
+      - 'main'
+
+concurrency:
+  group: validate-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: 'Validate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Install rust toolchain
+        working-directory: ./rust
+        run: rustup show
+
+      - name: Run clippy
+        working-directory: ./rust
+        run: cargo clippy
+
+      - name: Run rust tests
+        working-directory: ./rust
+        run: cargo test

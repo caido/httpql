@@ -20,7 +20,7 @@
 
 This is the HTTP Query Language specification. See our [documentation](https://docs.caido.io/internals/httpql.html) for details.
 
-The grammar is made for the [Lezer Parser](https://lezer.codemirror.net/).
+The grammar is made for the [Lezer Parser](https://lezer.codemirror.net/) and [Pest Parser](https://pest.rs/).
 
 ## 💚 Community
 
