@@ -33,7 +33,7 @@
   IntOperator { "eq" | "gt" | "gte" | "lt" | "lte" | "ne" }
 
   // Value types
-  SymbolValue { $[a-zA-Z-_]+ }
+  SymbolValue { $[a-z0-9-_]+ }
   IntValue { @digit+ }
 
 }
