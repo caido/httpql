@@ -29,7 +29,7 @@ StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" | "regex" |
 IntOperator    = { "eq" | "gte" | "gt" | "lte" | "lt" | "ne" }
 
 // Value types
-SymbolValue   = @{ ('a'..'z' | 'A'..'Z' | "-" | "_")+ }
+SymbolValue   = @{ ('a'..'z' | '0'..'9' | "-" | "_")+ }
 IntValue      = @{ ASCII_DIGIT+ }
 StringValue   = ${ "\"" ~ StringContent ~ "\"" }
 StringContent = @{ StringChar* }

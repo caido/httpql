@@ -288,9 +288,10 @@ mod tests {
     #[case(1)]
     #[case(2)]
     #[case(3)]
+    #[case(4)]
     fn test_parse(#[case] case: u32) {
         let (input, output) = read_case(case);
         let query = parse(&input).unwrap();
-        assert_eq!(output, query.to_string());
+        assert_eq!(output.trim(), query.to_string().trim());
     }
 }
