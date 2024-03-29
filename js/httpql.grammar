@@ -80,3 +80,5 @@ ResponseQuery {
 PresetQuery {
   PresetNamespace Colon (PresetNameExpression | PresetAliasExpression)
 }
+
+@external propSource highlight from "./props"

@@ -1,3 +1,7 @@
 # Rust
 Cargo.lock
 target/
+
+# JS
+pnpm-lock.yaml
+node_modules/
