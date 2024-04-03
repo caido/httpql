@@ -2,6 +2,7 @@
 import { LocalTokenGroup, LRParser } from "@lezer/lr";
 
 import { highlight } from "./props";
+
 export const parser = LRParser.deserialize({
   version: 14,
   states:

@@ -1,10 +1,10 @@
 import type { SyntaxNode } from "@lezer/common";
 import { ok, type Result } from "neverthrow";
 
+import type { HTTPQLError } from "../errors";
 import { terms } from "../parser";
 import type { FilterClauseRequestResponse, Options } from "../primitives";
 import { isPresent } from "../utils";
-import { HTTPQLError } from "../errors";
 
 import { deserializeCombinedQuery } from "./query.combined";
 import { deserializeGroupQuery } from "./query.group";
@@ -14,7 +14,7 @@ import { deserializeStringQuery } from "./query.string";
 export const deserializeQuery = (
   node: SyntaxNode,
   doc: string,
-  options: Options
+  options: Options,
 ): Result<FilterClauseRequestResponse, HTTPQLError> => {
   const stringQuery = node.getChild(terms.StringQuery);
   if (isPresent(stringQuery)) {

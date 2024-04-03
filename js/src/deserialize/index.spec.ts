@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  type FilterPreset,
   FilterOperatorInt,
   FilterOperatorString,
+  type FilterPreset,
 } from "../primitives";
 
 import { deserialize } from "./index";

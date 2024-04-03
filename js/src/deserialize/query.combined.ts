@@ -1,22 +1,22 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, Result } from "neverthrow";
 
-import { getChildString, isAbsent } from "../utils";
-import type { FilterClauseRequestResponse, Options } from "../primitives";
-import { terms } from "../parser";
 import { type HTTPQLError, InvalidQuery } from "../errors";
+import { terms } from "../parser";
+import type { FilterClauseRequestResponse, Options } from "../primitives";
+import { getChildString, isAbsent } from "../utils";
 
 import { deserializeQuery } from "./query";
 
 export const deserializeCombinedQuery = (
   node: SyntaxNode,
   doc: string,
-  options: Options
+  options: Options,
 ): Result<FilterClauseRequestResponse, HTTPQLError> => {
   const operator = getChildString(
     node,
     terms.LogicalOperator,
-    doc
+    doc,
   )?.toUpperCase();
 
   if (isAbsent(operator) || (operator !== "AND" && operator !== "OR")) {

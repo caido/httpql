@@ -1,13 +1,13 @@
-import { SyntaxNode } from "@lezer/common";
+import type { SyntaxNode } from "@lezer/common";
 
 export const isAbsent = <T>(
-  argument: T | undefined | null
+  argument: T | undefined | null,
 ): argument is undefined | null => {
   return argument === undefined || argument === null;
 };
 
 export const isPresent = <T>(
-  argument: T | undefined | null
+  argument: T | undefined | null,
 ): argument is NonNullable<T> => {
   return argument !== undefined && argument !== null;
 };

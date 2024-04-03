@@ -1,15 +1,15 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, ok, type Result } from "neverthrow";
 
+import { type HTTPQLError, InvalidQuery } from "../errors";
+import { terms } from "../parser";
 import type { FilterExprPresetInput, Options } from "../primitives";
 import { getChildString, isPresent } from "../utils";
-import { terms } from "../parser";
-import { type HTTPQLError, InvalidQuery } from "../errors";
 
 export const deserializePresetQuery = (
   node: SyntaxNode,
   doc: string,
-  options: Options
+  options: Options,
 ): Result<FilterExprPresetInput, HTTPQLError> => {
   const presets = options.presets ?? [];
   const nameStr = getChildString(node, terms.PresetNameExpression, doc);

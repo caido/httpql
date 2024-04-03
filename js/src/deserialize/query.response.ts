@@ -1,17 +1,17 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, type Result } from "neverthrow";
 
-import { getChildString, isPresent } from "../utils";
-import type { FilterClauseResponse } from "../primitives";
-import { terms } from "../parser";
 import { type HTTPQLError, InvalidQuery } from "../errors";
+import { terms } from "../parser";
+import type { FilterClauseResponse } from "../primitives";
+import { getChildString, isPresent } from "../utils";
 
 import { deserializeIntExpr } from "./expr.int";
 import { deserializeStringExpr } from "./expr.string";
 
 export const deserializeResponseQuery = (
   node: SyntaxNode,
-  doc: string
+  doc: string,
 ): Result<FilterClauseResponse, HTTPQLError> => {
   const stringField = (() => {
     const child = getChildString(node, terms.ResponseStringFieldName, doc);

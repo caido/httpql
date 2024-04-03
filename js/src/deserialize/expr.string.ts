@@ -2,14 +2,14 @@ import type { SyntaxNode } from "@lezer/common";
 import { err, ok } from "neverthrow";
 import type { Result } from "neverthrow";
 
-import { type FilterExprString, FilterOperatorString } from "../primitives";
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
-import { isPresent, getChildString } from "../utils";
+import { type FilterExprString, FilterOperatorString } from "../primitives";
+import { getChildString, isPresent } from "../utils";
 
 export const deserializeStringExpr = (
   node: SyntaxNode,
-  doc: string
+  doc: string,
 ): Result<FilterExprString, HTTPQLError> => {
   const operator = (() => {
     const operatorStr = getChildString(node, terms.StringOperator, doc);
