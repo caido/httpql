@@ -3,7 +3,7 @@ import { ok, type Result } from "neverthrow";
 
 import type { HTTPQLError } from "../errors";
 import { terms } from "../parser";
-import type { FilterClauseRequestResponse, Options } from "../primitives";
+import type { Options, Query } from "../primitives";
 import { isPresent } from "../utils";
 
 import { deserializeQuery } from "./query";
@@ -12,7 +12,7 @@ export const deserializeGroupQuery = (
   node: SyntaxNode,
   doc: string,
   options: Options,
-): Result<FilterClauseRequestResponse, HTTPQLError> => {
+): Result<Query, HTTPQLError> => {
   const query = node.getChild(terms.Query);
 
   if (isPresent(query)) {

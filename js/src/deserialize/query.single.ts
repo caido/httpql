@@ -3,7 +3,7 @@ import { err, type Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
-import type { FilterClauseRequestResponse, Options } from "../primitives";
+import type { Options, Query } from "../primitives";
 import { isPresent } from "../utils";
 
 import { deserializePresetQuery } from "./query.preset";
@@ -14,7 +14,7 @@ export const deserializeSingleQuery = (
   node: SyntaxNode,
   doc: string,
   options: Options,
-): Result<FilterClauseRequestResponse, HTTPQLError> => {
+): Result<Query, HTTPQLError> => {
   const requestQuery = node.getChild(terms.RequestQuery);
   if (isPresent(requestQuery)) {
     return deserializeRequestQuery(requestQuery, doc).map((request) => {

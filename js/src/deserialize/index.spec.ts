@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  FilterOperatorInt,
-  FilterOperatorString,
-  type FilterPreset,
-} from "../primitives";
+import { OperatorInt, OperatorString, type Preset } from "../primitives";
 
 import { deserialize } from "./index";
 
@@ -43,7 +39,7 @@ describe("deserialize", () => {
     expect(filter).to.deep.equal({
       request: {
         method: {
-          operator: FilterOperatorString.Eq,
+          operator: OperatorString.Eq,
           value: `GET${BACKSLASH}`,
         },
       },
@@ -58,7 +54,7 @@ describe("deserialize", () => {
     expect(filter).to.deep.equal({
       request: {
         method: {
-          operator: FilterOperatorString.Eq,
+          operator: OperatorString.Eq,
           value: `GET"`,
         },
       },
@@ -73,7 +69,7 @@ describe("deserialize", () => {
     expect(filter).to.deep.equal({
       request: {
         method: {
-          operator: FilterOperatorString.Eq,
+          operator: OperatorString.Eq,
           value: "GET",
         },
       },
@@ -88,7 +84,7 @@ describe("deserialize", () => {
     expect(filter).to.deep.equal({
       response: {
         statusCode: {
-          operator: FilterOperatorInt.Eq,
+          operator: OperatorInt.Eq,
           value: 404,
         },
       },
@@ -97,7 +93,7 @@ describe("deserialize", () => {
 
   it("should parse HTTPQL preset alias expression", () => {
     const query = "preset:my-preset";
-    const presets: FilterPreset[] = [
+    const presets: Preset[] = [
       {
         id: "my-preset-id",
         alias: "my-preset",
@@ -118,7 +114,7 @@ describe("deserialize", () => {
 
   it("should parse HTTPQL preset name expression", () => {
     const query = 'preset:"My preset"';
-    const presets: FilterPreset[] = [
+    const presets: Preset[] = [
       {
         id: "my-preset-id",
         alias: "my-preset",
@@ -146,7 +142,7 @@ describe("deserialize", () => {
 
   it("should not parse HTTPQL if no presets found", () => {
     const query = 'preset:"does not exist"';
-    const presets: FilterPreset[] = [
+    const presets: Preset[] = [
       {
         id: "my-preset-id",
         alias: "my-preset",
@@ -169,7 +165,7 @@ describe("deserialize", () => {
         {
           request: {
             method: {
-              operator: FilterOperatorString.Eq,
+              operator: OperatorString.Eq,
               value: "GET",
             },
           },
@@ -177,7 +173,7 @@ describe("deserialize", () => {
         {
           request: {
             host: {
-              operator: FilterOperatorString.Cont,
+              operator: OperatorString.Cont,
               value: "google.com",
             },
           },
@@ -196,7 +192,7 @@ describe("deserialize", () => {
         {
           request: {
             method: {
-              operator: FilterOperatorString.Eq,
+              operator: OperatorString.Eq,
               value: "GET",
             },
           },
@@ -204,7 +200,7 @@ describe("deserialize", () => {
         {
           request: {
             host: {
-              operator: FilterOperatorString.Cont,
+              operator: OperatorString.Cont,
               value: "google.com",
             },
           },
@@ -228,7 +224,7 @@ describe("deserialize", () => {
                 {
                   request: {
                     method: {
-                      operator: FilterOperatorString.Eq,
+                      operator: OperatorString.Eq,
                       value: "GET",
                     },
                   },
@@ -236,7 +232,7 @@ describe("deserialize", () => {
                 {
                   request: {
                     host: {
-                      operator: FilterOperatorString.Cont,
+                      operator: OperatorString.Cont,
                       value: "google.com",
                     },
                   },
@@ -248,7 +244,7 @@ describe("deserialize", () => {
         {
           request: {
             method: {
-              operator: FilterOperatorString.Eq,
+              operator: OperatorString.Eq,
               value: "POST",
             },
           },

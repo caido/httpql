@@ -2,26 +2,26 @@ import { err, ok, Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery, MissingPreset } from "./errors";
 import type {
-  FilterClauseRequest,
-  FilterClauseRequestResponse,
-  FilterClauseResponse,
-  FilterExprInt,
-  FilterExprPreset,
-  FilterExprString,
+  ClauseRequest,
+  ClauseResponse,
+  ExprInt,
+  ExprPreset,
+  ExprString,
   Options,
+  Query,
 } from "./primitives";
-import { FilterExprPresetSource } from "./primitives";
+import { ExprPresetSource } from "./primitives";
 import { isAbsent, isPresent } from "./utils";
 
 export const print = (
-  query: FilterClauseRequestResponse,
+  query: Query,
   options: Options,
 ): Result<string, HTTPQLError> => {
   return printClauseRequestResponse(query, options);
 };
 
 const printClauseRequestResponse = (
-  query: FilterClauseRequestResponse,
+  query: Query,
   options: Options,
 ): Result<string, HTTPQLError> => {
   if (isPresent(query.preset)) {
@@ -55,7 +55,7 @@ const printClauseRequestResponse = (
 };
 
 const printClauseRequest = (
-  value: FilterClauseRequest,
+  value: ClauseRequest,
 ): Result<string, HTTPQLError> => {
   if (isPresent(value.fileExtension)) {
     return printExprString(value.fileExtension).map((str) => `ext.${str}`);
@@ -82,7 +82,7 @@ const printClauseRequest = (
 };
 
 const printClauseResponse = (
-  value: FilterClauseResponse,
+  value: ClauseResponse,
 ): Result<string, HTTPQLError> => {
   if (isPresent(value.raw)) {
     return printExprString(value.raw).map((str) => `raw.${str}`);
@@ -94,7 +94,7 @@ const printClauseResponse = (
 };
 
 const printExprPreset = (
-  preset: FilterExprPreset,
+  preset: ExprPreset,
   options: Options,
 ): Result<string, HTTPQLError> => {
   const match = options.presets?.find((p) => p.id === preset.id);
@@ -104,19 +104,17 @@ const printExprPreset = (
   }
 
   switch (preset.source) {
-    case FilterExprPresetSource.Name:
+    case ExprPresetSource.Name:
       return ok(`preset:"${match.name}"`);
-    case FilterExprPresetSource.Alias:
+    case ExprPresetSource.Alias:
       return ok(`preset:${match.alias}`);
   }
 };
 
-const printExprInt = (value: FilterExprInt): Result<string, HTTPQLError> => {
+const printExprInt = (value: ExprInt): Result<string, HTTPQLError> => {
   return ok(`${value.operator.toLowerCase()}:${value.value}`);
 };
 
-const printExprString = (
-  value: FilterExprString,
-): Result<string, HTTPQLError> => {
+const printExprString = (value: ExprString): Result<string, HTTPQLError> => {
   return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
 };

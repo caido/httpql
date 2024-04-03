@@ -4,34 +4,34 @@ import type { Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
-import { type FilterExprString, FilterOperatorString } from "../primitives";
+import { type ExprString, OperatorString } from "../primitives";
 import { getChildString, isPresent } from "../utils";
 
 export const deserializeStringExpr = (
   node: SyntaxNode,
   doc: string,
-): Result<FilterExprString, HTTPQLError> => {
+): Result<ExprString, HTTPQLError> => {
   const operator = (() => {
     const operatorStr = getChildString(node, terms.StringOperator, doc);
 
     if (isPresent(operatorStr)) {
       switch (operatorStr) {
         case "cont":
-          return FilterOperatorString.Cont;
+          return OperatorString.Cont;
         case "ncont":
-          return FilterOperatorString.Ncont;
+          return OperatorString.Ncont;
         case "ne":
-          return FilterOperatorString.Ne;
+          return OperatorString.Ne;
         case "eq":
-          return FilterOperatorString.Eq;
+          return OperatorString.Eq;
         case "like":
-          return FilterOperatorString.Like;
+          return OperatorString.Like;
         case "nlike":
-          return FilterOperatorString.Nlike;
+          return OperatorString.Nlike;
         case "regex":
-          return FilterOperatorString.Regex;
+          return OperatorString.Regex;
         case "nregex":
-          return FilterOperatorString.Nregex;
+          return OperatorString.Nregex;
       }
     }
   })();

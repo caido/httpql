@@ -3,30 +3,30 @@ import { err, ok, type Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
-import { type FilterExprInt, FilterOperatorInt } from "../primitives";
+import { type ExprInt, OperatorInt } from "../primitives";
 import { getChildString, isPresent } from "../utils";
 
 export const deserializeIntExpr = (
   node: SyntaxNode,
   doc: string,
-): Result<FilterExprInt, HTTPQLError> => {
+): Result<ExprInt, HTTPQLError> => {
   const operator = (() => {
     const operatorStr = getChildString(node, terms.IntOperator, doc);
 
     if (isPresent(operatorStr)) {
       switch (operatorStr) {
         case "gt":
-          return FilterOperatorInt.Gt;
+          return OperatorInt.Gt;
         case "gte":
-          return FilterOperatorInt.Gte;
+          return OperatorInt.Gte;
         case "lt":
-          return FilterOperatorInt.Lt;
+          return OperatorInt.Lt;
         case "lte":
-          return FilterOperatorInt.Lte;
+          return OperatorInt.Lte;
         case "ne":
-          return FilterOperatorInt.Ne;
+          return OperatorInt.Ne;
         case "eq":
-          return FilterOperatorInt.Eq;
+          return OperatorInt.Eq;
       }
     }
   })();

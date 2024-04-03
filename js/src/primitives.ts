@@ -1,51 +1,51 @@
 export type Maybe<T> = T | undefined | null;
 
-export type FilterClauseRequest = {
-  fileExtension?: Maybe<FilterExprString>;
-  host?: Maybe<FilterExprString>;
-  method?: Maybe<FilterExprString>;
-  path?: Maybe<FilterExprString>;
-  port?: Maybe<FilterExprInt>;
-  query?: Maybe<FilterExprString>;
-  raw?: Maybe<FilterExprString>;
+export type Query = {
+  AND?: Maybe<Array<Query>>;
+  OR?: Maybe<Array<Query>>;
+  preset?: Maybe<ExprPreset>;
+  request?: Maybe<ClauseRequest>;
+  response?: Maybe<ClauseResponse>;
 };
 
-export type FilterClauseRequestResponse = {
-  AND?: Maybe<Array<FilterClauseRequestResponse>>;
-  OR?: Maybe<Array<FilterClauseRequestResponse>>;
-  preset?: Maybe<FilterExprPreset>;
-  request?: Maybe<FilterClauseRequest>;
-  response?: Maybe<FilterClauseResponse>;
+export type ClauseRequest = {
+  fileExtension?: Maybe<ExprString>;
+  host?: Maybe<ExprString>;
+  method?: Maybe<ExprString>;
+  path?: Maybe<ExprString>;
+  port?: Maybe<ExprInt>;
+  query?: Maybe<ExprString>;
+  raw?: Maybe<ExprString>;
 };
 
-export type FilterClauseResponse = {
-  raw?: Maybe<FilterExprString>;
-  statusCode?: Maybe<FilterExprInt>;
+export type ClauseResponse = {
+  raw?: Maybe<ExprString>;
+  statusCode?: Maybe<ExprInt>;
 };
 
-export type FilterExprInt = {
-  operator: FilterOperatorInt;
+export type ExprInt = {
+  operator: OperatorInt;
   value: number;
 };
 
-export type FilterExprPreset = {
+export type ExprPreset = {
   id: string;
-  source: FilterExprPresetSource;
+  source: ExprPresetSource;
 };
 
-export const FilterExprPresetSource = {
+export const ExprPresetSource = {
   Name: "NAME",
   Alias: "ALIAS",
 } as const;
-export type FilterExprPresetSource =
-  (typeof FilterExprPresetSource)[keyof typeof FilterExprPresetSource];
+export type ExprPresetSource =
+  (typeof ExprPresetSource)[keyof typeof ExprPresetSource];
 
-export type FilterExprString = {
-  operator: FilterOperatorString;
+export type ExprString = {
+  operator: OperatorString;
   value?: string;
 };
 
-export const FilterOperatorInt = {
+export const OperatorInt = {
   Eq: "EQ",
   Gt: "GT",
   Gte: "GTE",
@@ -53,10 +53,9 @@ export const FilterOperatorInt = {
   Lte: "LTE",
   Ne: "NE",
 } as const;
-export type FilterOperatorInt =
-  (typeof FilterOperatorInt)[keyof typeof FilterOperatorInt];
+export type OperatorInt = (typeof OperatorInt)[keyof typeof OperatorInt];
 
-export const FilterOperatorString = {
+export const OperatorString = {
   Cont: "CONT",
   Eq: "EQ",
   Like: "LIKE",
@@ -66,15 +65,15 @@ export const FilterOperatorString = {
   Nregex: "NREGEX",
   Regex: "REGEX",
 } as const;
-export type FilterOperatorString =
-  (typeof FilterOperatorString)[keyof typeof FilterOperatorString];
+export type OperatorString =
+  (typeof OperatorString)[keyof typeof OperatorString];
 
-export type FilterPreset = {
+export type Preset = {
   id: string;
   alias: string;
   name: string;
 };
 
 export type Options = {
-  presets: Maybe<FilterPreset[]>;
+  presets: Maybe<Preset[]>;
 };
