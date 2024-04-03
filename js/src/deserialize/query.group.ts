@@ -16,11 +16,7 @@ export const deserializeGroupQuery = (
   const query = node.getChild(terms.Query);
 
   if (isPresent(query)) {
-    return deserializeQuery(query, doc, options).map((query) => {
-      return {
-        AND: [query],
-      };
-    });
+    return deserializeQuery(query, doc, options);
   }
 
   return ok({});

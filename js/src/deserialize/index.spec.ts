@@ -108,6 +108,7 @@ describe("deserialize", () => {
     expect(filter).to.deep.equal({
       preset: {
         id: "my-preset-id",
+        source: "ALIAS",
       },
     });
   });
@@ -129,6 +130,7 @@ describe("deserialize", () => {
     expect(filter).to.deep.equal({
       preset: {
         id: "my-preset-id",
+        source: "NAME",
       },
     });
   });
@@ -209,6 +211,46 @@ describe("deserialize", () => {
     });
   });
 
+  it("should parse HTTPQL from left to right", () => {
+    const query =
+      'req.ext.nlike:"%.apng" AND req.ext.nlike:"%.avif" AND req.ext.nlike:"%.gif"';
+
+    const filter = deserialize(query)._unsafeUnwrap();
+
+    expect(filter).to.deep.equal({
+      AND: [
+        {
+          AND: [
+            {
+              request: {
+                fileExtension: {
+                  operator: OperatorString.Nlike,
+                  value: "%.apng",
+                },
+              },
+            },
+            {
+              request: {
+                fileExtension: {
+                  operator: OperatorString.Nlike,
+                  value: "%.avif",
+                },
+              },
+            },
+          ],
+        },
+        {
+          request: {
+            fileExtension: {
+              operator: OperatorString.Nlike,
+              value: "%.gif",
+            },
+          },
+        },
+      ],
+    });
+  });
+
   it("should parse HTTPQL group expression", () => {
     const query =
       '(req.method.eq:"GET" AND req.host.cont:"google.com") OR req.method.eq:"POST"';
@@ -220,24 +262,20 @@ describe("deserialize", () => {
         {
           AND: [
             {
-              AND: [
-                {
-                  request: {
-                    method: {
-                      operator: OperatorString.Eq,
-                      value: "GET",
-                    },
-                  },
+              request: {
+                method: {
+                  operator: OperatorString.Eq,
+                  value: "GET",
                 },
-                {
-                  request: {
-                    host: {
-                      operator: OperatorString.Cont,
-                      value: "google.com",
-                    },
-                  },
+              },
+            },
+            {
+              request: {
+                host: {
+                  operator: OperatorString.Cont,
+                  value: "google.com",
                 },
-              ],
+              },
             },
           ],
         },

@@ -18,6 +18,7 @@
   },
   "scripts": {
     "build": "rm -rf dist/*; tsc -p tsconfig.build.json",
+    "generate": "lezer-generator ./httpql.grammar -o ./src/parser/parser.ts",
     "lint": "eslint src/ --fix",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
@@ -29,6 +30,7 @@
     "neverthrow": "^6.1.0"
   },
   "devDependencies": {
+    "@lezer/generator": "1.6.0",
     "@types/node": "20.11.30",
     "@typescript-eslint/eslint-plugin": "7.5.0",
     "@typescript-eslint/parser": "7.5.0",
