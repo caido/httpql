@@ -6,7 +6,7 @@ import {
   type FilterClauseRequestResponseInput,
   FilterOperatorString,
 } from "../primitives";
-import { HTTPQLError, InvalidQuery } from "../errors";
+import { type HTTPQLError, InvalidQuery } from "../errors";
 
 export const deserializeStringQuery = (
   node: SyntaxNode,

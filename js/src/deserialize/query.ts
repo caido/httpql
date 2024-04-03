@@ -2,7 +2,7 @@ import type { SyntaxNode } from "@lezer/common";
 import { ok, type Result } from "neverthrow";
 
 import { terms } from "../parser";
-import type { FilterClauseRequestResponseInput } from "../primitives";
+import type { FilterClauseRequestResponseInput, Options } from "../primitives";
 import { isPresent } from "../utils";
 import { HTTPQLError } from "../errors";
 
@@ -10,7 +10,6 @@ import { deserializeCombinedQuery } from "./query.combined";
 import { deserializeGroupQuery } from "./query.group";
 import { deserializeSingleQuery } from "./query.single";
 import { deserializeStringQuery } from "./query.string";
-import type { Options } from "./types";
 
 export const deserializeQuery = (
   node: SyntaxNode,

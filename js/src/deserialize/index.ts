@@ -1,13 +1,12 @@
 import type { Result } from "neverthrow";
 import { err, ok } from "neverthrow";
 
-import type { FilterClauseRequestResponseInput } from "../primitives";
-import { HTTPQLError, InvalidQuery } from "../errors";
+import type { FilterClauseRequestResponseInput, Options } from "../primitives";
+import { type HTTPQLError, InvalidQuery } from "../errors";
 import { parser, terms } from "../parser";
 import { isAbsent } from "../utils";
 
 import { deserializeQuery } from "./query";
-import type { Options } from "./types";
 
 export const deserialize = (
   doc: string,

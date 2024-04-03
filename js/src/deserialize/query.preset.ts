@@ -1,12 +1,10 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, ok, type Result } from "neverthrow";
 
-import type { FilterExprPresetInput } from "../primitives";
+import type { FilterExprPresetInput, Options } from "../primitives";
 import { getChildString, isPresent } from "../utils";
 import { terms } from "../parser";
-import { HTTPQLError, InvalidQuery } from "../errors";
-
-import type { Options } from "./types";
+import { type HTTPQLError, InvalidQuery } from "../errors";
 
 export const deserializePresetQuery = (
   node: SyntaxNode,

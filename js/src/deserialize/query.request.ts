@@ -1,13 +1,10 @@
-import type { BaseError } from "@caido/common-frontend";
-import { isPresent } from "@caido/common-frontend";
 import type { SyntaxNode } from "@lezer/common";
 import type { Result } from "neverthrow";
 import { err } from "neverthrow";
 
-import { UserErrors } from "@/errors";
-import { getChildString } from "@/languages/utils";
-import type { FilterClauseRequestInput } from "@/types";
-
+import { getChildString, isPresent } from "../utils";
+import type { FilterClauseRequestInput } from "../primitives";
+import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
 
 import { deserializeIntExpr } from "./expr.int";
@@ -15,8 +12,8 @@ import { deserializeStringExpr } from "./expr.string";
 
 export const deserializeRequestQuery = (
   node: SyntaxNode,
-  doc: string,
-): Result<FilterClauseRequestInput, BaseError> => {
+  doc: string
+): Result<FilterClauseRequestInput, HTTPQLError> => {
   const stringField = (() => {
     const child = getChildString(node, terms.RequestStringFieldName, doc);
 
@@ -75,5 +72,5 @@ export const deserializeRequestQuery = (
     });
   }
 
-  return err(new UserErrors.InvalidHTTPQLQuery());
+  return err(new InvalidQuery());
 };

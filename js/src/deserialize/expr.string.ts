@@ -6,7 +6,7 @@ import {
   type FilterExprStringInput,
   FilterOperatorString,
 } from "../primitives";
-import { HTTPQLError, InvalidQuery } from "../errors";
+import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
 import { isPresent, getChildString } from "../utils";
 

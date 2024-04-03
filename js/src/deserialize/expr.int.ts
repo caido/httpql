@@ -5,7 +5,7 @@ import { getChildString, isPresent } from "../utils";
 import { type FilterExprIntInput, FilterOperatorInt } from "../primitives";
 
 import { terms } from "../parser";
-import { HTTPQLError, InvalidQuery } from "../errors";
+import { type HTTPQLError, InvalidQuery } from "../errors";
 
 export const deserializeIntExpr = (
   node: SyntaxNode,

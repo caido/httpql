@@ -1,23 +1,20 @@
-import type { BaseError } from "@caido/common-frontend";
-import { isPresent } from "@caido/common-frontend";
 import type { SyntaxNode } from "@lezer/common";
 import { err, type Result } from "neverthrow";
 
-import { UserErrors } from "@/errors";
-import type { FilterClauseRequestResponseInput } from "@/types";
-
+import type { FilterClauseRequestResponseInput, Options } from "../primitives";
 import { terms } from "../parser";
+import { isPresent } from "../utils";
+import { type HTTPQLError, InvalidQuery } from "../errors";
 
 import { deserializePresetQuery } from "./query.preset";
 import { deserializeRequestQuery } from "./query.request";
 import { deserializeResponseQuery } from "./query.response";
-import type { Options } from "./types";
 
 export const deserializeSingleQuery = (
   node: SyntaxNode,
   doc: string,
-  options: Options,
-): Result<FilterClauseRequestResponseInput, BaseError> => {
+  options: Options
+): Result<FilterClauseRequestResponseInput, HTTPQLError> => {
   const requestQuery = node.getChild(terms.RequestQuery);
   if (isPresent(requestQuery)) {
     return deserializeRequestQuery(requestQuery, doc).map((request) => {
@@ -45,5 +42,5 @@ export const deserializeSingleQuery = (
     });
   }
 
-  return err(new UserErrors.InvalidHTTPQLQuery());
+  return err(new InvalidQuery());
 };
