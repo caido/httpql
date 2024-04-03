@@ -2,7 +2,7 @@ import type { SyntaxNode } from "@lezer/common";
 import { ok, type Result } from "neverthrow";
 
 import { terms } from "../parser";
-import type { FilterClauseRequestResponseInput, Options } from "../primitives";
+import type { FilterClauseRequestResponse, Options } from "../primitives";
 import { isPresent } from "../utils";
 import { HTTPQLError } from "../errors";
 
@@ -15,7 +15,7 @@ export const deserializeQuery = (
   node: SyntaxNode,
   doc: string,
   options: Options
-): Result<FilterClauseRequestResponseInput, HTTPQLError> => {
+): Result<FilterClauseRequestResponse, HTTPQLError> => {
   const stringQuery = node.getChild(terms.StringQuery);
   if (isPresent(stringQuery)) {
     return deserializeStringQuery(stringQuery, doc);

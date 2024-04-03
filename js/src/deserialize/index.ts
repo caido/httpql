@@ -1,7 +1,7 @@
 import type { Result } from "neverthrow";
 import { err, ok } from "neverthrow";
 
-import type { FilterClauseRequestResponseInput, Options } from "../primitives";
+import type { FilterClauseRequestResponse, Options } from "../primitives";
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { parser, terms } from "../parser";
 import { isAbsent } from "../utils";
@@ -13,7 +13,7 @@ export const deserialize = (
   options: Options = {
     presets: undefined,
   }
-): Result<FilterClauseRequestResponseInput, HTTPQLError> => {
+): Result<FilterClauseRequestResponse, HTTPQLError> => {
   const trimmed = doc.trim();
   if (trimmed === "") {
     return ok({});

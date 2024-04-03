@@ -2,10 +2,7 @@ import type { SyntaxNode } from "@lezer/common";
 import { err, ok } from "neverthrow";
 import type { Result } from "neverthrow";
 
-import {
-  type FilterExprStringInput,
-  FilterOperatorString,
-} from "../primitives";
+import { type FilterExprString, FilterOperatorString } from "../primitives";
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
 import { isPresent, getChildString } from "../utils";
@@ -13,7 +10,7 @@ import { isPresent, getChildString } from "../utils";
 export const deserializeStringExpr = (
   node: SyntaxNode,
   doc: string
-): Result<FilterExprStringInput, HTTPQLError> => {
+): Result<FilterExprString, HTTPQLError> => {
   const operator = (() => {
     const operatorStr = getChildString(node, terms.StringOperator, doc);
 

@@ -1,30 +1,30 @@
 export type Maybe<T> = T | undefined | null;
 
-export type FilterClauseRequestInput = {
-  fileExtension?: Maybe<FilterExprStringInput>;
-  host?: Maybe<FilterExprStringInput>;
-  method?: Maybe<FilterExprStringInput>;
-  path?: Maybe<FilterExprStringInput>;
-  port?: Maybe<FilterExprIntInput>;
-  query?: Maybe<FilterExprStringInput>;
-  raw?: Maybe<FilterExprStringInput>;
+export type FilterClauseRequest = {
+  fileExtension?: Maybe<FilterExprString>;
+  host?: Maybe<FilterExprString>;
+  method?: Maybe<FilterExprString>;
+  path?: Maybe<FilterExprString>;
+  port?: Maybe<FilterExprInt>;
+  query?: Maybe<FilterExprString>;
+  raw?: Maybe<FilterExprString>;
 };
 
-export type FilterClauseRequestResponseInput = {
-  AND?: Maybe<Array<FilterClauseRequestResponseInput>>;
-  OR?: Maybe<Array<FilterClauseRequestResponseInput>>;
+export type FilterClauseRequestResponse = {
+  AND?: Maybe<Array<FilterClauseRequestResponse>>;
+  OR?: Maybe<Array<FilterClauseRequestResponse>>;
   preset?: Maybe<FilterExprPresetInput>;
-  request?: Maybe<FilterClauseRequestInput>;
-  response?: Maybe<FilterClauseResponseInput>;
-  source?: Maybe<FilterExprStringInput>;
+  request?: Maybe<FilterClauseRequest>;
+  response?: Maybe<FilterClauseResponse>;
+  source?: Maybe<FilterExprString>;
 };
 
-export type FilterClauseResponseInput = {
-  raw?: Maybe<FilterExprStringInput>;
-  statusCode?: Maybe<FilterExprIntInput>;
+export type FilterClauseResponse = {
+  raw?: Maybe<FilterExprString>;
+  statusCode?: Maybe<FilterExprInt>;
 };
 
-export type FilterExprIntInput = {
+export type FilterExprInt = {
   operator: FilterOperatorInt;
   value?: number;
 };
@@ -33,7 +33,7 @@ export type FilterExprPresetInput = {
   id: string;
 };
 
-export type FilterExprStringInput = {
+export type FilterExprString = {
   operator: FilterOperatorString;
   value?: string;
 };
@@ -66,4 +66,8 @@ export type FilterPreset = {
   id: string;
   alias: string;
   name: string;
+};
+
+export type Options = {
+  presets: Maybe<FilterPreset[]>;
 };

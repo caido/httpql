@@ -2,7 +2,7 @@ import type { SyntaxNode } from "@lezer/common";
 import { err, Result } from "neverthrow";
 
 import { getChildString, isAbsent } from "../utils";
-import type { FilterClauseRequestResponseInput, Options } from "../primitives";
+import type { FilterClauseRequestResponse, Options } from "../primitives";
 import { terms } from "../parser";
 import { type HTTPQLError, InvalidQuery } from "../errors";
 
@@ -12,7 +12,7 @@ export const deserializeCombinedQuery = (
   node: SyntaxNode,
   doc: string,
   options: Options
-): Result<FilterClauseRequestResponseInput, HTTPQLError> => {
+): Result<FilterClauseRequestResponse, HTTPQLError> => {
   const operator = getChildString(
     node,
     terms.LogicalOperator,

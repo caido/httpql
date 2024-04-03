@@ -3,7 +3,7 @@ import type { Result } from "neverthrow";
 import { err, ok } from "neverthrow";
 
 import {
-  type FilterClauseRequestResponseInput,
+  type FilterClauseRequestResponse,
   FilterOperatorString,
 } from "../primitives";
 import { type HTTPQLError, InvalidQuery } from "../errors";
@@ -11,7 +11,7 @@ import { type HTTPQLError, InvalidQuery } from "../errors";
 export const deserializeStringQuery = (
   node: SyntaxNode,
   doc: string
-): Result<FilterClauseRequestResponseInput, HTTPQLError> => {
+): Result<FilterClauseRequestResponse, HTTPQLError> => {
   try {
     const value = JSON.parse(doc.slice(node.from, node.to));
     const clause = {

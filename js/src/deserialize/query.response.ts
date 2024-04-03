@@ -2,7 +2,7 @@ import type { SyntaxNode } from "@lezer/common";
 import { err, type Result } from "neverthrow";
 
 import { getChildString, isPresent } from "../utils";
-import type { FilterClauseResponseInput } from "../primitives";
+import type { FilterClauseResponse } from "../primitives";
 import { terms } from "../parser";
 import { type HTTPQLError, InvalidQuery } from "../errors";
 
@@ -12,7 +12,7 @@ import { deserializeStringExpr } from "./expr.string";
 export const deserializeResponseQuery = (
   node: SyntaxNode,
   doc: string
-): Result<FilterClauseResponseInput, HTTPQLError> => {
+): Result<FilterClauseResponse, HTTPQLError> => {
   const stringField = (() => {
     const child = getChildString(node, terms.ResponseStringFieldName, doc);
 

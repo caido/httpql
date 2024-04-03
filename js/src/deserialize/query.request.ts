@@ -3,7 +3,7 @@ import type { Result } from "neverthrow";
 import { err } from "neverthrow";
 
 import { getChildString, isPresent } from "../utils";
-import type { FilterClauseRequestInput } from "../primitives";
+import type { FilterClauseRequest } from "../primitives";
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
 
@@ -13,7 +13,7 @@ import { deserializeStringExpr } from "./expr.string";
 export const deserializeRequestQuery = (
   node: SyntaxNode,
   doc: string
-): Result<FilterClauseRequestInput, HTTPQLError> => {
+): Result<FilterClauseRequest, HTTPQLError> => {
   const stringField = (() => {
     const child = getChildString(node, terms.RequestStringFieldName, doc);
 
