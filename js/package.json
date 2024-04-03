@@ -1,20 +1,32 @@
 {
   "name": "@caido/httpql",
-  "version": "0.1.2",
+  "version": "0.0.1",
   "description": "Parser for the HTTPQL language",
   "author": "Caido Labs Inc. <dev@caido.io>",
   "license": "MIT",
-  "types": "./src/index.d.ts",
-  "main": "./src/index.js",
-  "module": "./src/index.js",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "tsc"
+    "build": "rm -rf dist/*; tsc -p tsconfig.build.json"
   },
   "dependencies": {
+    "@lezer/common": "^1.2.1",
     "@lezer/highlight": "^1.2.0",
-    "@lezer/lr": "^1.4.0"
+    "@lezer/lr": "^1.4.0",
+    "neverthrow": "^6.1.0"
   },
   "devDependencies": {
+    "@types/node": "20.11.30",
     "typescript": "5.4.3",
     "vitest": "1.4.0"
   }

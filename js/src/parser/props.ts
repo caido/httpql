@@ -1,6 +1,7 @@
 import { styleTags, tags } from "@lezer/highlight";
+import { NodePropSource } from "@lezer/common";
 
-export const highlight = styleTags({
+export const highlight: NodePropSource = styleTags({
   "IntExpression/IntOperator": tags.operator,
   "IntExpression/IntValue": tags.integer,
   "StringExpression/StringOperator": tags.operator,
