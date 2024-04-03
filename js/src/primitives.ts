@@ -13,10 +13,9 @@ export type FilterClauseRequest = {
 export type FilterClauseRequestResponse = {
   AND?: Maybe<Array<FilterClauseRequestResponse>>;
   OR?: Maybe<Array<FilterClauseRequestResponse>>;
-  preset?: Maybe<FilterExprPresetInput>;
+  preset?: Maybe<FilterExprPreset>;
   request?: Maybe<FilterClauseRequest>;
   response?: Maybe<FilterClauseResponse>;
-  source?: Maybe<FilterExprString>;
 };
 
 export type FilterClauseResponse = {
@@ -26,12 +25,20 @@ export type FilterClauseResponse = {
 
 export type FilterExprInt = {
   operator: FilterOperatorInt;
-  value?: number;
+  value: number;
 };
 
-export type FilterExprPresetInput = {
+export type FilterExprPreset = {
   id: string;
+  source: FilterExprPresetSource;
 };
+
+export const FilterExprPresetSource = {
+  Name: "NAME",
+  Alias: "ALIAS",
+} as const;
+export type FilterExprPresetSource =
+  (typeof FilterExprPresetSource)[keyof typeof FilterExprPresetSource];
 
 export type FilterExprString = {
   operator: FilterOperatorString;

@@ -3,14 +3,15 @@ import { err, ok, type Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
-import type { FilterExprPresetInput, Options } from "../primitives";
+import type { FilterExprPreset, Options } from "../primitives";
+import { FilterExprPresetSource } from "../primitives";
 import { getChildString, isPresent } from "../utils";
 
 export const deserializePresetQuery = (
   node: SyntaxNode,
   doc: string,
   options: Options,
-): Result<FilterExprPresetInput, HTTPQLError> => {
+): Result<FilterExprPreset, HTTPQLError> => {
   const presets = options.presets ?? [];
   const nameStr = getChildString(node, terms.PresetNameExpression, doc);
 
@@ -24,6 +25,7 @@ export const deserializePresetQuery = (
       if (isPresent(preset)) {
         return ok({
           id: preset.id,
+          source: FilterExprPresetSource.Name,
         });
       }
     } catch {
@@ -40,6 +42,7 @@ export const deserializePresetQuery = (
     if (isPresent(preset)) {
       return ok({
         id: preset.id,
+        source: FilterExprPresetSource.Alias,
       });
     }
   }

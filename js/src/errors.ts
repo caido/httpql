@@ -26,9 +26,17 @@ export class HTTPQLError extends Error {
 }
 
 export class InvalidQuery extends HTTPQLError {
-  readonly __typename = "InvalidHTTPQLQuery";
+  readonly __typename = "InvalidQuery";
 
   constructor() {
     super(`HTTPQL query is not valid`);
+  }
+}
+
+export class MissingPreset extends HTTPQLError {
+  readonly __typename = "MissingPreset";
+
+  constructor(preset: string) {
+    super(`Missing preset '${preset}'`);
   }
 }
