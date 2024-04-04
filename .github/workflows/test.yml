@@ -9,17 +9,17 @@ on:
       - 'main'
 
 concurrency:
-  group: validate-${{ github.ref_name }}
+  group: tests-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  validate:
-    name: 'Validate'
+  test-rust:
+    name: 'Test rust'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install rust toolchain
         working-directory: ./rust
@@ -29,6 +29,40 @@ jobs:
         working-directory: ./rust
         run: cargo clippy
 
-      - name: Run rust tests
+      - name: Run tests
         working-directory: ./rust
         run: cargo test
+
+  test-js:
+    name: 'Test javascript'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3.0.0
+        with:
+          version: 8
+
+      - name: Install dependencies
+        working-directory: ./js
+        run: pnpm install
+
+      - name: Run linter
+        working-directory: ./js
+        run: pnpm lint
+
+      - name: Run typechecker
+        working-directory: ./js
+        run: pnpm typecheck
+
+      - name: Run tests
+        working-directory: ./js
+        run: pnpm test

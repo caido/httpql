@@ -1,0 +1,40 @@
+import type { SyntaxNode } from "@lezer/common";
+import { ok, type Result } from "neverthrow";
+
+import type { HTTPQLError } from "../errors";
+import { terms } from "../parser";
+import type { Options, Query } from "../primitives";
+import { isPresent } from "../utils";
+
+import { deserializeCombinedQuery } from "./query.combined";
+import { deserializeGroupQuery } from "./query.group";
+import { deserializeSingleQuery } from "./query.single";
+import { deserializeStringQuery } from "./query.string";
+
+export const deserializeQuery = (
+  node: SyntaxNode,
+  doc: string,
+  options: Options,
+): Result<Query, HTTPQLError> => {
+  const stringQuery = node.getChild(terms.StringQuery);
+  if (isPresent(stringQuery)) {
+    return deserializeStringQuery(stringQuery, doc);
+  }
+
+  const singleQuery = node.getChild(terms.SingleQuery);
+  if (isPresent(singleQuery)) {
+    return deserializeSingleQuery(singleQuery, doc, options);
+  }
+
+  const combinedQuery = node.getChild(terms.CombinedQuery);
+  if (isPresent(combinedQuery)) {
+    return deserializeCombinedQuery(combinedQuery, doc, options);
+  }
+
+  const groupQuery = node.getChild(terms.GroupQuery);
+  if (isPresent(groupQuery)) {
+    return deserializeGroupQuery(groupQuery, doc, options);
+  }
+
+  return ok({});
+};

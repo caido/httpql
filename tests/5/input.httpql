@@ -1,0 +1,3 @@
+req.ext.nlike:"%.apng" OR
+req.ext.nlike:"%.avif" AND
+req.ext.nlike:"%.gif"
