@@ -53,14 +53,14 @@ jobs:
         working-directory: ./js
         run: pnpm run build
 
-      - name: Publish internal
-        working-directory: ./js
-        run: |
-          echo "@caido:registry=https://npm.pkg.github.com" > .npmrc
-          pnpm -r publish
-
       - name: Publish
         working-directory: ./js
         env:
           NPM_TOKEN: ${{ secrets.NPM_BOT_TOKEN }}
         run: pnpm -r publish --access public
+
+      - name: Publish internal
+        working-directory: ./js
+        run: |
+          echo "@caido:registry=https://npm.pkg.github.com" > .npmrc
+          pnpm -r publish --no-git-checks
