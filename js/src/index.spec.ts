@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Options } from "./primitives";
 
-import { deserialize, print } from "./index";
+import { deserialize, serialize } from "./index";
 
 describe("httpql", () => {
   const cases = [1, 2, 3, 4, 5];
@@ -36,7 +36,7 @@ describe("httpql", () => {
         .trim();
 
       const result = deserialize(input, options)._unsafeUnwrap();
-      const ast = print(result, options)._unsafeUnwrap();
+      const ast = serialize(result, options)._unsafeUnwrap();
 
       expect(ast).toBe(output);
     });
