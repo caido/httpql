@@ -53,6 +53,10 @@ jobs:
         working-directory: ./js
         run: pnpm run build
 
+      - name: Publish internal
+        working-directory: ./js
+        run: env 'npm_config_//npm.pkg.github.com' | pnpm -r publish
+
       - name: Publish
         working-directory: ./js
         env:
