@@ -7,7 +7,7 @@ import type { Options } from "./primitives";
 import { deserialize, print } from "./index";
 
 describe("httpql", () => {
-  const cases = [1, 2, 3, 4];
+  const cases = [1, 2, 3, 4, 5];
   const options: Options = {
     presets: [
       {
@@ -31,10 +31,11 @@ describe("httpql", () => {
   for (const c of cases) {
     it(`Case ${c}`, () => {
       const input = fs.readFileSync(`../tests/${c}/input.httpql`, "utf-8");
-      const output = fs.readFileSync(`../tests/${c}/output.ast`, "utf-8");
+      const output = fs
+        .readFileSync(`../tests/${c}/output.ast`, "utf-8")
+        .trim();
 
       const result = deserialize(input, options)._unsafeUnwrap();
-      console.log(result);
       const ast = print(result, options)._unsafeUnwrap();
 
       expect(ast).toBe(output);

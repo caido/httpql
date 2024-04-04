@@ -1,17 +1,17 @@
 import type { SyntaxNode } from "@lezer/common";
 import type { Result } from "neverthrow";
-import { err, ok } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery } from "../errors";
+import { type HTTPQLError } from "../errors";
 import { OperatorString, type Query } from "../primitives";
+
+import { deserializeString } from "./string";
 
 export const deserializeStringQuery = (
   node: SyntaxNode,
   doc: string,
 ): Result<Query, HTTPQLError> => {
-  try {
-    const value = JSON.parse(doc.slice(node.from, node.to));
-    const clause = {
+  return deserializeString(node, doc).map((value) => {
+    return {
       OR: [
         {
           request: {
@@ -31,9 +31,5 @@ export const deserializeStringQuery = (
         },
       ],
     };
-
-    return ok(clause);
-  } catch {
-    return err(new InvalidQuery());
-  }
+  });
 };

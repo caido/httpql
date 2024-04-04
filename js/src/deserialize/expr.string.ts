@@ -1,11 +1,13 @@
 import type { SyntaxNode } from "@lezer/common";
-import { err, ok } from "neverthrow";
+import { err } from "neverthrow";
 import type { Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
 import { type ExprString, OperatorString } from "../primitives";
-import { getChildString, isPresent } from "../utils";
+import { getChildString, isAbsent, isPresent } from "../utils";
+
+import { deserializeString } from "./string";
 
 export const deserializeStringExpr = (
   node: SyntaxNode,
@@ -35,19 +37,14 @@ export const deserializeStringExpr = (
       }
     }
   })();
-
-  const value = getChildString(node, terms.StringValue, doc);
-
-  if (isPresent(operator) && isPresent(value)) {
-    try {
-      return ok({
-        operator,
-        value: JSON.parse(value),
-      });
-    } catch {
-      return err(new InvalidQuery());
-    }
+  if (isAbsent(operator)) {
+    return err(new InvalidQuery());
   }
 
-  return err(new InvalidQuery());
+  return deserializeString(node, doc).map((value) => {
+    return {
+      operator,
+      value,
+    };
+  });
 };

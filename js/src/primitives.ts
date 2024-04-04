@@ -42,7 +42,7 @@ export type ExprPresetSource =
 
 export type ExprString = {
   operator: OperatorString;
-  value?: string;
+  value: string;
 };
 
 export const OperatorInt = {

@@ -4,7 +4,6 @@ import { err, Result } from "neverthrow";
 import { type HTTPQLError, InvalidQuery } from "../errors";
 import { terms } from "../parser";
 import type { Options, Query } from "../primitives";
-import { getChildString, isAbsent } from "../utils";
 
 import { deserializeQuery } from "./query";
 
@@ -13,13 +12,10 @@ export const deserializeCombinedQuery = (
   doc: string,
   options: Options,
 ): Result<Query, HTTPQLError> => {
-  const operator = getChildString(
-    node,
-    terms.LogicalOperator,
-    doc,
-  )?.toUpperCase();
+  const isAnd = !!node.getChild(terms.And);
+  const isOr = !!node.getChild(terms.Or);
 
-  if (isAbsent(operator) || (operator !== "AND" && operator !== "OR")) {
+  if (!isAnd && !isOr) {
     return err(new InvalidQuery());
   }
 
@@ -30,16 +26,16 @@ export const deserializeCombinedQuery = (
   const combined = Result.combine(results);
 
   return combined.map((clauses) => {
-    switch (operator) {
-      case "AND":
-        return {
-          AND: clauses,
-        };
-
-      case "OR":
-        return {
-          OR: clauses,
-        };
+    if (isAnd) {
+      return {
+        AND: clauses,
+      };
     }
+    if (isOr) {
+      return {
+        OR: clauses,
+      };
+    }
+    return {};
   });
 };

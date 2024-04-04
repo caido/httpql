@@ -7,29 +7,31 @@ import type { ExprPreset, Options } from "../primitives";
 import { ExprPresetSource } from "../primitives";
 import { getChildString, isPresent } from "../utils";
 
+import { deserializeString } from "./string";
+
 export const deserializePresetQuery = (
   node: SyntaxNode,
   doc: string,
   options: Options,
 ): Result<ExprPreset, HTTPQLError> => {
   const presets = options.presets ?? [];
-  const nameStr = getChildString(node, terms.PresetNameExpression, doc);
+  const nameNode = node.getChild(terms.PresetNameExpression);
 
-  if (isPresent(nameStr)) {
-    try {
-      const parsed = JSON.parse(nameStr);
-      const preset = presets.find((p) => {
-        return p.name.toLowerCase() === parsed.toLowerCase();
+  if (isPresent(nameNode)) {
+    const parsed = deserializeString(nameNode, doc);
+    if (parsed.isErr()) {
+      return err(parsed.error);
+    }
+
+    const preset = presets.find((p) => {
+      return p.name.toLowerCase() === parsed.value.toLowerCase();
+    });
+
+    if (isPresent(preset)) {
+      return ok({
+        id: preset.id,
+        source: ExprPresetSource.Name,
       });
-
-      if (isPresent(preset)) {
-        return ok({
-          id: preset.id,
-          source: ExprPresetSource.Name,
-        });
-      }
-    } catch {
-      return err(new InvalidQuery());
     }
   }
 

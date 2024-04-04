@@ -2,7 +2,7 @@
   Query?
 }
 
-@precedence { or @left, and @left }
+@precedence { and @left, or @left }
 
 // Define tokens for basic syntax elements
 @tokens {
@@ -45,20 +45,20 @@
 }
 
 @skip {} {
-  StringValue { '"' (stringContent | stringEscape)* stringEnd }
+  StringContent { (stringContent | stringEscape)* }
+  StringValue { '"' StringContent stringEnd }
 }
 
 // Define non-token rules for constructing expressions
 @skip { whitespace }
 @detectDelim
 
-Query { StringQuery | GroupQuery | CombinedQuery | SingleQuery }
+Query { StringQuery | GroupQuery | SingleQuery | CombinedQuery }
 
 StringQuery { StringValue }
 GroupQuery { LeftParen Query? RightParen }
 
-LogicalOperator { !and And | !or Or }
-CombinedQuery { Query LogicalOperator Query }
+CombinedQuery { Query !and And Query | Query !or Or Query }
 
 SingleQuery { RequestQuery | ResponseQuery | PresetQuery }
 

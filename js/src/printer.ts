@@ -88,7 +88,7 @@ const printClauseResponse = (
     return printExprString(value.raw).map((str) => `raw.${str}`);
   }
   if (isPresent(value.statusCode)) {
-    return printExprInt(value.statusCode).map((str) => `status.${str}`);
+    return printExprInt(value.statusCode).map((str) => `code.${str}`);
   }
   return err(new InvalidQuery());
 };

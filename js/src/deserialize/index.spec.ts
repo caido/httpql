@@ -32,7 +32,7 @@ describe("deserialize", () => {
   });
 
   it("should parse HTTPQL expression with escaped backslash", () => {
-    const query = `req.method.eq:"GET${BACKSLASH + BACKSLASH}"`;
+    const query = `req.method.eq:"GET${BACKSLASH}${BACKSLASH}"`;
 
     const filter = deserialize(query)._unsafeUnwrap();
 
@@ -40,7 +40,7 @@ describe("deserialize", () => {
       request: {
         method: {
           operator: OperatorString.Eq,
-          value: `GET${BACKSLASH}`,
+          value: `GET${BACKSLASH}${BACKSLASH}`,
         },
       },
     });
@@ -55,7 +55,7 @@ describe("deserialize", () => {
       request: {
         method: {
           operator: OperatorString.Eq,
-          value: `GET"`,
+          value: `GET${BACKSLASH}"`,
         },
       },
     });

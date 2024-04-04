@@ -4,10 +4,11 @@ import { getString } from "../utils";
 
 import { parser } from "./parser";
 import {
+  And,
   CombinedQuery,
   GroupQuery,
   IntValue,
-  LogicalOperator,
+  Or,
   Query,
   RequestQuery,
   SingleQuery,
@@ -35,7 +36,7 @@ describe("parser", () => {
       .getChild(Query)!
       .getChild(CombinedQuery)!;
 
-    const operator = combinedQuery.getChild(LogicalOperator)!;
+    const operator = combinedQuery.getChild(And)!;
 
     const operatorValue = getString(operator, doc);
     expect(operatorValue).to.equal("AND");
@@ -62,7 +63,7 @@ describe("parser", () => {
       .getChild(Query)!
       .getChild(CombinedQuery)!;
 
-    const operator = combinedQuery.getChild(LogicalOperator)!;
+    const operator = combinedQuery.getChild(Or)!;
 
     const operatorValue = getString(operator, doc);
     expect(operatorValue).to.equal("OR");
