@@ -1,4 +1,6 @@
+use lazy_static::lazy_static;
 use pest::iterators::Pair;
+use pest::pratt_parser::{Assoc, Op, PrattParser};
 use pest::Parser;
 use pest_derive::Parser;
 
@@ -8,6 +10,12 @@ use crate::primitives::*;
 #[derive(Parser)]
 #[grammar = "httpql.pest"]
 struct HTTPQLParser;
+
+lazy_static! {
+    static ref PRATT_PARSER: PrattParser<Rule> = PrattParser::new()
+        .op(Op::infix(Rule::Or, Assoc::Left))
+        .op(Op::infix(Rule::And, Assoc::Left));
+}
 
 fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
     let mut pair = pair.into_inner();
@@ -230,33 +238,29 @@ fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
 }
 
 fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
-    let mut pair = pair.into_inner();
+    let pair = pair.into_inner();
 
-    let clause = pair.next().required("Query.clause")?;
-    let mut query = build_clause_ast(clause)?;
+    PRATT_PARSER
+        .map_primary(|primary| build_clause_ast(primary))
+        .map_infix(|lhs, op, rhs| {
+            let lhs = lhs?;
+            let rhs = rhs?;
 
-    while let Some(operator) = pair.next() {
-        let clause = pair.next().required("Query.clause")?;
-        let clause = build_clause_ast(clause)?;
-
-        match operator.as_rule() {
-            Rule::Or => {
-                query = Query {
-                    or: Some((Box::new(query), Box::new(clause))),
+            let query = match op.as_rule() {
+                Rule::Or => Query {
+                    or: Some((Box::new(lhs), Box::new(rhs))),
                     ..Default::default()
-                }
-            }
-            Rule::And => {
-                query = Query {
-                    and: Some((Box::new(query), Box::new(clause))),
+                },
+                Rule::And => Query {
+                    and: Some((Box::new(lhs), Box::new(rhs))),
                     ..Default::default()
-                }
-            }
-            t => unknown!("Query.operator.{:?}", t),
-        }
-    }
+                },
+                t => unknown!("Query.operator.{:?}", t),
+            };
 
-    Ok(query)
+            Ok(query)
+        })
+        .parse(pair)
 }
 
 pub fn parse(input: &str) -> Result<Query> {
