@@ -164,7 +164,7 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     };
 
     Ok(Query {
-        and: Some((
+        or: Some((
             Box::new(Query {
                 request: Some(ClauseRequest {
                     raw: Some(ExprString {
@@ -289,6 +289,7 @@ mod tests {
     #[case(2)]
     #[case(3)]
     #[case(4)]
+    #[case(5)]
     fn test_parse(#[case] case: u32) {
         let (input, output) = read_case(case);
         let query = parse(&input).unwrap();

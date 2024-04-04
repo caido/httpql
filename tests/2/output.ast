@@ -1,1 +1,1 @@
-(((((req.raw.cont:"some data" and resp.raw.cont:"some data") and resp.code.lte:300) and req.host.like:"%.google.com") and preset:"test lol") or preset:my_alias)
+(((((req.raw.cont:"some data" or resp.raw.cont:"some data") and resp.code.lte:300) and req.host.like:"%.google.com") and preset:"test lol") or preset:my_alias)
