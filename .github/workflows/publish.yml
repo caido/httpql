@@ -55,9 +55,7 @@ jobs:
 
       - name: Publish internal
         working-directory: ./js
-        env:
-          npm_config_@caido:registry: https://npm.pkg.github.com
-        run: pnpm -r publish
+        run: env "npm_config_@caido:registry=https://npm.pkg.github.com" pnpm -r publish
 
       - name: Publish
         working-directory: ./js
