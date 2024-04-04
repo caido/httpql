@@ -61,6 +61,8 @@ jobs:
 
       - name: Publish internal
         working-directory: ./js
+        env:
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "@caido:registry=https://npm.pkg.github.com" > .npmrc
+          mv .npmrc.github .npmrc
           pnpm -r publish --no-git-checks
