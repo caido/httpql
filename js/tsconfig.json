@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
+    "module": "NodeNext",
 
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": true,
@@ -10,7 +10,7 @@
     "resolveJsonModule": true,
     "noUnusedLocals": true,
 
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "sourceMap": true,
     "useDefineForClassFields": true,

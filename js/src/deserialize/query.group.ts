@@ -1,12 +1,12 @@
 import type { SyntaxNode } from "@lezer/common";
 import { ok, type Result } from "neverthrow";
 
-import type { HTTPQLError } from "../errors";
-import { terms } from "../parser";
-import type { Options, Query } from "../primitives";
-import { isPresent } from "../utils";
+import type { HTTPQLError } from "../errors.js";
+import { terms } from "../parser/index.js";
+import type { Options, Query } from "../primitives.js";
+import { isPresent } from "../utils.js";
 
-import { deserializeQuery } from "./query";
+import { deserializeQuery } from "./query.js";
 
 export const deserializeGroupQuery = (
   node: SyntaxNode,

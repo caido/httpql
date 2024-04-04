@@ -1,6 +1,6 @@
 import { err, ok, Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery, MissingPreset } from "./errors";
+import { type HTTPQLError, InvalidQuery, MissingPreset } from "./errors.js";
 import type {
   ClauseRequest,
   ClauseResponse,
@@ -9,9 +9,9 @@ import type {
   ExprString,
   Options,
   Query,
-} from "./primitives";
-import { ExprPresetSource } from "./primitives";
-import { isAbsent, isPresent } from "./utils";
+} from "./primitives.js";
+import { ExprPresetSource } from "./primitives.js";
+import { isAbsent, isPresent } from "./utils.js";
 
 export const serialize = (
   query: Query,

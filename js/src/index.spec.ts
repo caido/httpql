@@ -2,9 +2,9 @@ import * as fs from "fs";
 
 import { describe, expect, it } from "vitest";
 
-import type { Options } from "./primitives";
+import type { Options } from "./primitives.js";
 
-import { deserialize, serialize } from "./index";
+import { deserialize, serialize } from "./index.js";
 
 describe("httpql", () => {
   const cases = [1, 2, 3, 4, 5];

@@ -2,12 +2,12 @@ import type { SyntaxNode } from "@lezer/common";
 import { err } from "neverthrow";
 import type { Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery } from "../errors";
-import { terms } from "../parser";
-import { type ExprString, OperatorString } from "../primitives";
-import { getChildString, isAbsent, isPresent } from "../utils";
+import { type HTTPQLError, InvalidQuery } from "../errors.js";
+import { terms } from "../parser/index.js";
+import { type ExprString, OperatorString } from "../primitives.js";
+import { getChildString, isAbsent, isPresent } from "../utils.js";
 
-import { deserializeString } from "./string";
+import { deserializeString } from "./string.js";
 
 export const deserializeStringExpr = (
   node: SyntaxNode,

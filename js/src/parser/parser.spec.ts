@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { getString } from "../utils";
+import { getString } from "../utils.js";
 
-import { parser } from "./parser";
+import { parser } from "./parser.js";
 import {
   And,
   CombinedQuery,
@@ -13,7 +13,7 @@ import {
   RequestQuery,
   SingleQuery,
   StringValue,
-} from "./parser.terms";
+} from "./parser.terms.js";
 
 describe("parser", () => {
   it("Should parse single query", () => {
