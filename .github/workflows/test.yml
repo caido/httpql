@@ -56,9 +56,11 @@ jobs:
         run: pnpm install
 
       - name: Run linter
+        working-directory: ./js
         run: pnpm lint
 
       - name: Run typechecker
+        working-directory: ./js
         run: pnpm typecheck
 
       - name: Run tests
