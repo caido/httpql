@@ -1,13 +1,13 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, ok, type Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery } from "../errors";
-import { terms } from "../parser";
-import type { ExprPreset, Options } from "../primitives";
-import { ExprPresetSource } from "../primitives";
-import { getChildString, isPresent } from "../utils";
+import { type HTTPQLError, InvalidQuery } from "../errors.js";
+import { terms } from "../parser/index.js";
+import type { ExprPreset, Options } from "../primitives.js";
+import { ExprPresetSource } from "../primitives.js";
+import { getChildString, isPresent } from "../utils.js";
 
-import { deserializeString } from "./string";
+import { deserializeString } from "./string.js";
 
 export const deserializePresetQuery = (
   node: SyntaxNode,

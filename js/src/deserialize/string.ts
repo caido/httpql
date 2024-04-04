@@ -2,9 +2,9 @@ import type { SyntaxNode } from "@lezer/common";
 import { err, ok } from "neverthrow";
 import type { Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery } from "../errors";
-import { terms } from "../parser";
-import { getChildString, isAbsent } from "../utils";
+import { type HTTPQLError, InvalidQuery } from "../errors.js";
+import { terms } from "../parser/index.js";
+import { getChildString, isAbsent } from "../utils.js";
 
 export const deserializeString = (
   node: SyntaxNode,

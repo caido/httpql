@@ -1,11 +1,11 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery } from "../errors";
-import { terms } from "../parser";
-import type { Options, Query } from "../primitives";
+import { type HTTPQLError, InvalidQuery } from "../errors.js";
+import { terms } from "../parser/index.js";
+import type { Options, Query } from "../primitives.js";
 
-import { deserializeQuery } from "./query";
+import { deserializeQuery } from "./query.js";
 
 export const deserializeCombinedQuery = (
   node: SyntaxNode,

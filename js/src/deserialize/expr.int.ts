@@ -1,10 +1,10 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, ok, type Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery } from "../errors";
-import { terms } from "../parser";
-import { type ExprInt, OperatorInt } from "../primitives";
-import { getChildString, isPresent } from "../utils";
+import { type HTTPQLError, InvalidQuery } from "../errors.js";
+import { terms } from "../parser/index.js";
+import { type ExprInt, OperatorInt } from "../primitives.js";
+import { getChildString, isPresent } from "../utils.js";
 
 export const deserializeIntExpr = (
   node: SyntaxNode,

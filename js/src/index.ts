@@ -1,4 +1,4 @@
-export * from "./primitives";
-export { deserialize } from "./deserialize";
-export { parser, terms } from "./parser";
-export { serialize } from "./serialize";
+export * from "./primitives.js";
+export { deserialize } from "./deserialize/index.js";
+export { parser, terms } from "./parser/index.js";
+export { serialize } from "./serialize.js";

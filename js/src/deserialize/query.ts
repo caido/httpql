@@ -1,15 +1,15 @@
 import type { SyntaxNode } from "@lezer/common";
 import { ok, type Result } from "neverthrow";
 
-import type { HTTPQLError } from "../errors";
-import { terms } from "../parser";
-import type { Options, Query } from "../primitives";
-import { isPresent } from "../utils";
+import type { HTTPQLError } from "../errors.js";
+import { terms } from "../parser/index.js";
+import type { Options, Query } from "../primitives.js";
+import { isPresent } from "../utils.js";
 
-import { deserializeCombinedQuery } from "./query.combined";
-import { deserializeGroupQuery } from "./query.group";
-import { deserializeSingleQuery } from "./query.single";
-import { deserializeStringQuery } from "./query.string";
+import { deserializeCombinedQuery } from "./query.combined.js";
+import { deserializeGroupQuery } from "./query.group.js";
+import { deserializeSingleQuery } from "./query.single.js";
+import { deserializeStringQuery } from "./query.string.js";
 
 export const deserializeQuery = (
   node: SyntaxNode,

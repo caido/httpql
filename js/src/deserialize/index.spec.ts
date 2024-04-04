@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { OperatorInt, OperatorString, type Preset } from "../primitives";
+import { OperatorInt, OperatorString, type Preset } from "../primitives.js";
 
-import { deserialize } from "./index";
+import { deserialize } from "./index.js";
 
 const BACKSLASH = "\\";
 

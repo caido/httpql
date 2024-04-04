@@ -1,14 +1,14 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, type Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery } from "../errors";
-import { terms } from "../parser";
-import type { Options, Query } from "../primitives";
-import { isPresent } from "../utils";
+import { type HTTPQLError, InvalidQuery } from "../errors.js";
+import { terms } from "../parser/index.js";
+import type { Options, Query } from "../primitives.js";
+import { isPresent } from "../utils.js";
 
-import { deserializePresetQuery } from "./query.preset";
-import { deserializeRequestQuery } from "./query.request";
-import { deserializeResponseQuery } from "./query.response";
+import { deserializePresetQuery } from "./query.preset.js";
+import { deserializeRequestQuery } from "./query.request.js";
+import { deserializeResponseQuery } from "./query.response.js";
 
 export const deserializeSingleQuery = (
   node: SyntaxNode,

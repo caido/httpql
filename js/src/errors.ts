@@ -1,5 +1,5 @@
-import type { Maybe } from "./primitives";
-import { isPresent } from "./utils";
+import type { Maybe } from "./primitives.js";
+import { isPresent } from "./utils.js";
 
 export class HTTPQLError extends Error {
   source: Maybe<Error>;
