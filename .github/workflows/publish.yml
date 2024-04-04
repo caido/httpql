@@ -6,20 +6,51 @@ on:
       - 'main'
 
 jobs:
-  publish:
+  publish-rust:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout project
+        uses: actions/checkout@v3
 
-      - uses: actions-rs/toolchain@v1
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
 
-      - uses: katyo/publish-crates@33e1d18666cdfacf9f6c3547194d2c1d39cbf849 # (v2)
+      - name: Publish
+        uses: katyo/publish-crates@33e1d18666cdfacf9f6c3547194d2c1d39cbf849 # (v2)
         with:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           ignore-unpublished-changes: true
           path: ./rust
+
+  publish-js:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3.0.0
+        with:
+          version: 8
+
+      - name: Install dependencies
+        working-directory: ./js
+        run: pnpm install
+
+      - name: Publish
+        working-directory: ./js
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_BOT_TOKEN }}
+        run: pnpm -r publish --access public
