@@ -15,7 +15,9 @@ import { isAbsent, isPresent } from "./utils";
 
 export const serialize = (
   query: Query,
-  options: Options,
+  options: Options = {
+    presets: undefined,
+  },
 ): Result<string, HTTPQLError> => {
   return serializeClauseRequestResponse(query, options);
 };
