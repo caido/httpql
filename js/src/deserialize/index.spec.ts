@@ -23,6 +23,14 @@ describe("deserialize", () => {
     expect(result.isOk()).to.be.true;
   });
 
+  it("should parse space query", () => {
+    const query = "   ";
+
+    const result = deserialize(query);
+
+    expect(result.isOk()).to.be.true;
+  });
+
   it("should parse empty group", () => {
     const query = "()";
 

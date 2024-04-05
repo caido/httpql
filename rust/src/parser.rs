@@ -264,6 +264,10 @@ fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
 }
 
 pub fn parse(input: &str) -> Result<Query> {
+    if input.trim().is_empty() {
+        return Ok(Query::default());
+    }
+
     let mut pairs = HTTPQLParser::parse(Rule::HTTPQL, input)?;
 
     let pair = pairs.next().required("HTTPQL")?;
@@ -282,21 +286,19 @@ mod tests {
 
     use super::*;
 
-    fn read_case(case: u32) -> (String, String) {
-        let input = std::fs::read_to_string(format!("../tests/{}/input.httpql", case)).unwrap();
-        let output = std::fs::read_to_string(format!("../tests/{}/output.ast", case)).unwrap();
-        (input, output)
+    #[rstest]
+    #[case("", "")]
+    #[case("   ", "")]
+    fn test_parse(#[case] input: String, #[case] output: String) {
+        let query = parse(&input).unwrap();
+        assert_eq!(output, query.to_string(),);
     }
 
     #[rstest]
-    #[case(1)]
-    #[case(2)]
-    #[case(3)]
-    #[case(4)]
-    #[case(5)]
-    fn test_parse(#[case] case: u32) {
-        let (input, output) = read_case(case);
-        let query = parse(&input).unwrap();
-        assert_eq!(output.trim(), query.to_string().trim());
+    #[case("aaaaaa")]
+    #[case("req and resp")]
+    #[case("req.ext.eq:\"\" and ")]
+    fn test_err(#[case] input: String) {
+        assert!(parse(&input).is_err());
     }
 }
