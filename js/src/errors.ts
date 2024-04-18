@@ -32,11 +32,3 @@ export class InvalidQuery extends HTTPQLError {
     super(`HTTPQL query is not valid`);
   }
 }
-
-export class MissingPreset extends HTTPQLError {
-  readonly __typename = "MissingPreset";
-
-  constructor(preset: string) {
-    super(`Missing preset '${preset}'`);
-  }
-}

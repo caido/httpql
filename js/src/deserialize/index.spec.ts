@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { OperatorInt, OperatorString, type Preset } from "../primitives.js";
+import { OperatorInt, OperatorString } from "../primitives.js";
 
 import { deserialize } from "./index.js";
 
@@ -48,7 +48,8 @@ describe("deserialize", () => {
       request: {
         method: {
           operator: OperatorString.Eq,
-          value: `GET${BACKSLASH}${BACKSLASH}`,
+          value: `GET\\`,
+          isRaw: false,
         },
       },
     });
@@ -63,7 +64,8 @@ describe("deserialize", () => {
       request: {
         method: {
           operator: OperatorString.Eq,
-          value: `GET${BACKSLASH}"`,
+          value: `GET"`,
+          isRaw: false,
         },
       },
     });
@@ -79,6 +81,7 @@ describe("deserialize", () => {
         method: {
           operator: OperatorString.Eq,
           value: "GET",
+          isRaw: false,
         },
       },
     });
@@ -101,68 +104,26 @@ describe("deserialize", () => {
 
   it("should parse HTTPQL preset alias expression", () => {
     const query = "preset:my-preset";
-    const presets: Preset[] = [
-      {
-        id: "my-preset-id",
-        alias: "my-preset",
-        name: "My preset",
-      },
-    ];
 
-    const filter = deserialize(query, {
-      presets,
-    })._unsafeUnwrap();
+    const filter = deserialize(query)._unsafeUnwrap();
 
     expect(filter).to.deep.equal({
       preset: {
-        id: "my-preset-id",
-        source: "ALIAS",
+        alias: "my-preset",
       },
     });
   });
 
   it("should parse HTTPQL preset name expression", () => {
     const query = 'preset:"My preset"';
-    const presets: Preset[] = [
-      {
-        id: "my-preset-id",
-        alias: "my-preset",
-        name: "My preset",
-      },
-    ];
 
-    const filter = deserialize(query, {
-      presets,
-    })._unsafeUnwrap();
+    const filter = deserialize(query)._unsafeUnwrap();
 
     expect(filter).to.deep.equal({
       preset: {
-        id: "my-preset-id",
-        source: "NAME",
-      },
-    });
-  });
-
-  it("should not parse HTTPQL if no presets given", () => {
-    const query = 'preset:"My preset"';
-    const result = deserialize(query);
-
-    expect(result.isErr()).to.be.true;
-  });
-
-  it("should not parse HTTPQL if no presets found", () => {
-    const query = 'preset:"does not exist"';
-    const presets: Preset[] = [
-      {
-        id: "my-preset-id",
-        alias: "my-preset",
         name: "My preset",
       },
-    ];
-
-    const result = deserialize(query, { presets });
-
-    expect(result.isErr()).to.be.true;
+    });
   });
 
   it("should parse HTTPQL AND expression", () => {
@@ -177,6 +138,7 @@ describe("deserialize", () => {
             method: {
               operator: OperatorString.Eq,
               value: "GET",
+              isRaw: false,
             },
           },
         },
@@ -185,6 +147,7 @@ describe("deserialize", () => {
             host: {
               operator: OperatorString.Cont,
               value: "google.com",
+              isRaw: false,
             },
           },
         },
@@ -204,6 +167,7 @@ describe("deserialize", () => {
             method: {
               operator: OperatorString.Eq,
               value: "GET",
+              isRaw: false,
             },
           },
         },
@@ -212,6 +176,7 @@ describe("deserialize", () => {
             host: {
               operator: OperatorString.Cont,
               value: "google.com",
+              isRaw: false,
             },
           },
         },
@@ -234,6 +199,7 @@ describe("deserialize", () => {
                 fileExtension: {
                   operator: OperatorString.Nlike,
                   value: "%.apng",
+                  isRaw: false,
                 },
               },
             },
@@ -242,6 +208,7 @@ describe("deserialize", () => {
                 fileExtension: {
                   operator: OperatorString.Nlike,
                   value: "%.avif",
+                  isRaw: false,
                 },
               },
             },
@@ -252,6 +219,7 @@ describe("deserialize", () => {
             fileExtension: {
               operator: OperatorString.Nlike,
               value: "%.gif",
+              isRaw: false,
             },
           },
         },
@@ -274,6 +242,7 @@ describe("deserialize", () => {
                 method: {
                   operator: OperatorString.Eq,
                   value: "GET",
+                  isRaw: false,
                 },
               },
             },
@@ -282,6 +251,7 @@ describe("deserialize", () => {
                 host: {
                   operator: OperatorString.Cont,
                   value: "google.com",
+                  isRaw: false,
                 },
               },
             },
@@ -292,6 +262,7 @@ describe("deserialize", () => {
             method: {
               operator: OperatorString.Eq,
               value: "POST",
+              isRaw: false,
             },
           },
         },

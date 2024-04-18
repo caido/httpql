@@ -3,17 +3,12 @@ import type { Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors.js";
 import { parser, terms } from "../parser/index.js";
-import type { Options, Query } from "../primitives.js";
+import type { Query } from "../primitives.js";
 import { isAbsent } from "../utils.js";
 
 import { deserializeQuery } from "./query.js";
 
-export const deserialize = (
-  doc: string,
-  options: Options = {
-    presets: undefined,
-  },
-): Result<Query, HTTPQLError> => {
+export const deserialize = (doc: string): Result<Query, HTTPQLError> => {
   const trimmed = doc.trim();
   if (trimmed === "") {
     return ok({});
@@ -27,10 +22,6 @@ export const deserialize = (
       if (node.type.isError) {
         hasError = true;
       }
-
-      if (node.type.is(terms.PresetQuery) && isAbsent(options.presets)) {
-        hasError = true;
-      }
     },
   });
 
@@ -39,5 +30,5 @@ export const deserialize = (
     return err(new InvalidQuery());
   }
 
-  return deserializeQuery(query, doc, options);
+  return deserializeQuery(query, doc);
 };

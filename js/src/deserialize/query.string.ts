@@ -10,7 +10,7 @@ export const deserializeStringQuery = (
   node: SyntaxNode,
   doc: string,
 ): Result<Query, HTTPQLError> => {
-  return deserializeString(node, doc).map((value) => {
+  return deserializeString(node, doc).map(({ value }) => {
     return {
       OR: [
         {
@@ -18,6 +18,7 @@ export const deserializeStringQuery = (
             raw: {
               operator: OperatorString.Cont,
               value,
+              isRaw: false,
             },
           },
         },
@@ -26,6 +27,7 @@ export const deserializeStringQuery = (
             raw: {
               operator: OperatorString.Cont,
               value,
+              isRaw: false,
             },
           },
         },

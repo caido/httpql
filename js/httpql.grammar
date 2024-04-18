@@ -12,6 +12,7 @@
   RightParen { ")" }
   Dot { "." }
   Colon { ":" }
+  Hex  { $[0-9a-fA-F] }
 
   // Logical operators
   And { "AND" | "and" }
@@ -29,24 +30,29 @@
   ResponseIntFieldName { "code" }
 
   // Operators for string and integer types
-  StringOperator { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" | "regex" | "nregex" }
+  StringOperator { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike"}
+  RegexOperator { "regex" | "nregex" }
   IntOperator { "eq" | "gt" | "gte" | "lt" | "lte" | "ne" }
 
   // Value types
   SymbolValue { $[a-z0-9-_]+ }
   IntValue { @digit+ }
 
+  // String
+  StringChar { $[\u{20}\u{21}\u{23}-\u{5b}\u{5d}-\u{10ffff}] | "\\" StringEscape }
+  StringEscape  { $["\\\/bfnrt] | "u" Hex Hex Hex Hex }
 }
 
 @local tokens {
-  stringEnd[@name='"'] { '"' }
-  stringEscape { "\\" _ }
-  @else stringContent
+  regexEnd[@name='/'] { '/' }
+  regexEscape { "\\" _ }
+  @else regexContent
 }
 
 @skip {} {
-  StringContent { (stringContent | stringEscape)* }
-  StringValue { '"' StringContent stringEnd }
+  StringValue { '"' StringChar* '"' }
+  RegexContent { (regexContent | regexEscape)* }
+  RegexValue { '/' RegexContent regexEnd }
 }
 
 // Define non-token rules for constructing expressions
@@ -63,7 +69,7 @@ CombinedQuery { Query !and And Query | Query !or Or Query }
 SingleQuery { RequestQuery | ResponseQuery | PresetQuery }
 
 IntExpression { IntOperator Colon IntValue }
-StringExpression { StringOperator Colon StringValue }
+StringExpression { StringOperator Colon StringValue | RegexOperator Colon (RegexValue | StringValue) }
 PresetNameExpression { StringValue }
 PresetAliasExpression { SymbolValue }
 
