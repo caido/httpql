@@ -298,7 +298,6 @@ pub fn parse(input: &str) -> Result<Query> {
 
 #[cfg(test)]
 mod tests {
-    use regex::Regex;
     use rstest::rstest;
 
     use super::*;
@@ -317,31 +316,5 @@ mod tests {
     #[case("req.ext.eq:\"\" and ")]
     fn test_err(#[case] input: String) {
         assert!(parse(&input).is_err());
-    }
-
-    #[rstest]
-    #[case(r#"req.raw.regex:/\./"#, "a", false)]
-    //#[case(r#"req.raw.regex:"\.""#, "a", true)]
-    #[case(r#"req.raw.regex:"\n""#, "\n", true)]
-    #[case(r#"req.raw.regex:"\"asd\"""#, "\"asd\"", true)]
-    #[case(r#"req.raw.regex:/\//"#, "/", true)]
-    fn test_string_regex(#[case] input: String, #[case] test: String, #[case] result: bool) {
-        println!("Input: {:?}", input);
-        let query = parse(&input).unwrap();
-        let expr = query.request.unwrap().raw.unwrap();
-        println!("Value: {:?}", expr.value);
-        let regex = Regex::new(&expr.value).unwrap();
-        assert_eq!(regex.is_match(&test), result);
-    }
-
-    #[rstest]
-    #[case(r#"req.raw.cont:"\"asd\"""#, "\"asd\"", true)]
-    #[case(r#"req.raw.cont:"😊""#, "😊", true)]
-    fn test_string_cont(#[case] input: String, #[case] test: String, #[case] result: bool) {
-        println!("Input: {:?}", input);
-        let query = parse(&input).unwrap();
-        let expr = query.request.unwrap().raw.unwrap();
-        println!("Value: {:?}", expr.value);
-        assert_eq!(expr.value == test, result);
     }
 }

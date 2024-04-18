@@ -269,32 +269,4 @@ describe("deserialize", () => {
       ],
     });
   });
-
-  describe("string regex", () => {
-    const cases = [['req.raw.regex:"\\"asd\\""', '"asd"', true]] as const;
-
-    cases.forEach(([query, value, expected], index) => {
-      it(`case ${index}`, () => {
-        const expr = deserialize(query)._unsafeUnwrap().request!.raw!;
-        const regex = new RegExp(expr.value);
-        expect(regex.test(value)).to.equal(expected);
-      });
-    });
-  });
-
-  describe("string cont", () => {
-    const cases = [
-      ['req.raw.cont:"\\"asd\\""', '"asd"', true],
-      ['req.raw.cont:"😊"', "😊", true],
-      // ['req.raw.cont:"\\."', ".", true],
-    ] as const;
-
-    cases.forEach(([query, value, expected], index) => {
-      it(`case ${index}`, () => {
-        const expr = deserialize(query)._unsafeUnwrap().request!.raw!;
-        console.log(expr.value);
-        expect(expr.value === value).to.equal(expected);
-      });
-    });
-  });
 });

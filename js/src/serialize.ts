@@ -104,5 +104,9 @@ const serializeExprInt = (value: ExprInt): Result<string, HTTPQLError> => {
 const serializeExprString = (
   value: ExprString,
 ): Result<string, HTTPQLError> => {
-  return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
+  if (value.isRaw) {
+    return ok(`${value.operator.toLowerCase()}:/${value.value}/`);
+  } else {
+    return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
+  }
 };

@@ -17,3 +17,4 @@ serde_json = { version = "1" }
 [dev-dependencies]
 regex = { version = "1.10" }
 rstest = { version = "0.18" }
+serde = { version = "1", features = ["derive"] }
