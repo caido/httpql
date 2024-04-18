@@ -17,20 +17,29 @@ lazy_static! {
         .op(Op::infix(Rule::And, Assoc::Left));
 }
 
-fn build_string_ast(pair: Pair<Rule>) -> Result<(String, bool)> {
+struct ParsedString {
+    value: String,
+    is_raw: bool,
+}
+
+fn build_string_ast(pair: Pair<Rule>) -> Result<ParsedString> {
     let result = match pair.as_rule() {
         Rule::StringValue => match serde_json::from_str(pair.as_str()) {
-            Ok(serde_json::Value::String(s)) => (s, false),
+            Ok(serde_json::Value::String(value)) => ParsedString {
+                value,
+                is_raw: false,
+            },
             _ => invalid!("StringValue.content"),
         },
-        Rule::RegexValue => (
-            pair.into_inner()
+        Rule::RegexValue => ParsedString {
+            value: pair
+                .into_inner()
                 .next()
                 .required("RegexValue.content")?
                 .as_str()
                 .to_string(),
-            true,
-        ),
+            is_raw: true,
+        },
         t => unknown!("StringExpression.value.{:?}", t),
     };
     Ok(result)
@@ -47,8 +56,6 @@ fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
             "ncont" => OperatorString::Ncont,
             "like" => OperatorString::Like,
             "nlike" => OperatorString::Nlike,
-            "regex" => OperatorString::Regex,
-            "nregex" => OperatorString::Nregex,
             t => unknown!("StringOperator.{}", t),
         },
         Rule::RegexOperator => match operator.as_str() {
@@ -59,11 +66,11 @@ fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
         t => unknown!("StringExpression.operator.{:?}", t),
     };
     let value = pair.next().required("StringExpression.value")?;
-    let (value, raw) = build_string_ast(value)?;
+    let ParsedString { value, is_raw } = build_string_ast(value)?;
     Ok(ExprString {
         value,
         operator,
-        raw,
+        is_raw,
     })
 }
 
@@ -95,7 +102,7 @@ fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
     let value = pair.next().required("PresetExpression.value")?;
     let expr = match value.as_rule() {
         Rule::StringValue => {
-            let (name, _) = build_string_ast(value)?;
+            let ParsedString { value: name, .. } = build_string_ast(value)?;
             ExprPreset::Name(name)
         }
         Rule::SymbolValue => {
@@ -176,7 +183,7 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     let mut pair = pair.into_inner();
 
     let value = pair.next().required("StringClause.value")?;
-    let (value, _) = build_string_ast(value)?;
+    let ParsedString { value, .. } = build_string_ast(value)?;
 
     Ok(Query {
         or: Some((
@@ -185,7 +192,7 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
                     raw: Some(ExprString {
                         value: value.clone(),
                         operator: OperatorString::Cont,
-                        raw: false,
+                        is_raw: false,
                     }),
                     ..Default::default()
                 }),
@@ -196,7 +203,7 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
                     raw: Some(ExprString {
                         value,
                         operator: OperatorString::Cont,
-                        raw: false,
+                        is_raw: false,
                     }),
                     ..Default::default()
                 }),

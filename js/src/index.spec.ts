@@ -2,31 +2,10 @@ import * as fs from "fs";
 
 import { describe, expect, it } from "vitest";
 
-import type { Options } from "./primitives.js";
-
 import { deserialize, serialize } from "./index.js";
 
 describe("httpql", () => {
   const cases = [1, 2, 3, 4, 5];
-  const options: Options = {
-    presets: [
-      {
-        id: "1",
-        name: "test lol",
-        alias: "test_lol",
-      },
-      {
-        id: "2",
-        name: "My Alias",
-        alias: "my_alias",
-      },
-      {
-        id: "3",
-        name: "Test Characters",
-        alias: "abc123-_",
-      },
-    ],
-  };
 
   for (const c of cases) {
     it(`Case ${c}`, () => {
@@ -35,8 +14,8 @@ describe("httpql", () => {
         .readFileSync(`../tests/${c}/output.ast`, "utf-8")
         .trim();
 
-      const result = deserialize(input, options)._unsafeUnwrap();
-      const ast = serialize(result, options)._unsafeUnwrap();
+      const result = deserialize(input)._unsafeUnwrap();
+      const ast = serialize(result)._unsafeUnwrap();
 
       expect(ast).toBe(output);
     });

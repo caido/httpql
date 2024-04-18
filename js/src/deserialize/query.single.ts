@@ -3,7 +3,7 @@ import { err, type Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors.js";
 import { terms } from "../parser/index.js";
-import type { Options, Query } from "../primitives.js";
+import type { Query } from "../primitives.js";
 import { isPresent } from "../utils.js";
 
 import { deserializePresetQuery } from "./query.preset.js";
@@ -13,7 +13,6 @@ import { deserializeResponseQuery } from "./query.response.js";
 export const deserializeSingleQuery = (
   node: SyntaxNode,
   doc: string,
-  options: Options,
 ): Result<Query, HTTPQLError> => {
   const requestQuery = node.getChild(terms.RequestQuery);
   if (isPresent(requestQuery)) {
@@ -35,7 +34,7 @@ export const deserializeSingleQuery = (
 
   const presetQuery = node.getChild(terms.PresetQuery);
   if (isPresent(presetQuery)) {
-    return deserializePresetQuery(presetQuery, doc, options).map((preset) => {
+    return deserializePresetQuery(presetQuery, doc).map((preset) => {
       return {
         preset,
       };

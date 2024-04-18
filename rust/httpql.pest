@@ -25,7 +25,7 @@ ResponseStringFieldName = { "raw" }
 ResponseIntFieldName    = { "code" }
 
 // Operators for string and integer types
-StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" | "regex" | "nregex" }
+StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
 RegexOperator  = { "regex" | "nregex" }
 IntOperator    = { "eq" | "gte" | "gt" | "lte" | "lt" | "ne" }
 
@@ -51,7 +51,7 @@ WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
 
 // Expression
 IntExpression         = ${ IntOperator ~ Colon ~ IntValue }
-StringExpression      = ${ StringOperator ~ Colon ~ StringValue | RegexOperator ~ Colon ~ RegexValue }
+StringExpression      = ${ StringOperator ~ Colon ~ StringValue | RegexOperator ~ Colon ~ (RegexValue | StringValue) }
 PresetNameExpression  =  { StringValue }
 PresetAliasExpression =  { SymbolValue }
 

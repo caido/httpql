@@ -1,16 +1,15 @@
 import type { SyntaxNode } from "@lezer/common";
-import { err, Result } from "neverthrow";
+import { err, ok, Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors.js";
 import { terms } from "../parser/index.js";
-import type { Options, Query } from "../primitives.js";
+import type { Query } from "../primitives.js";
 
 import { deserializeQuery } from "./query.js";
 
 export const deserializeCombinedQuery = (
   node: SyntaxNode,
   doc: string,
-  options: Options,
 ): Result<Query, HTTPQLError> => {
   const isAnd = !!node.getChild(terms.And);
   const isOr = !!node.getChild(terms.Or);
@@ -21,21 +20,26 @@ export const deserializeCombinedQuery = (
 
   const results = node
     .getChildren(terms.Query)
-    .map((n) => deserializeQuery(n, doc, options));
+    .map((n) => deserializeQuery(n, doc));
 
   const combined = Result.combine(results);
 
-  return combined.map((clauses) => {
+  return combined.andThen((clauses) => {
+    if (clauses.length !== 2) {
+      return err(new InvalidQuery());
+    }
+
     if (isAnd) {
-      return {
-        AND: clauses,
-      };
+      return ok({
+        AND: clauses as [Query, Query],
+      });
     }
     if (isOr) {
-      return {
-        OR: clauses,
-      };
+      return ok({
+        OR: clauses as [Query, Query],
+      });
     }
-    return {};
+
+    return err(new InvalidQuery());
   });
 };

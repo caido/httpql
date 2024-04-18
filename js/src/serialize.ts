@@ -1,33 +1,25 @@
 import { err, ok, Result } from "neverthrow";
 
-import { type HTTPQLError, InvalidQuery, MissingPreset } from "./errors.js";
+import { type HTTPQLError, InvalidQuery } from "./errors.js";
 import type {
   ClauseRequest,
   ClauseResponse,
   ExprInt,
   ExprPreset,
   ExprString,
-  Options,
   Query,
 } from "./primitives.js";
-import { ExprPresetSource } from "./primitives.js";
-import { isAbsent, isPresent } from "./utils.js";
+import { isPresent } from "./utils.js";
 
-export const serialize = (
-  query: Query,
-  options: Options = {
-    presets: undefined,
-  },
-): Result<string, HTTPQLError> => {
-  return serializeClauseRequestResponse(query, options);
+export const serialize = (query: Query): Result<string, HTTPQLError> => {
+  return serializeClauseRequestResponse(query);
 };
 
 const serializeClauseRequestResponse = (
   query: Query,
-  options: Options,
 ): Result<string, HTTPQLError> => {
   if (isPresent(query.preset)) {
-    return serializeExprPreset(query.preset, options);
+    return serializeExprPreset(query.preset);
   }
   if (isPresent(query.request)) {
     return serializeClauseRequest(query.request).map((str) => `req.${str}`);
@@ -40,8 +32,8 @@ const serializeClauseRequestResponse = (
       return err(new InvalidQuery());
     }
     return Result.combine([
-      serializeClauseRequestResponse(query.AND[0]!, options),
-      serializeClauseRequestResponse(query.AND[1]!, options),
+      serializeClauseRequestResponse(query.AND[0]),
+      serializeClauseRequestResponse(query.AND[1]),
     ]).map(([left, right]) => `(${left} and ${right})`);
   }
   if (isPresent(query.OR)) {
@@ -49,8 +41,8 @@ const serializeClauseRequestResponse = (
       return err(new InvalidQuery());
     }
     return Result.combine([
-      serializeClauseRequestResponse(query.OR[0]!, options),
-      serializeClauseRequestResponse(query.OR[1]!, options),
+      serializeClauseRequestResponse(query.OR[0]),
+      serializeClauseRequestResponse(query.OR[1]),
     ]).map(([left, right]) => `(${left} or ${right})`);
   }
   return err(new InvalidQuery());
@@ -97,19 +89,11 @@ const serializeClauseResponse = (
 
 const serializeExprPreset = (
   preset: ExprPreset,
-  options: Options,
 ): Result<string, HTTPQLError> => {
-  const match = options.presets?.find((p) => p.id === preset.id);
-
-  if (isAbsent(match)) {
-    return err(new MissingPreset(preset.id));
-  }
-
-  switch (preset.source) {
-    case ExprPresetSource.Name:
-      return ok(`preset:"${match.name}"`);
-    case ExprPresetSource.Alias:
-      return ok(`preset:${match.alias}`);
+  if ("alias" in preset) {
+    return ok(`preset:${preset.alias}`);
+  } else {
+    return ok(`preset:"${preset.name}"`);
   }
 };
 

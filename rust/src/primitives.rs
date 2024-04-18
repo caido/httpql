@@ -90,12 +90,12 @@ impl fmt::Display for ClauseRequest {
 pub struct ExprString {
     pub value: String,
     pub operator: OperatorString,
-    pub raw: bool,
+    pub is_raw: bool,
 }
 
 impl fmt::Display for ExprString {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if self.raw {
+        if self.is_raw {
             write!(f, r"{}:/{}/", self.operator, self.value)
         } else {
             write!(f, "{}:\"{}\"", self.operator, self.value)

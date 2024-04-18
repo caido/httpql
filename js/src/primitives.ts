@@ -1,8 +1,8 @@
 export type Maybe<T> = T | undefined | null;
 
 export type Query = {
-  AND?: Maybe<Array<Query>>;
-  OR?: Maybe<Array<Query>>;
+  AND?: Maybe<[Query, Query]>;
+  OR?: Maybe<[Query, Query]>;
   preset?: Maybe<ExprPreset>;
   request?: Maybe<ClauseRequest>;
   response?: Maybe<ClauseResponse>;
@@ -28,21 +28,12 @@ export type ExprInt = {
   value: number;
 };
 
-export type ExprPreset = {
-  id: string;
-  source: ExprPresetSource;
-};
-
-export const ExprPresetSource = {
-  Name: "NAME",
-  Alias: "ALIAS",
-} as const;
-export type ExprPresetSource =
-  (typeof ExprPresetSource)[keyof typeof ExprPresetSource];
+export type ExprPreset = { alias: string } | { name: string };
 
 export type ExprString = {
   operator: OperatorString;
   value: string;
+  isRaw: boolean;
 };
 
 export const OperatorInt = {
@@ -67,13 +58,3 @@ export const OperatorString = {
 } as const;
 export type OperatorString =
   (typeof OperatorString)[keyof typeof OperatorString];
-
-export type Preset = {
-  id: string;
-  alias: string;
-  name: string;
-};
-
-export type Options = {
-  presets: Maybe<Preset[]>;
-};

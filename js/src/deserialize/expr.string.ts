@@ -14,10 +14,9 @@ export const deserializeStringExpr = (
   doc: string,
 ): Result<ExprString, HTTPQLError> => {
   const operator = (() => {
-    const operatorStr = getChildString(node, terms.StringOperator, doc);
-
-    if (isPresent(operatorStr)) {
-      switch (operatorStr) {
+    const stringOperatorStr = getChildString(node, terms.StringOperator, doc);
+    if (isPresent(stringOperatorStr)) {
+      switch (stringOperatorStr) {
         case "cont":
           return OperatorString.Cont;
         case "ncont":
@@ -30,6 +29,12 @@ export const deserializeStringExpr = (
           return OperatorString.Like;
         case "nlike":
           return OperatorString.Nlike;
+      }
+    }
+
+    const regexOperatorStr = getChildString(node, terms.RegexOperator, doc);
+    if (isPresent(regexOperatorStr)) {
+      switch (regexOperatorStr) {
         case "regex":
           return OperatorString.Regex;
         case "nregex":
@@ -41,10 +46,11 @@ export const deserializeStringExpr = (
     return err(new InvalidQuery());
   }
 
-  return deserializeString(node, doc).map((value) => {
+  return deserializeString(node, doc).map(({ value, isRaw }) => {
     return {
       operator,
       value,
+      isRaw,
     };
   });
 };
