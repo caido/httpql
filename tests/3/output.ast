@@ -1,1 +1,1 @@
-req.query.regex:"\/.*\"\/asd"
+req.query.regex:"/.*"/asd"

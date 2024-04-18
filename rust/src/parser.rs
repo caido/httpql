@@ -17,6 +17,25 @@ lazy_static! {
         .op(Op::infix(Rule::And, Assoc::Left));
 }
 
+fn build_string_ast(pair: Pair<Rule>) -> Result<(String, bool)> {
+    let result = match pair.as_rule() {
+        Rule::StringValue => match serde_json::from_str(pair.as_str()) {
+            Ok(serde_json::Value::String(s)) => (s, false),
+            _ => invalid!("StringValue.content"),
+        },
+        Rule::RegexValue => (
+            pair.into_inner()
+                .next()
+                .required("RegexValue.content")?
+                .as_str()
+                .to_string(),
+            true,
+        ),
+        t => unknown!("StringExpression.value.{:?}", t),
+    };
+    Ok(result)
+}
+
 fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
     let mut pair = pair.into_inner();
     let operator = pair.next().required("StringExpression.operator")?;
@@ -32,19 +51,20 @@ fn build_expr_string_ast(pair: Pair<Rule>) -> Result<ExprString> {
             "nregex" => OperatorString::Nregex,
             t => unknown!("StringOperator.{}", t),
         },
+        Rule::RegexOperator => match operator.as_str() {
+            "regex" => OperatorString::Regex,
+            "nregex" => OperatorString::Nregex,
+            t => unknown!("RegexOperator.{}", t),
+        },
         t => unknown!("StringExpression.operator.{:?}", t),
     };
     let value = pair.next().required("StringExpression.value")?;
-    let value = match value.as_rule() {
-        Rule::StringValue => value
-            .into_inner()
-            .next()
-            .required("StringValue.content")?
-            .as_str()
-            .to_string(),
-        t => unknown!("StringExpression.value.{:?}", t),
-    };
-    Ok(ExprString { value, operator })
+    let (value, raw) = build_string_ast(value)?;
+    Ok(ExprString {
+        value,
+        operator,
+        raw,
+    })
 }
 
 fn build_expr_int_ast(pair: Pair<Rule>) -> Result<ExprInt> {
@@ -75,12 +95,7 @@ fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
     let value = pair.next().required("PresetExpression.value")?;
     let expr = match value.as_rule() {
         Rule::StringValue => {
-            let name = value
-                .into_inner()
-                .next()
-                .required("StringValue.content")?
-                .as_str()
-                .to_string();
+            let (name, _) = build_string_ast(value)?;
             ExprPreset::Name(name)
         }
         Rule::SymbolValue => {
@@ -161,15 +176,7 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     let mut pair = pair.into_inner();
 
     let value = pair.next().required("StringClause.value")?;
-    let value = match value.as_rule() {
-        Rule::StringValue => value
-            .into_inner()
-            .next()
-            .required("StringValue.content")?
-            .as_str()
-            .to_string(),
-        t => unknown!("StringClause.value.{:?}", t),
-    };
+    let (value, _) = build_string_ast(value)?;
 
     Ok(Query {
         or: Some((
@@ -178,6 +185,7 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
                     raw: Some(ExprString {
                         value: value.clone(),
                         operator: OperatorString::Cont,
+                        raw: false,
                     }),
                     ..Default::default()
                 }),
@@ -188,6 +196,7 @@ fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
                     raw: Some(ExprString {
                         value,
                         operator: OperatorString::Cont,
+                        raw: false,
                     }),
                     ..Default::default()
                 }),
@@ -282,6 +291,7 @@ pub fn parse(input: &str) -> Result<Query> {
 
 #[cfg(test)]
 mod tests {
+    use regex::Regex;
     use rstest::rstest;
 
     use super::*;
@@ -300,5 +310,31 @@ mod tests {
     #[case("req.ext.eq:\"\" and ")]
     fn test_err(#[case] input: String) {
         assert!(parse(&input).is_err());
+    }
+
+    #[rstest]
+    #[case(r#"req.raw.regex:/\./"#, "a", false)]
+    //#[case(r#"req.raw.regex:"\.""#, "a", true)]
+    #[case(r#"req.raw.regex:"\n""#, "\n", true)]
+    #[case(r#"req.raw.regex:"\"asd\"""#, "\"asd\"", true)]
+    #[case(r#"req.raw.regex:/\//"#, "/", true)]
+    fn test_string_regex(#[case] input: String, #[case] test: String, #[case] result: bool) {
+        println!("Input: {:?}", input);
+        let query = parse(&input).unwrap();
+        let expr = query.request.unwrap().raw.unwrap();
+        println!("Value: {:?}", expr.value);
+        let regex = Regex::new(&expr.value).unwrap();
+        assert_eq!(regex.is_match(&test), result);
+    }
+
+    #[rstest]
+    #[case(r#"req.raw.cont:"\"asd\"""#, "\"asd\"", true)]
+    #[case(r#"req.raw.cont:"😊""#, "😊", true)]
+    fn test_string_cont(#[case] input: String, #[case] test: String, #[case] result: bool) {
+        println!("Input: {:?}", input);
+        let query = parse(&input).unwrap();
+        let expr = query.request.unwrap().raw.unwrap();
+        println!("Value: {:?}", expr.value);
+        assert_eq!(expr.value == test, result);
     }
 }

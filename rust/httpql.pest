@@ -26,16 +26,24 @@ ResponseIntFieldName    = { "code" }
 
 // Operators for string and integer types
 StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" | "regex" | "nregex" }
+RegexOperator  = { "regex" | "nregex" }
 IntOperator    = { "eq" | "gte" | "gt" | "lte" | "lt" | "ne" }
 
 // Value types
 SymbolValue   = @{ ('a'..'z' | '0'..'9' | "-" | "_")+ }
 IntValue      = @{ ASCII_DIGIT+ }
-StringValue   = ${ "\"" ~ StringContent ~ "\"" }
-StringContent = @{ StringChar* }
+StringValue   = @{ "\"" ~ StringContent ~ "\"" }
+StringContent =  { StringChar* }
 StringChar    =  {
+    !("\"" | "\\") ~ ANY
+  | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+  | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+RegexValue    = ${ "/" ~ RegexContent ~ "/" }
+RegexContent  = @{ RegexChar* }
+RegexChar     =  {
     "\\" ~ ANY
-  | !"\"" ~ ANY
+  | !"/" ~ ANY
 }
 
 // Define non-token rules for constructing expressions
@@ -43,7 +51,7 @@ WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
 
 // Expression
 IntExpression         = ${ IntOperator ~ Colon ~ IntValue }
-StringExpression      = ${ StringOperator ~ Colon ~ StringValue }
+StringExpression      = ${ StringOperator ~ Colon ~ StringValue | RegexOperator ~ Colon ~ RegexValue }
 PresetNameExpression  =  { StringValue }
 PresetAliasExpression =  { SymbolValue }
 

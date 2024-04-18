@@ -31,6 +31,7 @@ mod tests {
     #[case(3)]
     #[case(4)]
     #[case(5)]
+    #[case(6)]
     fn test_httpql(#[case] case: u32) {
         let (input, output) = read_case(case);
         let query = HTTPQL::parse(&input).unwrap();

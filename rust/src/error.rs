@@ -62,11 +62,20 @@ pub(super) type Result<T> = std::result::Result<T, HTTPQLError>;
 
 macro_rules! unknown {
     ($msg:literal) => {
-        return Err(ParserError::UnknownToken($e.to_string()).into())
+        return Err(ParserError::UnknownToken($msg.to_string()).into())
     };
     ($fmt:expr, $($arg:tt)*) => {
         return Err(ParserError::UnknownToken(format!($fmt, $($arg)*)).into())
     };
 }
 
-pub(crate) use unknown;
+macro_rules! invalid {
+    ($msg:literal) => {
+        return Err(ParserError::InvalidToken($msg.to_string()).into())
+    };
+    ($fmt:expr, $($arg:tt)*) => {
+        return Err(ParserError::InvalidToken(format!($fmt, $($arg)*)).into())
+    };
+}
+
+pub(crate) use {invalid, unknown};
