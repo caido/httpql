@@ -36,7 +36,7 @@ describe("httpql", () => {
   });
 
   describe("regex", () => {
-    const cases = [1, 2, 3, 4, 5];
+    const cases = [1, 2, 3, 4, 5, 6, 7, 8];
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = fs.readFileSync(

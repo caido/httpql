@@ -48,6 +48,9 @@ mod tests {
     #[case(3)]
     #[case(4)]
     #[case(5)]
+    #[case(6)]
+    #[case(7)]
+    #[case(8)]
     fn test_regex(#[case] case: u32) {
         let input =
             std::fs::read_to_string(format!("../tests/regex/{}/input.httpql", case)).unwrap();
