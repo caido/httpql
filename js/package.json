@@ -1,6 +1,6 @@
 {
   "name": "@caido/httpql",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Parser for the HTTPQL language",
   "author": "Caido Labs Inc. <dev@caido.io>",
   "license": "MIT",

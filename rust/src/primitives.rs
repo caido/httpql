@@ -3,6 +3,7 @@ use core::fmt;
 #[derive(Clone, Debug, Default)]
 pub struct Query {
     pub preset: Option<ExprPreset>,
+    pub row: Option<ClauseRow>,
     pub request: Option<ClauseRequest>,
     pub response: Option<ClauseResponse>,
     pub and: Option<(Box<Query>, Box<Query>)>,
@@ -13,6 +14,9 @@ impl fmt::Display for Query {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if let Some(expr) = &self.preset {
             return write!(f, "{}", expr);
+        }
+        if let Some(expr) = &self.row {
+            return write!(f, "row.{}", expr);
         }
         if let Some(expr) = &self.request {
             return write!(f, "req.{}", expr);
@@ -31,9 +35,24 @@ impl fmt::Display for Query {
 }
 
 #[derive(Clone, Debug, Default)]
+pub struct ClauseRow {
+    pub id: Option<ExprInt>,
+}
+
+impl fmt::Display for ClauseRow {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(expr) = &self.id {
+            return write!(f, "id.{}", expr);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Default)]
 pub struct ClauseResponse {
     pub raw: Option<ExprString>,
     pub status_code: Option<ExprInt>,
+    pub roundtrip_time: Option<ExprInt>,
 }
 
 impl fmt::Display for ClauseResponse {
@@ -44,7 +63,10 @@ impl fmt::Display for ClauseResponse {
         if let Some(expr) = &self.status_code {
             return write!(f, "code.{}", expr);
         }
-        Ok(())
+        if let Some(expr) = &self.roundtrip_time {
+            return write!(f, "roundtrip.{}", expr);
+        }
+        Err(fmt::Error)
     }
 }
 
@@ -57,6 +79,7 @@ pub struct ClauseRequest {
     pub port: Option<ExprInt>,
     pub query: Option<ExprString>,
     pub raw: Option<ExprString>,
+    pub created_at: Option<ExprDate>,
 }
 
 impl fmt::Display for ClauseRequest {
@@ -82,7 +105,10 @@ impl fmt::Display for ClauseRequest {
         if let Some(expr) = &self.raw {
             return write!(f, "raw.{}", expr);
         }
-        Ok(())
+        if let Some(expr) = &self.created_at {
+            return write!(f, "created_at.{}", expr);
+        }
+        Err(fmt::Error)
     }
 }
 
@@ -161,6 +187,33 @@ impl fmt::Display for OperatorInt {
             OperatorInt::Gte => write!(f, "gte"),
             OperatorInt::Eq => write!(f, "eq"),
             OperatorInt::Ne => write!(f, "ne"),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ExprDate {
+    pub value: String,
+    pub operator: OperatorDate,
+}
+
+impl fmt::Display for ExprDate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:\"{}\"", self.operator, self.value)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum OperatorDate {
+    Lt,
+    Gt,
+}
+
+impl fmt::Display for OperatorDate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            OperatorDate::Lt => write!(f, "lt"),
+            OperatorDate::Gt => write!(f, "gt"),
         }
     }
 }

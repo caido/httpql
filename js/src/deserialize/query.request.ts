@@ -7,6 +7,7 @@ import { terms } from "../parser/index.js";
 import type { ClauseRequest } from "../primitives.js";
 import { getChildString, isPresent } from "../utils.js";
 
+import { deserializeDateExpr } from "./expr.date.js";
 import { deserializeIntExpr } from "./expr.int.js";
 import { deserializeStringExpr } from "./expr.string.js";
 
@@ -46,6 +47,17 @@ export const deserializeRequestQuery = (
     }
   })();
 
+  const dateField = (() => {
+    const child = getChildString(node, terms.RequestDateFieldName, doc);
+
+    if (isPresent(child)) {
+      switch (child) {
+        case "created_at":
+          return "createdAt";
+      }
+    }
+  })();
+
   const stringFilter = (() => {
     const child = node.getChild(terms.StringExpression);
     if (isPresent(child)) return deserializeStringExpr(child, doc);
@@ -54,6 +66,11 @@ export const deserializeRequestQuery = (
   const intFilter = (() => {
     const child = node.getChild(terms.IntExpression);
     if (isPresent(child)) return deserializeIntExpr(child, doc);
+  })();
+
+  const dateFilter = (() => {
+    const child = node.getChild(terms.DateExpression);
+    if (isPresent(child)) return deserializeDateExpr(child, doc);
   })();
 
   if (isPresent(stringField) && isPresent(stringFilter)) {
@@ -68,6 +85,14 @@ export const deserializeRequestQuery = (
     return intFilter.map((filter) => {
       return {
         [intField]: filter,
+      };
+    });
+  }
+
+  if (isPresent(dateField) && isPresent(dateFilter)) {
+    return dateFilter.map((filter) => {
+      return {
+        [dateField]: filter,
       };
     });
   }

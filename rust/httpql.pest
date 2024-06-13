@@ -12,22 +12,28 @@ And = { "AND" | "and" }
 Or  = { "OR" | "or" }
 
 // Namespaces
+RowNamespace      = _{ "row" }
 RequestNamespace  = _{ "req" }
 ResponseNamespace = _{ "resp" }
 PresetNamespace   = _{ "preset" }
 
+// Row field names
+RowIntFieldName = { "id" }
+
 // Request field names
 RequestStringFieldName = { "ext" | "host" | "method" | "path" | "query" | "raw" }
 RequestIntFieldName    = { "port" }
+RequestDateFieldName   = { "created_at" }
 
 // Response field names
 ResponseStringFieldName = { "raw" }
-ResponseIntFieldName    = { "code" }
+ResponseIntFieldName    = { "code" | "roundtrip" }
 
 // Operators for string and integer types
 StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
 RegexOperator  = { "regex" | "nregex" }
 IntOperator    = { "eq" | "gte" | "gt" | "lte" | "lt" | "ne" }
+DateOperator   = { "lt" | "gt" }
 
 // Value types
 SymbolValue   = @{ ('a'..'z' | '0'..'9' | "-" | "_")+ }
@@ -52,15 +58,19 @@ WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
 // Expression
 IntExpression         = ${ IntOperator ~ Colon ~ IntValue }
 StringExpression      = ${ StringOperator ~ Colon ~ StringValue | RegexOperator ~ Colon ~ (RegexValue | StringValue) }
+DateExpression        = ${ DateOperator ~ Colon ~ StringValue }
 PresetNameExpression  =  { StringValue }
 PresetAliasExpression =  { SymbolValue }
 
 // Clause
 StringClause = { StringValue }
 
+RowClause = ${ RowNamespace ~ Dot ~ RowIntFieldName ~ Dot ~ IntExpression }
+
 RequestClause = ${
     RequestNamespace ~ Dot ~ RequestIntFieldName ~ Dot ~ IntExpression
   | RequestNamespace ~ Dot ~ RequestStringFieldName ~ Dot ~ StringExpression
+  | RequestNamespace ~ Dot ~ RequestDateFieldName ~ Dot ~ DateExpression
 }
 
 ResponseClause = ${
@@ -73,6 +83,6 @@ PresetClause = ${
 }
 
 // Query
-Clause          = _{ StringClause | RequestClause | ResponseClause | PresetClause | LeftParen ~ Query ~ RightParen }
+Clause          = _{ StringClause | RowClause | RequestClause | ResponseClause | PresetClause | LeftParen ~ Query ~ RightParen }
 LogicalOperator = _{ And | Or }
 Query           =  { Clause ~ (LogicalOperator ~ Clause)* }

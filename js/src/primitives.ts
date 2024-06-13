@@ -3,9 +3,14 @@ export type Maybe<T> = T | undefined | null;
 export type Query = {
   AND?: Maybe<[Query, Query]>;
   OR?: Maybe<[Query, Query]>;
+  row?: Maybe<ClauseRow>;
   preset?: Maybe<ExprPreset>;
   request?: Maybe<ClauseRequest>;
   response?: Maybe<ClauseResponse>;
+};
+
+export type ClauseRow = {
+  id?: Maybe<ExprInt>;
 };
 
 export type ClauseRequest = {
@@ -16,11 +21,13 @@ export type ClauseRequest = {
   port?: Maybe<ExprInt>;
   query?: Maybe<ExprString>;
   raw?: Maybe<ExprString>;
+  createdAt?: Maybe<ExprDate>;
 };
 
 export type ClauseResponse = {
   raw?: Maybe<ExprString>;
   statusCode?: Maybe<ExprInt>;
+  roundtripTime?: Maybe<ExprInt>;
 };
 
 export type ExprInt = {
@@ -34,6 +41,11 @@ export type ExprString = {
   operator: OperatorString;
   value: string;
   isRaw: boolean;
+};
+
+export type ExprDate = {
+  operator: OperatorDate;
+  value: string;
 };
 
 export const OperatorInt = {
@@ -58,3 +70,9 @@ export const OperatorString = {
 } as const;
 export type OperatorString =
   (typeof OperatorString)[keyof typeof OperatorString];
+
+export const OperatorDate = {
+  Gt: "GT",
+  Lt: "LT",
+} as const;
+export type OperatorDate = (typeof OperatorDate)[keyof typeof OperatorDate];

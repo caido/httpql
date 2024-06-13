@@ -9,11 +9,21 @@ import { isPresent } from "../utils.js";
 import { deserializePresetQuery } from "./query.preset.js";
 import { deserializeRequestQuery } from "./query.request.js";
 import { deserializeResponseQuery } from "./query.response.js";
+import { deserializeRowQuery } from "./query.row.js";
 
 export const deserializeSingleQuery = (
   node: SyntaxNode,
   doc: string,
 ): Result<Query, HTTPQLError> => {
+  const rowQuery = node.getChild(terms.RowQuery);
+  if (isPresent(rowQuery)) {
+    return deserializeRowQuery(rowQuery, doc).map((row) => {
+      return {
+        row,
+      };
+    });
+  }
+
   const requestQuery = node.getChild(terms.RequestQuery);
   if (isPresent(requestQuery)) {
     return deserializeRequestQuery(requestQuery, doc).map((request) => {

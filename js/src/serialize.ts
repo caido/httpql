@@ -4,6 +4,8 @@ import { type HTTPQLError, InvalidQuery } from "./errors.js";
 import type {
   ClauseRequest,
   ClauseResponse,
+  ClauseRow,
+  ExprDate,
   ExprInt,
   ExprPreset,
   ExprString,
@@ -18,6 +20,9 @@ export const serialize = (query: Query): Result<string, HTTPQLError> => {
 const serializeClauseRequestResponse = (
   query: Query,
 ): Result<string, HTTPQLError> => {
+  if (isPresent(query.row)) {
+    return serializeClauseRow(query.row).map((str) => `row.${str}`);
+  }
   if (isPresent(query.preset)) {
     return serializeExprPreset(query.preset);
   }
@@ -48,6 +53,13 @@ const serializeClauseRequestResponse = (
   return err(new InvalidQuery());
 };
 
+const serializeClauseRow = (value: ClauseRow): Result<string, HTTPQLError> => {
+  if (isPresent(value.id)) {
+    return serializeExprInt(value.id).map((str) => `id.${str}`);
+  }
+  return err(new InvalidQuery());
+};
+
 const serializeClauseRequest = (
   value: ClauseRequest,
 ): Result<string, HTTPQLError> => {
@@ -72,6 +84,9 @@ const serializeClauseRequest = (
   if (isPresent(value.raw)) {
     return serializeExprString(value.raw).map((str) => `raw.${str}`);
   }
+  if (isPresent(value.createdAt)) {
+    return serializeExprDate(value.createdAt).map((str) => `created_at.${str}`);
+  }
   return err(new InvalidQuery());
 };
 
@@ -83,6 +98,11 @@ const serializeClauseResponse = (
   }
   if (isPresent(value.statusCode)) {
     return serializeExprInt(value.statusCode).map((str) => `code.${str}`);
+  }
+  if (isPresent(value.roundtripTime)) {
+    return serializeExprInt(value.roundtripTime).map(
+      (str) => `roundtrip.${str}`,
+    );
   }
   return err(new InvalidQuery());
 };
@@ -109,4 +129,8 @@ const serializeExprString = (
   } else {
     return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
   }
+};
+
+const serializeExprDate = (value: ExprDate): Result<string, HTTPQLError> => {
+  return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
 };
