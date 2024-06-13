@@ -31,6 +31,8 @@ export const deserializeResponseQuery = (
       switch (child) {
         case "code":
           return "statusCode";
+        case "roundtrip":
+          return "roundtripTime";
       }
     }
   })();

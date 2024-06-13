@@ -95,6 +95,11 @@ const serializeClauseResponse = (
   if (isPresent(value.statusCode)) {
     return serializeExprInt(value.statusCode).map((str) => `code.${str}`);
   }
+  if (isPresent(value.roundtripTime)) {
+    return serializeExprInt(value.roundtripTime).map(
+      (str) => `roundtrip.${str}`,
+    );
+  }
   return err(new InvalidQuery());
 };
 

@@ -26,6 +26,7 @@ export type ClauseRequest = {
 export type ClauseResponse = {
   raw?: Maybe<ExprString>;
   statusCode?: Maybe<ExprInt>;
+  roundtripTime?: Maybe<ExprInt>;
 };
 
 export type ExprInt = {

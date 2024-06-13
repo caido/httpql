@@ -52,6 +52,7 @@ impl fmt::Display for ClauseRow {
 pub struct ClauseResponse {
     pub raw: Option<ExprString>,
     pub status_code: Option<ExprInt>,
+    pub roundtrip_time: Option<ExprInt>,
 }
 
 impl fmt::Display for ClauseResponse {
@@ -61,6 +62,9 @@ impl fmt::Display for ClauseResponse {
         }
         if let Some(expr) = &self.status_code {
             return write!(f, "code.{}", expr);
+        }
+        if let Some(expr) = &self.roundtrip_time {
+            return write!(f, "roundtrip.{}", expr);
         }
         Ok(())
     }

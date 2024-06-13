@@ -184,6 +184,9 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
             "code" => {
                 clause.status_code = Some(build_expr_int_ast(expr)?);
             }
+            "roundtrip" => {
+                clause.roundtrip_time = Some(build_expr_int_ast(expr)?);
+            }
             t => unknown!("ResponseIntFieldName.{}", t),
         },
         Rule::ResponseStringFieldName => match field.as_str() {
