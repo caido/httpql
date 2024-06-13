@@ -3,6 +3,7 @@ use core::fmt;
 #[derive(Clone, Debug, Default)]
 pub struct Query {
     pub preset: Option<ExprPreset>,
+    pub row: Option<ClauseRow>,
     pub request: Option<ClauseRequest>,
     pub response: Option<ClauseResponse>,
     pub and: Option<(Box<Query>, Box<Query>)>,
@@ -13,6 +14,9 @@ impl fmt::Display for Query {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if let Some(expr) = &self.preset {
             return write!(f, "{}", expr);
+        }
+        if let Some(expr) = &self.row {
+            return write!(f, "row.{}", expr);
         }
         if let Some(expr) = &self.request {
             return write!(f, "req.{}", expr);
@@ -25,6 +29,20 @@ impl fmt::Display for Query {
         }
         if let Some(expr) = &self.or {
             return write!(f, "({} or {})", expr.0, expr.1);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct ClauseRow {
+    pub id: Option<ExprInt>,
+}
+
+impl fmt::Display for ClauseRow {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(expr) = &self.id {
+            return write!(f, "id.{}", expr);
         }
         Ok(())
     }

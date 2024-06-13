@@ -114,6 +114,25 @@ fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
     Ok(expr)
 }
 
+fn build_row_clause_ast(pair: Pair<Rule>) -> Result<ClauseRow> {
+    let mut clause = ClauseRow::default();
+
+    let mut pair = pair.into_inner();
+    let field = pair.next().required("ClauseRow.field")?;
+    let expr = pair.next().required("ClauseRow.expr")?;
+    match field.as_rule() {
+        Rule::RowIntFieldName => match field.as_str() {
+            "id" => {
+                clause.id = Some(build_expr_int_ast(expr)?);
+            }
+            t => unknown!("RowIntFieldName.{}", t),
+        },
+        t => unknown!("ClauseRow.field.{:?}", t),
+    };
+
+    Ok(clause)
+}
+
 fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
     let mut clause = ClauseRequest::default();
 
@@ -232,6 +251,13 @@ fn build_preset_clause_ast(pair: Pair<Rule>) -> Result<Query> {
 
 fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     match pair.as_rule() {
+        Rule::RowClause => {
+            let query = Query {
+                row: Some(build_row_clause_ast(pair)?),
+                ..Default::default()
+            };
+            Ok(query)
+        }
         Rule::RequestClause => {
             let query = Query {
                 request: Some(build_request_clause_ast(pair)?),

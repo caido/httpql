@@ -4,6 +4,7 @@ import { type HTTPQLError, InvalidQuery } from "./errors.js";
 import type {
   ClauseRequest,
   ClauseResponse,
+  ClauseRow,
   ExprInt,
   ExprPreset,
   ExprString,
@@ -18,6 +19,9 @@ export const serialize = (query: Query): Result<string, HTTPQLError> => {
 const serializeClauseRequestResponse = (
   query: Query,
 ): Result<string, HTTPQLError> => {
+  if (isPresent(query.row)) {
+    return serializeClauseRow(query.row).map((str) => `row.${str}`);
+  }
   if (isPresent(query.preset)) {
     return serializeExprPreset(query.preset);
   }
@@ -44,6 +48,13 @@ const serializeClauseRequestResponse = (
       serializeClauseRequestResponse(query.OR[0]),
       serializeClauseRequestResponse(query.OR[1]),
     ]).map(([left, right]) => `(${left} or ${right})`);
+  }
+  return err(new InvalidQuery());
+};
+
+const serializeClauseRow = (value: ClauseRow): Result<string, HTTPQLError> => {
+  if (isPresent(value.id)) {
+    return serializeExprInt(value.id).map((str) => `id.${str}`);
   }
   return err(new InvalidQuery());
 };

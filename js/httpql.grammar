@@ -18,10 +18,16 @@
   And { "AND" | "and" }
   Or { "OR" | "or" }
 
-  // Request field names
+  // Namespaces
+  RowNamespace { "row" }
   RequestNamespace { "req" }
   ResponseNamespace { "resp" }
   PresetNamespace { "preset" }
+
+  // Row field names
+  RowIntFieldName { "id" }
+
+  // Request field names
   RequestStringFieldName { "ext" | "host" | "method" | "path" | "query" | "raw" }
   RequestIntFieldName { "port" }
 
@@ -66,12 +72,14 @@ GroupQuery { LeftParen Query? RightParen }
 
 CombinedQuery { Query !and And Query | Query !or Or Query }
 
-SingleQuery { RequestQuery | ResponseQuery | PresetQuery }
+SingleQuery { RowQuery | RequestQuery | ResponseQuery | PresetQuery }
 
 IntExpression { IntOperator Colon IntValue }
 StringExpression { StringOperator Colon StringValue | RegexOperator Colon (RegexValue | StringValue) }
 PresetNameExpression { StringValue }
 PresetAliasExpression { SymbolValue }
+
+RowQuery { RowNamespace Dot RowIntFieldName Dot IntExpression }
 
 RequestQuery {
   RequestNamespace Dot RequestIntFieldName Dot IntExpression |
@@ -87,4 +95,4 @@ PresetQuery {
   PresetNamespace Colon (PresetNameExpression | PresetAliasExpression)
 }
 
-@external propSource highlight from "./props"
+@external propSource highlight from "./props.js"

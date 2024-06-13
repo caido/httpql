@@ -3,9 +3,14 @@ export type Maybe<T> = T | undefined | null;
 export type Query = {
   AND?: Maybe<[Query, Query]>;
   OR?: Maybe<[Query, Query]>;
+  row?: Maybe<ClauseRow>;
   preset?: Maybe<ExprPreset>;
   request?: Maybe<ClauseRequest>;
   response?: Maybe<ClauseResponse>;
+};
+
+export type ClauseRow = {
+  id?: Maybe<ExprInt>;
 };
 
 export type ClauseRequest = {
