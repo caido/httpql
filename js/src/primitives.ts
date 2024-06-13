@@ -21,6 +21,7 @@ export type ClauseRequest = {
   port?: Maybe<ExprInt>;
   query?: Maybe<ExprString>;
   raw?: Maybe<ExprString>;
+  createdAt?: Maybe<ExprDate>;
 };
 
 export type ClauseResponse = {
@@ -40,6 +41,11 @@ export type ExprString = {
   operator: OperatorString;
   value: string;
   isRaw: boolean;
+};
+
+export type ExprDate = {
+  operator: OperatorDate;
+  value: string;
 };
 
 export const OperatorInt = {
@@ -64,3 +70,9 @@ export const OperatorString = {
 } as const;
 export type OperatorString =
   (typeof OperatorString)[keyof typeof OperatorString];
+
+export const OperatorDate = {
+  Gt: "GT",
+  Lt: "LT",
+} as const;
+export type OperatorDate = (typeof OperatorDate)[keyof typeof OperatorDate];

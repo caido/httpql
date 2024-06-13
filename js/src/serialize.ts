@@ -5,6 +5,7 @@ import type {
   ClauseRequest,
   ClauseResponse,
   ClauseRow,
+  ExprDate,
   ExprInt,
   ExprPreset,
   ExprString,
@@ -83,6 +84,9 @@ const serializeClauseRequest = (
   if (isPresent(value.raw)) {
     return serializeExprString(value.raw).map((str) => `raw.${str}`);
   }
+  if (isPresent(value.createdAt)) {
+    return serializeExprDate(value.createdAt).map((str) => `created_at.${str}`);
+  }
   return err(new InvalidQuery());
 };
 
@@ -125,4 +129,8 @@ const serializeExprString = (
   } else {
     return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
   }
+};
+
+const serializeExprDate = (value: ExprDate): Result<string, HTTPQLError> => {
+  return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
 };

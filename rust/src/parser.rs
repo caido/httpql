@@ -97,6 +97,25 @@ fn build_expr_int_ast(pair: Pair<Rule>) -> Result<ExprInt> {
     Ok(ExprInt { value, operator })
 }
 
+fn build_expr_date_ast(pair: Pair<Rule>) -> Result<ExprDate> {
+    let mut pair = pair.into_inner();
+    let operator = pair.next().required("DateExpression.operator")?;
+    let operator = match operator.as_rule() {
+        Rule::DateOperator => match operator.as_str() {
+            "lt" => OperatorDate::Lt,
+            "gt" => OperatorDate::Gt,
+            t => unknown!("DateOperator.{}", t),
+        },
+        t => unknown!("DateExpression.operator.{:?}", t),
+    };
+    let value = pair.next().required("DateExpression.value")?;
+    let ParsedString { value, is_raw } = build_string_ast(value)?;
+    if is_raw {
+        invalid!("DateExpression.value");
+    }
+    Ok(ExprDate { value, operator })
+}
+
 fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
     let mut pair = pair.into_inner();
     let value = pair.next().required("PresetExpression.value")?;
@@ -166,6 +185,12 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
                 clause.raw = Some(build_expr_string_ast(expr)?);
             }
             t => unknown!("RequestStringFieldName.{}", t),
+        },
+        Rule::RequestDateFieldName => match field.as_str() {
+            "created_at" => {
+                clause.created_at = Some(build_expr_date_ast(expr)?);
+            }
+            t => unknown!("RequestDateFieldName.{}", t),
         },
         t => unknown!("RequestClause.field.{:?}", t),
     };

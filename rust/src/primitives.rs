@@ -79,6 +79,7 @@ pub struct ClauseRequest {
     pub port: Option<ExprInt>,
     pub query: Option<ExprString>,
     pub raw: Option<ExprString>,
+    pub created_at: Option<ExprDate>,
 }
 
 impl fmt::Display for ClauseRequest {
@@ -103,6 +104,9 @@ impl fmt::Display for ClauseRequest {
         }
         if let Some(expr) = &self.raw {
             return write!(f, "raw.{}", expr);
+        }
+        if let Some(expr) = &self.created_at {
+            return write!(f, "created_at.{}", expr);
         }
         Err(fmt::Error)
     }
@@ -183,6 +187,33 @@ impl fmt::Display for OperatorInt {
             OperatorInt::Gte => write!(f, "gte"),
             OperatorInt::Eq => write!(f, "eq"),
             OperatorInt::Ne => write!(f, "ne"),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ExprDate {
+    pub value: String,
+    pub operator: OperatorDate,
+}
+
+impl fmt::Display for ExprDate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:\"{}\"", self.operator, self.value)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum OperatorDate {
+    Lt,
+    Gt,
+}
+
+impl fmt::Display for OperatorDate {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            OperatorDate::Lt => write!(f, "lt"),
+            OperatorDate::Gt => write!(f, "gt"),
         }
     }
 }
