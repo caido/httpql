@@ -66,7 +66,7 @@ impl fmt::Display for ClauseResponse {
         if let Some(expr) = &self.roundtrip_time {
             return write!(f, "roundtrip.{}", expr);
         }
-        Ok(())
+        Err(fmt::Error)
     }
 }
 
@@ -104,7 +104,7 @@ impl fmt::Display for ClauseRequest {
         if let Some(expr) = &self.raw {
             return write!(f, "raw.{}", expr);
         }
-        Ok(())
+        Err(fmt::Error)
     }
 }
 
