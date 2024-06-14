@@ -12,6 +12,7 @@ export const highlight: NodePropSource = styleTags({
   RequestNamespace: tags.attributeName,
   ResponseNamespace: tags.attributeName,
   PresetNamespace: tags.attributeName,
+  SourceNamespace: tags.attributeName,
   RowNamespace: tags.attributeName,
 
   // Fields
