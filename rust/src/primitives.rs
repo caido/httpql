@@ -3,6 +3,7 @@ use core::fmt;
 #[derive(Clone, Debug, Default)]
 pub struct Query {
     pub preset: Option<ExprPreset>,
+    pub source: Option<ExprSource>,
     pub row: Option<ClauseRow>,
     pub request: Option<ClauseRequest>,
     pub response: Option<ClauseResponse>,
@@ -13,6 +14,9 @@ pub struct Query {
 impl fmt::Display for Query {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if let Some(expr) = &self.preset {
+            return write!(f, "{}", expr);
+        }
+        if let Some(expr) = &self.source {
             return write!(f, "{}", expr);
         }
         if let Some(expr) = &self.row {
@@ -230,5 +234,16 @@ impl fmt::Display for ExprPreset {
             ExprPreset::Name(name) => write!(f, "preset:\"{}\"", name),
             ExprPreset::Alias(alias) => write!(f, "preset:{}", alias),
         }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ExprSource {
+    pub name: String,
+}
+
+impl fmt::Display for ExprSource {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "source:\"{}\"", self.name)
     }
 }

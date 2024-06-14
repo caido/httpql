@@ -8,6 +8,7 @@ import type {
   ExprDate,
   ExprInt,
   ExprPreset,
+  ExprSource,
   ExprString,
   Query,
 } from "./primitives.js";
@@ -25,6 +26,9 @@ const serializeClauseRequestResponse = (
   }
   if (isPresent(query.preset)) {
     return serializeExprPreset(query.preset);
+  }
+  if (isPresent(query.source)) {
+    return serializeExprSource(query.source);
   }
   if (isPresent(query.request)) {
     return serializeClauseRequest(query.request).map((str) => `req.${str}`);
@@ -133,4 +137,10 @@ const serializeExprString = (
 
 const serializeExprDate = (value: ExprDate): Result<string, HTTPQLError> => {
   return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
+};
+
+const serializeExprSource = (
+  value: ExprSource,
+): Result<string, HTTPQLError> => {
+  return ok(`source:"${value.name}"`);
 };

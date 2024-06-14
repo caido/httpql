@@ -4,6 +4,7 @@ export type Query = {
   AND?: Maybe<[Query, Query]>;
   OR?: Maybe<[Query, Query]>;
   row?: Maybe<ClauseRow>;
+  source?: Maybe<ExprSource>;
   preset?: Maybe<ExprPreset>;
   request?: Maybe<ClauseRequest>;
   response?: Maybe<ClauseResponse>;
@@ -36,6 +37,8 @@ export type ExprInt = {
 };
 
 export type ExprPreset = { alias: string } | { name: string };
+
+export type ExprSource = { name: string };
 
 export type ExprString = {
   operator: OperatorString;

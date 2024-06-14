@@ -16,6 +16,7 @@ RowNamespace      = _{ "row" }
 RequestNamespace  = _{ "req" }
 ResponseNamespace = _{ "resp" }
 PresetNamespace   = _{ "preset" }
+SourceNamespace   = _{ "source" }
 
 // Row field names
 RowIntFieldName = { "id" }
@@ -61,6 +62,7 @@ StringExpression      = ${ StringOperator ~ Colon ~ StringValue | RegexOperator 
 DateExpression        = ${ DateOperator ~ Colon ~ StringValue }
 PresetNameExpression  =  { StringValue }
 PresetAliasExpression =  { SymbolValue }
+SourceNameExpression  =  { StringValue }
 
 // Clause
 StringClause = { StringValue }
@@ -82,7 +84,11 @@ PresetClause = ${
     PresetNamespace ~ Colon ~ (PresetNameExpression | PresetAliasExpression)
 }
 
+SourceClause = ${
+    SourceNamespace ~ Colon ~ SourceNameExpression
+}
+
 // Query
-Clause          = _{ StringClause | RowClause | RequestClause | ResponseClause | PresetClause | LeftParen ~ Query ~ RightParen }
+Clause          = _{ StringClause | RowClause | RequestClause | ResponseClause | PresetClause | SourceClause | LeftParen ~ Query ~ RightParen }
 LogicalOperator = _{ And | Or }
 Query           =  { Clause ~ (LogicalOperator ~ Clause)* }
