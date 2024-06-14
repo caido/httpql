@@ -133,6 +133,25 @@ fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
     Ok(expr)
 }
 
+fn build_expr_source_ast(pair: Pair<Rule>) -> Result<ExprSource> {
+    let mut pair = pair.into_inner();
+    let value = pair.next().required("SourceExpression.value")?;
+    let expr = match value.as_rule() {
+        Rule::StringValue => {
+            let ParsedString {
+                value: name,
+                is_raw,
+            } = build_string_ast(value)?;
+            if is_raw {
+                invalid!("SourceExpression.value");
+            }
+            ExprSource { name }
+        }
+        t => unknown!("SourceExpression.value.{:?}", t),
+    };
+    Ok(expr)
+}
+
 fn build_row_clause_ast(pair: Pair<Rule>) -> Result<ClauseRow> {
     let mut clause = ClauseRow::default();
 
@@ -277,6 +296,21 @@ fn build_preset_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     })
 }
 
+fn build_source_clause_ast(pair: Pair<Rule>) -> Result<Query> {
+    let mut pair = pair.into_inner();
+
+    let expr = pair.next().required("SourceClause.expr")?;
+    let expr = match expr.as_rule() {
+        Rule::SourceNameExpression => build_expr_source_ast(expr)?,
+        t => unknown!("SourceClause.expr.{:?}", t),
+    };
+
+    Ok(Query {
+        source: Some(expr),
+        ..Default::default()
+    })
+}
+
 fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     match pair.as_rule() {
         Rule::RowClause => {
@@ -303,6 +337,7 @@ fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
         Rule::Query => build_query_ast(pair),
         Rule::StringClause => build_string_clause_ast(pair),
         Rule::PresetClause => build_preset_clause_ast(pair),
+        Rule::SourceClause => build_source_clause_ast(pair),
         t => unknown!("Clause.{:?}", t),
     }
 }

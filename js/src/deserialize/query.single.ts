@@ -10,6 +10,7 @@ import { deserializePresetQuery } from "./query.preset.js";
 import { deserializeRequestQuery } from "./query.request.js";
 import { deserializeResponseQuery } from "./query.response.js";
 import { deserializeRowQuery } from "./query.row.js";
+import { deserializeSourceQuery } from "./query.source.js";
 
 export const deserializeSingleQuery = (
   node: SyntaxNode,
@@ -47,6 +48,15 @@ export const deserializeSingleQuery = (
     return deserializePresetQuery(presetQuery, doc).map((preset) => {
       return {
         preset,
+      };
+    });
+  }
+
+  const sourceQuery = node.getChild(terms.SourceQuery);
+  if (isPresent(sourceQuery)) {
+    return deserializeSourceQuery(sourceQuery, doc).map((source) => {
+      return {
+        source,
       };
     });
   }
