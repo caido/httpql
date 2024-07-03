@@ -54,7 +54,7 @@ const serializeClauseRequestResponse = (
       serializeClauseRequestResponse(query.OR[1]),
     ]).map(([left, right]) => `(${left} or ${right})`);
   }
-  return err(new InvalidQuery());
+  return ok("()");
 };
 
 const serializeClauseRow = (value: ClauseRow): Result<string, HTTPQLError> => {

@@ -91,4 +91,4 @@ SourceClause = ${
 // Query
 Clause          = _{ StringClause | RowClause | RequestClause | ResponseClause | PresetClause | SourceClause | LeftParen ~ Query ~ RightParen }
 LogicalOperator = _{ And | Or }
-Query           =  { Clause ~ (LogicalOperator ~ Clause)* }
+Query           =  { (Clause ~ (LogicalOperator ~ Clause)*)? }

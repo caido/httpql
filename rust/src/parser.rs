@@ -345,6 +345,10 @@ fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
 fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
     let pair = pair.into_inner();
 
+    if pair.peek().is_none() {
+        return Ok(Query::default());
+    }
+
     PRATT_PARSER
         .map_primary(|primary| build_clause_ast(primary))
         .map_infix(|lhs, op, rhs| {
@@ -369,10 +373,6 @@ fn build_query_ast(pair: Pair<Rule>) -> Result<Query> {
 }
 
 pub fn parse(input: &str) -> Result<Query> {
-    if input.trim().is_empty() {
-        return Ok(Query::default());
-    }
-
     let mut pairs = HTTPQLParser::parse(Rule::HTTPQL, input)?;
 
     let pair = pairs.next().required("HTTPQL")?;
@@ -392,8 +392,8 @@ mod tests {
     use super::*;
 
     #[rstest]
-    #[case("", "")]
-    #[case("   ", "")]
+    #[case("", "()")]
+    #[case("   ", "()")]
     fn test_parse(#[case] input: String, #[case] output: String) {
         let query = parse(&input).unwrap();
         assert_eq!(output, query.to_string(),);

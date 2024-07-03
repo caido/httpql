@@ -34,7 +34,7 @@ impl fmt::Display for Query {
         if let Some(expr) = &self.or {
             return write!(f, "({} or {})", expr.0, expr.1);
         }
-        Ok(())
+        write!(f, "()")
     }
 }
 
