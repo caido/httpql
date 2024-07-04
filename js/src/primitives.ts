@@ -15,14 +15,15 @@ export type ClauseRow = {
 };
 
 export type ClauseRequest = {
+  createdAt?: Maybe<ExprDate>;
   fileExtension?: Maybe<ExprString>;
   host?: Maybe<ExprString>;
+  isTLS?: Maybe<ExprBool>;
   method?: Maybe<ExprString>;
   path?: Maybe<ExprString>;
   port?: Maybe<ExprInt>;
   query?: Maybe<ExprString>;
   raw?: Maybe<ExprString>;
-  createdAt?: Maybe<ExprDate>;
 };
 
 export type ClauseResponse = {
@@ -49,6 +50,11 @@ export type ExprString = {
 export type ExprDate = {
   operator: OperatorDate;
   value: string;
+};
+
+export type ExprBool = {
+  operator: OperatorBool;
+  value: boolean;
 };
 
 export const OperatorInt = {
@@ -79,3 +85,9 @@ export const OperatorDate = {
   Lt: "LT",
 } as const;
 export type OperatorDate = (typeof OperatorDate)[keyof typeof OperatorDate];
+
+export const OperatorBool = {
+  Eq: "EQ",
+  Ne: "NE",
+} as const;
+export type OperatorBool = (typeof OperatorBool)[keyof typeof OperatorBool];

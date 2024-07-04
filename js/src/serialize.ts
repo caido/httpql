@@ -5,6 +5,7 @@ import type {
   ClauseRequest,
   ClauseResponse,
   ClauseRow,
+  ExprBool,
   ExprDate,
   ExprInt,
   ExprPreset,
@@ -67,11 +68,17 @@ const serializeClauseRow = (value: ClauseRow): Result<string, HTTPQLError> => {
 const serializeClauseRequest = (
   value: ClauseRequest,
 ): Result<string, HTTPQLError> => {
+  if (isPresent(value.createdAt)) {
+    return serializeExprDate(value.createdAt).map((str) => `created_at.${str}`);
+  }
   if (isPresent(value.fileExtension)) {
     return serializeExprString(value.fileExtension).map((str) => `ext.${str}`);
   }
   if (isPresent(value.host)) {
     return serializeExprString(value.host).map((str) => `host.${str}`);
+  }
+  if (isPresent(value.isTLS)) {
+    return serializeExprBool(value.isTLS).map((str) => `tls.${str}`);
   }
   if (isPresent(value.method)) {
     return serializeExprString(value.method).map((str) => `method.${str}`);
@@ -87,9 +94,6 @@ const serializeClauseRequest = (
   }
   if (isPresent(value.raw)) {
     return serializeExprString(value.raw).map((str) => `raw.${str}`);
-  }
-  if (isPresent(value.createdAt)) {
-    return serializeExprDate(value.createdAt).map((str) => `created_at.${str}`);
   }
   return err(new InvalidQuery());
 };
@@ -137,6 +141,10 @@ const serializeExprString = (
 
 const serializeExprDate = (value: ExprDate): Result<string, HTTPQLError> => {
   return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
+};
+
+const serializeExprBool = (value: ExprBool): Result<string, HTTPQLError> => {
+  return ok(`${value.operator.toLowerCase()}:${value.value}`);
 };
 
 const serializeExprSource = (

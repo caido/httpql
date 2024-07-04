@@ -10,6 +10,7 @@ import { getChildString, isPresent } from "../utils.js";
 import { deserializeDateExpr } from "./expr.date.js";
 import { deserializeIntExpr } from "./expr.int.js";
 import { deserializeStringExpr } from "./expr.string.js";
+import { deserializeBoolExpr } from "./expr.bool.js";
 
 export const deserializeRequestClause = (
   node: SyntaxNode,
@@ -58,6 +59,17 @@ export const deserializeRequestClause = (
     }
   })();
 
+  const boolField = (() => {
+    const child = getChildString(node, terms.RequestBoolFieldName, doc);
+
+    if (isPresent(child)) {
+      switch (child) {
+        case "tls":
+          return "isTLS";
+      }
+    }
+  })();
+
   const stringFilter = (() => {
     const child = node.getChild(terms.StringExpression);
     if (isPresent(child)) return deserializeStringExpr(child, doc);
@@ -71,6 +83,11 @@ export const deserializeRequestClause = (
   const dateFilter = (() => {
     const child = node.getChild(terms.DateExpression);
     if (isPresent(child)) return deserializeDateExpr(child, doc);
+  })();
+
+  const boolFilter = (() => {
+    const child = node.getChild(terms.BoolExpression);
+    if (isPresent(child)) return deserializeBoolExpr(child, doc);
   })();
 
   if (isPresent(stringField) && isPresent(stringFilter)) {
@@ -93,6 +110,14 @@ export const deserializeRequestClause = (
     return dateFilter.map((filter) => {
       return {
         [dateField]: filter,
+      };
+    });
+  }
+
+  if (isPresent(boolField) && isPresent(boolFilter)) {
+    return boolFilter.map((filter) => {
+      return {
+        [boolField]: filter,
       };
     });
   }

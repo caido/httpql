@@ -116,6 +116,25 @@ fn build_expr_date_ast(pair: Pair<Rule>) -> Result<ExprDate> {
     Ok(ExprDate { value, operator })
 }
 
+fn build_expr_bool_ast(pair: Pair<Rule>) -> Result<ExprBool> {
+    let mut pair = pair.into_inner();
+    let operator = pair.next().required("BoolExpression.operator")?;
+    let operator = match operator.as_rule() {
+        Rule::BoolOperator => match operator.as_str() {
+            "eq" => OperatorBool::Eq,
+            "ne" => OperatorBool::Ne,
+            t => unknown!("BoolOperator.{}", t),
+        },
+        t => unknown!("BoolExpression.operator.{:?}", t),
+    };
+    let value = pair.next().required("BoolExpression.value")?;
+    let value = match value.as_rule() {
+        Rule::BoolValue => value.as_str().parse().required("BoolValue")?,
+        t => unknown!("BoolExpression.value.{:?}", t),
+    };
+    Ok(ExprBool { value, operator })
+}
+
 fn build_expr_preset_ast(pair: Pair<Rule>) -> Result<ExprPreset> {
     let mut pair = pair.into_inner();
     let value = pair.next().required("PresetExpression.value")?;
@@ -210,6 +229,12 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
                 clause.created_at = Some(build_expr_date_ast(expr)?);
             }
             t => unknown!("RequestDateFieldName.{}", t),
+        },
+        Rule::RequestBoolFieldName => match field.as_str() {
+            "tls" => {
+                clause.is_tls = Some(build_expr_bool_ast(expr)?);
+            }
+            t => unknown!("RequestBoolFieldName.{}", t),
         },
         t => unknown!("RequestClause.field.{:?}", t),
     };

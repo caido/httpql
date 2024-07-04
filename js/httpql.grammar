@@ -32,6 +32,7 @@
   RequestStringFieldName { "ext" | "host" | "method" | "path" | "query" | "raw" }
   RequestIntFieldName { "port" }
   RequestDateFieldName { "created_at" }
+  RequestBoolFieldName { "tls" }
 
   // Response field names
   ResponseStringFieldName { "raw" }
@@ -42,10 +43,12 @@
   RegexOperator { "regex" | "nregex" }
   IntOperator { "eq" | "gt" | "gte" | "lt" | "lte" | "ne" }
   DateOperator { "lt" | "gt" }
+  BoolOperator { "eq" | "ne" }
 
   // Value types
   SymbolValue { $[a-z0-9-_]+ }
   IntValue { @digit+ }
+  BoolValue { "true" | "false" }
 
   // String
   StringChar { $[\u{20}\u{21}\u{23}-\u{5b}\u{5d}-\u{10ffff}] | "\\" StringEscape }
@@ -72,6 +75,7 @@
 IntExpression { IntOperator Colon IntValue }
 StringExpression { StringOperator Colon StringValue | RegexOperator Colon (RegexValue | StringValue) }
 DateExpression { DateOperator Colon StringValue }
+BoolExpression { BoolOperator Colon BoolValue }
 PresetNameExpression { StringValue }
 PresetAliasExpression { SymbolValue }
 SourceNameExpression { StringValue }
@@ -84,7 +88,8 @@ RowClause { RowNamespace Dot RowIntFieldName Dot IntExpression }
 RequestClause {
   RequestNamespace Dot RequestIntFieldName Dot IntExpression |
   RequestNamespace Dot RequestStringFieldName Dot StringExpression |
-  RequestNamespace Dot RequestDateFieldName Dot DateExpression
+  RequestNamespace Dot RequestDateFieldName Dot DateExpression |
+  RequestNamespace Dot RequestBoolFieldName Dot BoolExpression
 }
 
 ResponseClause {

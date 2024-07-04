@@ -76,23 +76,30 @@ impl fmt::Display for ClauseResponse {
 
 #[derive(Clone, Debug, Default)]
 pub struct ClauseRequest {
+    pub created_at: Option<ExprDate>,
     pub file_extension: Option<ExprString>,
     pub host: Option<ExprString>,
+    pub is_tls: Option<ExprBool>,
     pub method: Option<ExprString>,
     pub path: Option<ExprString>,
     pub port: Option<ExprInt>,
     pub query: Option<ExprString>,
     pub raw: Option<ExprString>,
-    pub created_at: Option<ExprDate>,
 }
 
 impl fmt::Display for ClauseRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(expr) = &self.created_at {
+            return write!(f, "created_at.{}", expr);
+        }
         if let Some(expr) = &self.file_extension {
             return write!(f, "ext.{}", expr);
         }
         if let Some(expr) = &self.host {
             return write!(f, "host.{}", expr);
+        }
+        if let Some(expr) = &self.is_tls {
+            return write!(f, "tls.{}", expr);
         }
         if let Some(expr) = &self.method {
             return write!(f, "method.{}", expr);
@@ -108,9 +115,6 @@ impl fmt::Display for ClauseRequest {
         }
         if let Some(expr) = &self.raw {
             return write!(f, "raw.{}", expr);
-        }
-        if let Some(expr) = &self.created_at {
-            return write!(f, "created_at.{}", expr);
         }
         Err(fmt::Error)
     }
@@ -218,6 +222,33 @@ impl fmt::Display for OperatorDate {
         match self {
             OperatorDate::Lt => write!(f, "lt"),
             OperatorDate::Gt => write!(f, "gt"),
+        }
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ExprBool {
+    pub value: bool,
+    pub operator: OperatorBool,
+}
+
+impl fmt::Display for ExprBool {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:{}", self.operator, self.value)
+    }
+}
+
+#[derive(Clone, Debug)]
+pub enum OperatorBool {
+    Eq,
+    Ne,
+}
+
+impl fmt::Display for OperatorBool {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            OperatorBool::Eq => write!(f, "eq"),
+            OperatorBool::Ne => write!(f, "ne"),
         }
     }
 }

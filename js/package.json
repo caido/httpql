@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "rm -rf dist/*; tsc -p tsconfig.build.json",
-    "generate": "lezer-generator ./httpql.grammar -o ./src/parser/parser.ts",
+    "generate": "lezer-generator ./httpql.grammar -o ./src/parser/parser.ts && pnpm lint",
     "lint": "eslint src/ --fix",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
