@@ -6,7 +6,7 @@ import { OperatorString, type Query } from "../primitives.js";
 
 import { deserializeString } from "./string.js";
 
-export const deserializeStringQuery = (
+export const deserializeStringClause = (
   node: SyntaxNode,
   doc: string,
 ): Result<Query, HTTPQLError> => {

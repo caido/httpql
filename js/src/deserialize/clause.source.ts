@@ -8,7 +8,7 @@ import { isPresent } from "../utils.js";
 
 import { deserializeString } from "./string.js";
 
-export const deserializeSourceQuery = (
+export const deserializeSourceClause = (
   node: SyntaxNode,
   doc: string,
 ): Result<ExprSource, HTTPQLError> => {

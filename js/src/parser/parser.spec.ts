@@ -5,47 +5,45 @@ import { getString } from "../utils.js";
 import { parser } from "./parser.js";
 import {
   And,
-  CombinedQuery,
+  Clause,
   GroupQuery,
   IntValue,
+  LogicalQuery,
   Or,
   Query,
-  RequestQuery,
-  SingleQuery,
+  RequestClause,
   StringValue,
 } from "./parser.terms.js";
 
 describe("parser", () => {
-  it("Should parse single query", () => {
+  it("Should parse single clause", () => {
     const doc = 'request.method.eq:"GET"';
 
     const tree = parser.parse(doc);
 
-    const singleQuery = tree.topNode.getChild(Query)!.getChild(SingleQuery)!;
+    const clause = tree.topNode.getChild(Query)!.getChild(Clause)!;
 
-    const value = getString(singleQuery, doc);
+    const value = getString(clause, doc);
     expect(value).to.equal('request.method.eq:"GET"');
   });
 
-  it("Should parse combined query", () => {
+  it("Should parse logical query", () => {
     const doc = 'request.method.eq:"GET" AND request.host.eq:"google.com"';
 
     const tree = parser.parse(doc);
 
-    const combinedQuery = tree.topNode
-      .getChild(Query)!
-      .getChild(CombinedQuery)!;
+    const logicalQuery = tree.topNode.getChild(Query)!.getChild(LogicalQuery)!;
 
-    const operator = combinedQuery.getChild(And)!;
+    const operator = logicalQuery.getChild(And)!;
 
     const operatorValue = getString(operator, doc);
     expect(operatorValue).to.equal("AND");
 
-    const querys = combinedQuery
+    const clauses = logicalQuery
       .getChildren(Query)
-      .map((n) => n.getChild(SingleQuery)!);
+      .map((n) => n.getChild(Clause)!);
 
-    const values = querys.map((n) => getString(n, doc));
+    const values = clauses.map((n) => getString(n, doc));
     expect(values).to.deep.equal([
       'request.method.eq:"GET"',
       'request.host.eq:"google.com"',
@@ -57,22 +55,22 @@ describe("parser", () => {
 
     const tree = parser.parse(doc);
 
-    const combinedQuery = tree.topNode
+    const logicalQuery = tree.topNode
       .getChild(Query)!
       .getChild(GroupQuery)!
       .getChild(Query)!
-      .getChild(CombinedQuery)!;
+      .getChild(LogicalQuery)!;
 
-    const operator = combinedQuery.getChild(Or)!;
+    const operator = logicalQuery.getChild(Or)!;
 
     const operatorValue = getString(operator, doc);
     expect(operatorValue).to.equal("OR");
 
-    const querys = combinedQuery
+    const clauses = logicalQuery
       .getChildren(Query)
-      .map((n) => n.getChild(SingleQuery)!);
+      .map((n) => n.getChild(Clause)!);
 
-    const values = querys.map((n) => getString(n, doc));
+    const values = clauses.map((n) => getString(n, doc));
     expect(values).to.deep.equal([
       'request.method.eq:"GET"',
       "request.port.eq:200",
@@ -86,8 +84,8 @@ describe("parser", () => {
 
     const node = tree.topNode
       .getChild(Query)!
-      .getChild(SingleQuery)!
-      .getChild(RequestQuery)!
+      .getChild(Clause)!
+      .getChild(RequestClause)!
       .getChild(IntValue);
 
     expect(node).to.be.null;
@@ -100,8 +98,8 @@ describe("parser", () => {
 
     const node = tree.topNode
       .getChild(Query)!
-      .getChild(SingleQuery)!
-      .getChild(RequestQuery)!
+      .getChild(Clause)!
+      .getChild(RequestClause)!
       .getChild(StringValue);
 
     expect(node).to.be.null;

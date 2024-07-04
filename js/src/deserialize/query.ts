@@ -6,28 +6,22 @@ import { terms } from "../parser/index.js";
 import type { Query } from "../primitives.js";
 import { isPresent } from "../utils.js";
 
-import { deserializeCombinedQuery } from "./query.combined.js";
+import { deserializeClause } from "./clause.js";
 import { deserializeGroupQuery } from "./query.group.js";
-import { deserializeSingleQuery } from "./query.single.js";
-import { deserializeStringQuery } from "./query.string.js";
+import { deserializeLogicalQuery } from "./query.logical.js";
 
 export const deserializeQuery = (
   node: SyntaxNode,
   doc: string,
 ): Result<Query, HTTPQLError> => {
-  const stringQuery = node.getChild(terms.StringQuery);
-  if (isPresent(stringQuery)) {
-    return deserializeStringQuery(stringQuery, doc);
+  const clause = node.getChild(terms.Clause);
+  if (isPresent(clause)) {
+    return deserializeClause(clause, doc);
   }
 
-  const singleQuery = node.getChild(terms.SingleQuery);
-  if (isPresent(singleQuery)) {
-    return deserializeSingleQuery(singleQuery, doc);
-  }
-
-  const combinedQuery = node.getChild(terms.CombinedQuery);
-  if (isPresent(combinedQuery)) {
-    return deserializeCombinedQuery(combinedQuery, doc);
+  const logicalQuery = node.getChild(terms.LogicalQuery);
+  if (isPresent(logicalQuery)) {
+    return deserializeLogicalQuery(logicalQuery, doc);
   }
 
   const groupQuery = node.getChild(terms.GroupQuery);

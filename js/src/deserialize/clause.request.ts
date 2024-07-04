@@ -1,23 +1,35 @@
 import type { SyntaxNode } from "@lezer/common";
-import { err, type Result } from "neverthrow";
+import { err } from "neverthrow";
+import type { Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors.js";
 import { terms } from "../parser/index.js";
-import type { ClauseResponse } from "../primitives.js";
+import type { ClauseRequest } from "../primitives.js";
 import { getChildString, isPresent } from "../utils.js";
 
+import { deserializeDateExpr } from "./expr.date.js";
 import { deserializeIntExpr } from "./expr.int.js";
 import { deserializeStringExpr } from "./expr.string.js";
 
-export const deserializeResponseQuery = (
+export const deserializeRequestClause = (
   node: SyntaxNode,
   doc: string,
-): Result<ClauseResponse, HTTPQLError> => {
+): Result<ClauseRequest, HTTPQLError> => {
   const stringField = (() => {
-    const child = getChildString(node, terms.ResponseStringFieldName, doc);
+    const child = getChildString(node, terms.RequestStringFieldName, doc);
 
     if (isPresent(child)) {
       switch (child) {
+        case "ext":
+          return "fileExtension";
+        case "host":
+          return "host";
+        case "method":
+          return "method";
+        case "path":
+          return "path";
+        case "query":
+          return "query";
         case "raw":
           return "raw";
       }
@@ -25,14 +37,23 @@ export const deserializeResponseQuery = (
   })();
 
   const intField = (() => {
-    const child = getChildString(node, terms.ResponseIntFieldName, doc);
+    const child = getChildString(node, terms.RequestIntFieldName, doc);
 
     if (isPresent(child)) {
       switch (child) {
-        case "code":
-          return "statusCode";
-        case "roundtrip":
-          return "roundtripTime";
+        case "port":
+          return "port";
+      }
+    }
+  })();
+
+  const dateField = (() => {
+    const child = getChildString(node, terms.RequestDateFieldName, doc);
+
+    if (isPresent(child)) {
+      switch (child) {
+        case "created_at":
+          return "createdAt";
       }
     }
   })();
@@ -47,6 +68,11 @@ export const deserializeResponseQuery = (
     if (isPresent(child)) return deserializeIntExpr(child, doc);
   })();
 
+  const dateFilter = (() => {
+    const child = node.getChild(terms.DateExpression);
+    if (isPresent(child)) return deserializeDateExpr(child, doc);
+  })();
+
   if (isPresent(stringField) && isPresent(stringFilter)) {
     return stringFilter.map((filter) => {
       return {
@@ -59,6 +85,14 @@ export const deserializeResponseQuery = (
     return intFilter.map((filter) => {
       return {
         [intField]: filter,
+      };
+    });
+  }
+
+  if (isPresent(dateField) && isPresent(dateFilter)) {
+    return dateFilter.map((filter) => {
+      return {
+        [dateField]: filter,
       };
     });
   }

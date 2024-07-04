@@ -8,7 +8,7 @@ import { getChildString, isPresent } from "../utils.js";
 
 import { deserializeString } from "./string.js";
 
-export const deserializePresetQuery = (
+export const deserializePresetClause = (
   node: SyntaxNode,
   doc: string,
 ): Result<ExprPreset, HTTPQLError> => {

@@ -68,15 +68,7 @@
 @skip { whitespace }
 @detectDelim
 
-Query { StringQuery | GroupQuery | SingleQuery | CombinedQuery }
-
-StringQuery { StringValue }
-GroupQuery { LeftParen Query? RightParen }
-
-CombinedQuery { Query !and And Query | Query !or Or Query }
-
-SingleQuery { RowQuery | RequestQuery | ResponseQuery | PresetQuery | SourceQuery }
-
+// Expression
 IntExpression { IntOperator Colon IntValue }
 StringExpression { StringOperator Colon StringValue | RegexOperator Colon (RegexValue | StringValue) }
 DateExpression { DateOperator Colon StringValue }
@@ -84,25 +76,34 @@ PresetNameExpression { StringValue }
 PresetAliasExpression { SymbolValue }
 SourceNameExpression { StringValue }
 
-RowQuery { RowNamespace Dot RowIntFieldName Dot IntExpression }
+// Clause
+StringClause { StringValue }
 
-RequestQuery {
+RowClause { RowNamespace Dot RowIntFieldName Dot IntExpression }
+
+RequestClause {
   RequestNamespace Dot RequestIntFieldName Dot IntExpression |
   RequestNamespace Dot RequestStringFieldName Dot StringExpression |
   RequestNamespace Dot RequestDateFieldName Dot DateExpression
 }
 
-ResponseQuery {
+ResponseClause {
   ResponseNamespace Dot ResponseIntFieldName Dot IntExpression |
   ResponseNamespace Dot ResponseStringFieldName Dot StringExpression
 }
 
-PresetQuery {
+PresetClause {
   PresetNamespace Colon (PresetNameExpression | PresetAliasExpression)
 }
 
-SourceQuery {
+SourceClause {
   SourceNamespace Colon SourceNameExpression
 }
+
+// Query
+Clause { StringClause | RowClause | RequestClause | ResponseClause | PresetClause | SourceClause }
+GroupQuery { LeftParen Query? RightParen }
+LogicalQuery { Query !and And Query | Query !or Or Query }
+Query { Clause | GroupQuery | LogicalQuery }
 
 @external propSource highlight from "./props.js"

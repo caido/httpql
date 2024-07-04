@@ -9,7 +9,7 @@ import { getChildString, isPresent } from "../utils.js";
 
 import { deserializeIntExpr } from "./expr.int.js";
 
-export const deserializeRowQuery = (
+export const deserializeRowClause = (
   node: SyntaxNode,
   doc: string,
 ): Result<ClauseRow, HTTPQLError> => {

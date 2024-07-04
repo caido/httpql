@@ -7,7 +7,7 @@ import type { Query } from "../primitives.js";
 
 import { deserializeQuery } from "./query.js";
 
-export const deserializeCombinedQuery = (
+export const deserializeLogicalQuery = (
   node: SyntaxNode,
   doc: string,
 ): Result<Query, HTTPQLError> => {
