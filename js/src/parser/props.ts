@@ -7,6 +7,7 @@ export const highlight: NodePropSource = styleTags({
   "StringExpression/StringOperator": tags.operator,
   "StringExpression/RegexOperator": tags.operator,
   "DateExpression/DateOperator": tags.operator,
+  "BoolExpression/BoolOperator": tags.operator,
 
   // Namespaces
   RequestNamespace: tags.attributeName,
@@ -19,6 +20,7 @@ export const highlight: NodePropSource = styleTags({
   RequestIntFieldName: tags.attributeName,
   RequestStringFieldName: tags.attributeName,
   RequestDateFieldName: tags.attributeName,
+  RequestBoolFieldName: tags.attributeName,
   ResponseIntFieldName: tags.attributeName,
   ResponseStringFieldName: tags.attributeName,
   RowIntFieldName: tags.attributeName,
@@ -26,6 +28,7 @@ export const highlight: NodePropSource = styleTags({
   // Values
   SymbolValue: tags.literal,
   "IntExpression/IntValue": tags.integer,
+  "BoolExpression/BoolValue": tags.bool,
   "StringValue/...": tags.string,
   "RegexValue/...": tags.string,
 });
