@@ -30,13 +30,13 @@
 
   // Request field names
   RequestStringFieldName { "ext" | "host" | "method" | "path" | "query" | "raw" }
-  RequestIntFieldName { "port" }
+  RequestIntFieldName { "len" | "port" }
   RequestDateFieldName { "created_at" }
   RequestBoolFieldName { "tls" }
 
   // Response field names
   ResponseStringFieldName { "raw" }
-  ResponseIntFieldName { "code" | "roundtrip" }
+  ResponseIntFieldName { "code" | "len" | "roundtrip" }
 
   // Operators for string and integer types
   StringOperator { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike"}

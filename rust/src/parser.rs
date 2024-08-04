@@ -198,6 +198,9 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
     let expr = pair.next().required("RequestClause.expr")?;
     match field.as_rule() {
         Rule::RequestIntFieldName => match field.as_str() {
+            "len" => {
+                clause.length = Some(build_expr_int_ast(expr)?);
+            }
             "port" => {
                 clause.port = Some(build_expr_int_ast(expr)?);
             }
@@ -252,6 +255,9 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
         Rule::ResponseIntFieldName => match field.as_str() {
             "code" => {
                 clause.status_code = Some(build_expr_int_ast(expr)?);
+            }
+            "len" => {
+                clause.length = Some(build_expr_int_ast(expr)?);
             }
             "roundtrip" => {
                 clause.roundtrip_time = Some(build_expr_int_ast(expr)?);

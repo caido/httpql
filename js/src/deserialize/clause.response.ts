@@ -31,6 +31,8 @@ export const deserializeResponseClause = (
       switch (child) {
         case "code":
           return "statusCode";
+        case "len":
+          return "length";
         case "roundtrip":
           return "roundtripTime";
       }

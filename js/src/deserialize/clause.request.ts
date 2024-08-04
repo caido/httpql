@@ -7,10 +7,10 @@ import { terms } from "../parser/index.js";
 import type { ClauseRequest } from "../primitives.js";
 import { getChildString, isPresent } from "../utils.js";
 
+import { deserializeBoolExpr } from "./expr.bool.js";
 import { deserializeDateExpr } from "./expr.date.js";
 import { deserializeIntExpr } from "./expr.int.js";
 import { deserializeStringExpr } from "./expr.string.js";
-import { deserializeBoolExpr } from "./expr.bool.js";
 
 export const deserializeRequestClause = (
   node: SyntaxNode,
@@ -42,6 +42,8 @@ export const deserializeRequestClause = (
 
     if (isPresent(child)) {
       switch (child) {
+        case "len":
+          return "length";
         case "port":
           return "port";
       }

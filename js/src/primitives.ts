@@ -19,6 +19,7 @@ export type ClauseRequest = {
   fileExtension?: Maybe<ExprString>;
   host?: Maybe<ExprString>;
   isTLS?: Maybe<ExprBool>;
+  length?: Maybe<ExprInt>;
   method?: Maybe<ExprString>;
   path?: Maybe<ExprString>;
   port?: Maybe<ExprInt>;
@@ -27,9 +28,10 @@ export type ClauseRequest = {
 };
 
 export type ClauseResponse = {
+  length?: Maybe<ExprInt>;
   raw?: Maybe<ExprString>;
-  statusCode?: Maybe<ExprInt>;
   roundtripTime?: Maybe<ExprInt>;
+  statusCode?: Maybe<ExprInt>;
 };
 
 export type ExprInt = {

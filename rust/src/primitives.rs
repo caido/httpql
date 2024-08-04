@@ -54,21 +54,25 @@ impl fmt::Display for ClauseRow {
 
 #[derive(Clone, Debug, Default)]
 pub struct ClauseResponse {
+    pub length: Option<ExprInt>,
+    pub roundtrip_time: Option<ExprInt>,
     pub raw: Option<ExprString>,
     pub status_code: Option<ExprInt>,
-    pub roundtrip_time: Option<ExprInt>,
 }
 
 impl fmt::Display for ClauseResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(expr) = &self.length {
+            return write!(f, "len.{}", expr);
+        }
         if let Some(expr) = &self.raw {
             return write!(f, "raw.{}", expr);
         }
-        if let Some(expr) = &self.status_code {
-            return write!(f, "code.{}", expr);
-        }
         if let Some(expr) = &self.roundtrip_time {
             return write!(f, "roundtrip.{}", expr);
+        }
+        if let Some(expr) = &self.status_code {
+            return write!(f, "code.{}", expr);
         }
         Err(fmt::Error)
     }
@@ -80,6 +84,7 @@ pub struct ClauseRequest {
     pub file_extension: Option<ExprString>,
     pub host: Option<ExprString>,
     pub is_tls: Option<ExprBool>,
+    pub length: Option<ExprInt>,
     pub method: Option<ExprString>,
     pub path: Option<ExprString>,
     pub port: Option<ExprInt>,
@@ -100,6 +105,9 @@ impl fmt::Display for ClauseRequest {
         }
         if let Some(expr) = &self.is_tls {
             return write!(f, "tls.{}", expr);
+        }
+        if let Some(expr) = &self.length {
+            return write!(f, "len.{}", expr);
         }
         if let Some(expr) = &self.method {
             return write!(f, "method.{}", expr);

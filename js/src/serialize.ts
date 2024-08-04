@@ -80,6 +80,9 @@ const serializeClauseRequest = (
   if (isPresent(value.isTLS)) {
     return serializeExprBool(value.isTLS).map((str) => `tls.${str}`);
   }
+  if (isPresent(value.length)) {
+    return serializeExprInt(value.length).map((str) => `len.${str}`);
+  }
   if (isPresent(value.method)) {
     return serializeExprString(value.method).map((str) => `method.${str}`);
   }
@@ -101,16 +104,19 @@ const serializeClauseRequest = (
 const serializeClauseResponse = (
   value: ClauseResponse,
 ): Result<string, HTTPQLError> => {
+  if (isPresent(value.length)) {
+    return serializeExprInt(value.length).map((str) => `len.${str}`);
+  }
   if (isPresent(value.raw)) {
     return serializeExprString(value.raw).map((str) => `raw.${str}`);
-  }
-  if (isPresent(value.statusCode)) {
-    return serializeExprInt(value.statusCode).map((str) => `code.${str}`);
   }
   if (isPresent(value.roundtripTime)) {
     return serializeExprInt(value.roundtripTime).map(
       (str) => `roundtrip.${str}`,
     );
+  }
+  if (isPresent(value.statusCode)) {
+    return serializeExprInt(value.statusCode).map((str) => `code.${str}`);
   }
   return err(new InvalidQuery());
 };
