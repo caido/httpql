@@ -141,7 +141,7 @@ const serializeExprString = (
   if (value.isRaw) {
     return ok(`${value.operator.toLowerCase()}:/${value.value}/`);
   } else {
-    return ok(`${value.operator.toLowerCase()}:"${value.value}"`);
+    return ok(`${value.operator.toLowerCase()}:${JSON.stringify(value.value)}`);
   }
 };
 

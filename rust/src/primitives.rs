@@ -140,7 +140,12 @@ impl fmt::Display for ExprString {
         if self.is_raw {
             write!(f, r"{}:/{}/", self.operator, self.value)
         } else {
-            write!(f, "{}:\"{}\"", self.operator, self.value)
+            write!(
+                f,
+                "{}:{}",
+                self.operator,
+                serde_json::to_string(self.value.as_str()).expect("Failed to serialize string")
+            )
         }
     }
 }
