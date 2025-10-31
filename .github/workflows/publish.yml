@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     branches:
-      - 'main'
+      - "main"
 
 permissions:
   id-token: write # Required for OIDC
@@ -39,18 +39,11 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Install Mise
+        uses: caido/action-mise-action@v3.2.0
         with:
-          node-version: 18
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3.0.0
-        with:
-          version: 8
-
-      - name: Update npm
-        run: npm install -g npm@11.6.2
+          working_directory: ./proxy-frontend
+          version: ${{ vars.CI__MISE_VERSION }}
 
       - name: Install dependencies
         working-directory: ./js
@@ -66,6 +59,8 @@ jobs:
 
       - name: Publish internal
         working-directory: ./js
+        env:
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mv .npmrc.github .npmrc
           pnpm -r publish --no-git-checks
