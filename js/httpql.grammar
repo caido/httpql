@@ -8,6 +8,8 @@
 @tokens {
   // Whitespace and delimiters
   whitespace { @whitespace }
+  LineComment[isolate] { "//" (!LineTerminator)* }
+  LineTerminator { "\r\n" | "\r" | "\n" }
   LeftParen { "(" }
   RightParen { ")" }
   Dot { "." }
@@ -61,14 +63,21 @@
   @else regexContent
 }
 
+@local tokens {
+  blockCommentEnd { "*/" }
+  blockCommentNewline { LineTerminator }
+  @else blockCommentContent
+}
+
 @skip {} {
   StringValue { '"' StringChar* '"' }
   RegexContent { (regexContent | regexEscape)* }
   RegexValue { '/' RegexContent regexEnd }
+  BlockComment[isolate] { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
 }
 
 // Define non-token rules for constructing expressions
-@skip { whitespace }
+@skip { whitespace | BlockComment | LineComment }
 @detectDelim
 
 // Expression

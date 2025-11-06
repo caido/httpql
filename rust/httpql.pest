@@ -57,7 +57,11 @@ RegexChar     =  {
 BoolValue     =  { "true" | "false" }
 
 // Define non-token rules for constructing expressions
-WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+WHITESPACE     = _{ " " | "\t" | LineTerminator }
+COMMENT        = _{ LineComment | BlockComment }
+BlockComment   = _{ "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+LineComment    = _{ "//" ~ (!LineTerminator ~ ANY)* }
+LineTerminator = @{ "\r\n" | "\r" | "\n" }
 
 // Expression
 IntExpression         = ${ IntOperator ~ Colon ~ IntValue }
