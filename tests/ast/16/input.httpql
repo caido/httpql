@@ -1,0 +1,4 @@
+// req.raw.cont:"other\n" /* embedded */
+req.raw.cont:"helloworld\n" // this is a comment in between
+// this is a comment after
+or /* before */ req.raw.cont:"helloworld\r\n"

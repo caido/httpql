@@ -8,11 +8,16 @@
 @tokens {
   // Whitespace and delimiters
   whitespace { @whitespace }
+  LineComment { "//" ![\n]* }
+  LineTerminator { "\r\n" | "\r" | "\n" }
   LeftParen { "(" }
   RightParen { ")" }
   Dot { "." }
   Colon { ":" }
   Hex  { $[0-9a-fA-F] }
+  RegexDelim { "/" }
+
+  @precedence { "/*", LineComment, RegexDelim }
 
   // Logical operators
   And { "AND" | "and" }
@@ -56,20 +61,28 @@
 }
 
 @local tokens {
-  regexEnd[@name='/'] { '/' }
+  regexEnd[@name='/'] { RegexDelim }
   regexEscape { "\\" _ }
   @else regexContent
+}
+
+@local tokens {
+  blockCommentEnd { "*/" }
+  blockCommentNewline { LineTerminator }
+  @else blockCommentContent
 }
 
 @skip {} {
   StringValue { '"' StringChar* '"' }
   RegexContent { (regexContent | regexEscape)* }
-  RegexValue { '/' RegexContent regexEnd }
+  RegexValue { RegexDelim RegexContent regexEnd }
+  BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
 }
 
 // Define non-token rules for constructing expressions
-@skip { whitespace }
+@skip { whitespace | BlockComment | LineComment }
 @detectDelim
+
 
 // Expression
 IntExpression { IntOperator Colon IntValue }
