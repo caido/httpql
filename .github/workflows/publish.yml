@@ -56,9 +56,7 @@ jobs:
 
       - name: Publish
         working-directory: ./js
-        run: |
-          npm -v
-          pnpm -r publish --access public
+        run: pnpm -r publish --access public
 
       - name: Publish internal
         working-directory: ./js
