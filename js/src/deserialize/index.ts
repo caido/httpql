@@ -20,7 +20,6 @@ export const deserialize = (doc: string): Result<Query, HTTPQLError> => {
   tree.iterate({
     enter: (node) => {
       if (node.type.isError) {
-        console.error(node.from, node.to);
         hasError = true;
       }
     },
