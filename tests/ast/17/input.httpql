@@ -1,2 +1,1 @@
-req.  raw./* hello */  cont:"helloworld\n"
-//
+req.raw.regex://
