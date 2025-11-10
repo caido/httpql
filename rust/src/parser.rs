@@ -429,12 +429,4 @@ mod tests {
         let query = parse(&input).unwrap();
         assert_eq!(output, query.to_string(),);
     }
-
-    #[rstest]
-    #[case("aaaaaa")]
-    #[case("req and resp")]
-    #[case("req.ext.eq:\"\" and ")]
-    fn test_err(#[case] input: String) {
-        assert!(parse(&input).is_err());
-    }
 }

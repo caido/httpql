@@ -46,11 +46,25 @@ mod tests {
     #[case(15)]
     #[case(16)]
     #[case(17)]
+    #[case(18)]
+    #[case(19)]
     fn test_ast(#[case] case: u32) {
         let input = std::fs::read_to_string(format!("../tests/ast/{case}/input.httpql")).unwrap();
         let output = std::fs::read_to_string(format!("../tests/ast/{case}/output.ast")).unwrap();
         let query = HTTPQL::parse(&input).unwrap();
         assert_eq!(output.trim(), query.to_string().trim());
+    }
+
+    #[rstest]
+    #[case(1)]
+    #[case(2)]
+    #[case(3)]
+    #[case(4)]
+    #[case(5)]
+    #[case(6)]
+    fn test_error(#[case] case: u32) {
+        let input = std::fs::read_to_string(format!("../tests/error/{case}/input.httpql")).unwrap();
+        assert!(HTTPQL::parse(&input).is_err());
     }
 
     #[rstest]

@@ -64,36 +64,36 @@ LineComment    = _{ "//" ~ (!LineTerminator ~ ANY)* }
 LineTerminator = @{ "\r\n" | "\r" | "\n" }
 
 // Expression
-IntExpression         = { IntOperator ~ Colon ~ IntValue }
-StringExpression      = { StringOperator ~ Colon ~ StringValue | RegexOperator ~ Colon ~ (RegexValue | StringValue) }
-DateExpression        = { DateOperator ~ Colon ~ StringValue }
-BoolExpression        = { BoolOperator ~ Colon ~ BoolValue }
-PresetNameExpression  = { StringValue }
-PresetAliasExpression = { SymbolValue }
-SourceNameExpression  = { StringValue }
+IntExpression         = ${ IntOperator ~ Colon ~ IntValue }
+StringExpression      = ${ StringOperator ~ Colon ~ StringValue | RegexOperator ~ Colon ~ (RegexValue | StringValue) }
+DateExpression        = ${ DateOperator ~ Colon ~ StringValue }
+BoolExpression        = ${ BoolOperator ~ Colon ~ BoolValue }
+PresetNameExpression  =  { StringValue }
+PresetAliasExpression =  { SymbolValue }
+SourceNameExpression  =  { StringValue }
 
 // Clause
 StringClause = { StringValue }
 
-RowClause = { RowNamespace ~ Dot ~ RowIntFieldName ~ Dot ~ IntExpression }
+RowClause = ${ RowNamespace ~ Dot ~ RowIntFieldName ~ Dot ~ IntExpression }
 
-RequestClause = {
+RequestClause = ${
     RequestNamespace ~ Dot ~ RequestIntFieldName ~ Dot ~ IntExpression
   | RequestNamespace ~ Dot ~ RequestStringFieldName ~ Dot ~ StringExpression
   | RequestNamespace ~ Dot ~ RequestDateFieldName ~ Dot ~ DateExpression
   | RequestNamespace ~ Dot ~ RequestBoolFieldName ~ Dot ~ BoolExpression
 }
 
-ResponseClause = {
+ResponseClause = ${
     ResponseNamespace ~ Dot ~ ResponseIntFieldName ~ Dot ~ IntExpression
   | ResponseNamespace ~ Dot ~ ResponseStringFieldName ~ Dot ~ StringExpression
 }
 
-PresetClause = {
+PresetClause = ${
     PresetNamespace ~ Colon ~ (PresetNameExpression | PresetAliasExpression)
 }
 
-SourceClause = {
+SourceClause = ${
     SourceNamespace ~ Colon ~ SourceNameExpression
 }
 
