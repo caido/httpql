@@ -17,7 +17,9 @@
   Hex  { $[0-9a-fA-F] }
   RegexDelim { "/" }
 
-  @precedence { "/*", LineComment, RegexDelim }
+  // NOTE: Since we disallowed comments in expression, we don't need this precedence
+  // but keeping it for when we allow them
+  // @precedence { "/*", LineComment, RegexDelim }
 
   // Logical operators
   And { "AND" | "and" }
@@ -85,10 +87,12 @@
 
 
 // Expression
+@skip {} {
 IntExpression { IntOperator Colon IntValue }
 StringExpression { StringOperator Colon StringValue | RegexOperator Colon (RegexValue | StringValue) }
 DateExpression { DateOperator Colon StringValue }
 BoolExpression { BoolOperator Colon BoolValue }
+}
 PresetNameExpression { StringValue }
 PresetAliasExpression { SymbolValue }
 SourceNameExpression { StringValue }
@@ -96,6 +100,7 @@ SourceNameExpression { StringValue }
 // Clause
 StringClause { StringValue }
 
+@skip {} {
 RowClause { RowNamespace Dot RowIntFieldName Dot IntExpression }
 
 RequestClause {
@@ -116,6 +121,7 @@ PresetClause {
 
 SourceClause {
   SourceNamespace Colon SourceNameExpression
+}
 }
 
 // Query

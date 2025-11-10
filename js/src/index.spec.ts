@@ -16,7 +16,9 @@ type Test =
 
 describe("httpql", () => {
   describe("ast", () => {
-    const cases = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+    const cases = [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+    ];
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = fs.readFileSync(
@@ -31,6 +33,20 @@ describe("httpql", () => {
         const ast = serialize(query)._unsafeUnwrap();
 
         expect(ast).toBe(output);
+      });
+    }
+  });
+
+  describe("error", () => {
+    const cases = [1, 2, 3, 4, 5, 6];
+    for (const c of cases) {
+      it(`Case ${c}`, () => {
+        const input = fs.readFileSync(
+          `../tests/error/${c}/input.httpql`,
+          "utf-8",
+        );
+        const query = deserialize(input);
+        expect(query.isErr()).toBe(true);
       });
     }
   });
