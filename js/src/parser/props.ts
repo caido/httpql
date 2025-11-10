@@ -31,4 +31,8 @@ export const highlight: NodePropSource = styleTags({
   "BoolExpression/BoolValue": tags.bool,
   "StringValue/...": tags.string,
   "RegexValue/...": tags.string,
+
+  // Comments
+  "BlockComment/...": tags.comment,
+  LineComment: tags.comment,
 });
