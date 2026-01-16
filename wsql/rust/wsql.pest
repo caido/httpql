@@ -1,0 +1,83 @@
+WSQL = { SOI ~ Query? ~ EOI }
+
+// Tokens
+// Delimiters
+LeftParen  = _{ "(" }
+RightParen = _{ ")" }
+Dot        = _{ "." }
+Colon      = _{ ":" }
+
+// Logical operators
+And = { "AND" | "and" }
+Or  = { "OR" | "or" }
+
+// Namespaces
+WsNamespace     = _{ "ws" }
+StreamNamespace = _{ "stream" }
+
+// Websocket field names
+WsStringFieldName = { "direction" | "raw" | "format" }
+WsDateFieldName   = { "created_at" }
+
+// Stream field names
+StreamStringFieldName = { "host" | "path" | "source" | "protocol" }
+StreamIntFieldName    = { "port" }
+StreamBoolFieldName   = { "tls" }
+
+// Operators for string and integer types
+StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
+RegexOperator  = { "regex" | "nregex" }
+IntOperator    = { "eq" | "gte" | "gt" | "lte" | "lt" | "ne" }
+DateOperator   = { "lt" | "gt" }
+BoolOperator   = { "eq" | "ne" }
+
+// Value types
+SymbolValue   = @{ ('a'..'z' | '0'..'9' | "-" | "_")+ }
+IntValue      = @{ ASCII_DIGIT+ }
+StringValue   = @{ "\"" ~ StringContent ~ "\"" }
+StringContent =  { StringChar* }
+StringChar    =  {
+    !("\"" | "\\") ~ ANY
+  | "\\" ~ ("\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t")
+  | "\\" ~ ("u" ~ ASCII_HEX_DIGIT{4})
+}
+RegexValue    = ${ "/" ~ RegexContent ~ "/" }
+RegexContent  = @{ RegexChar* }
+RegexChar     =  {
+    "\\" ~ ANY
+  | !"/" ~ ANY
+}
+BoolValue     =  { "true" | "false" }
+
+// Define non-token rules for constructing expressions
+WHITESPACE     = _{ " " | "\t" | LineTerminator }
+COMMENT        = _{ LineComment | BlockComment }
+BlockComment   = _{ "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+LineComment    = _{ "//" ~ (!LineTerminator ~ ANY)* }
+LineTerminator = @{ "\r\n" | "\r" | "\n" }
+
+// Expression
+IntExpression          = ${ IntOperator ~ Colon ~ IntValue }
+StringExpression       = ${ StringOperator ~ Colon ~ StringValue | RegexOperator ~ Colon ~ (RegexValue | StringValue) }
+DateExpression         = ${ DateOperator ~ Colon ~ StringValue }
+BoolExpression         = ${ BoolOperator ~ Colon ~ BoolValue }
+
+// Clause
+StringClause = { StringValue }
+
+WsClause = ${
+    WsNamespace ~ Dot ~ WsStringFieldName ~ Dot ~ StringExpression
+  | WsNamespace ~ Dot ~ WsDateFieldName ~ Dot ~ DateExpression
+}
+
+StreamClause = ${
+    StreamNamespace ~ Dot ~ StreamIntFieldName ~ Dot ~ IntExpression
+  | StreamNamespace ~ Dot ~ StreamStringFieldName ~ Dot ~ StringExpression
+  | StreamNamespace ~ Dot ~ StreamBoolFieldName ~ Dot ~ BoolExpression 
+}
+
+
+// Query
+Clause          = _{ WsClause | StreamClause | LeftParen ~ Query ~ RightParen }
+LogicalOperator = _{ And | Or }
+Query           =  { (Clause ~ (LogicalOperator ~ Clause)*)? }

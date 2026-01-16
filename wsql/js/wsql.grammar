@@ -1,0 +1,113 @@
+@top WSQL {
+  Query?
+}
+
+@precedence { and @left, or @left }
+
+// Define tokens for basic syntax elements
+@tokens {
+  // Whitespace and delimiters
+  whitespace { @whitespace }
+  LineComment { "//" ![\n]* }
+  LineTerminator { "\r\n" | "\r" | "\n" }
+  LeftParen { "(" }
+  RightParen { ")" }
+  Dot { "." }
+  Colon { ":" }
+  Hex  { $[0-9a-fA-F] }
+  RegexDelim { "/" }
+
+  // NOTE: Since we disallowed comments in expression, we don't need this precedence
+  // but keeping it for when we allow them
+  // @precedence { "/*", LineComment, RegexDelim }
+
+  // Logical operators
+  And { "AND" | "and" }
+  Or { "OR" | "or" }
+
+  // Websocket field names
+  WsStringFieldName = { "direction" | "raw" | "format" }
+  WsDateFieldName   = { "created_at" }
+
+  // Stream field names
+  StreamStringFieldName = { "host" | "path" | "source" | "protocol" }
+  StreamIntFieldName    = { "port" }
+  StreamBoolFieldName   = { "tls" }
+
+  // Operators for string and integer types
+  StringOperator { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike"}
+  RegexOperator { "regex" | "nregex" }
+  IntOperator { "eq" | "gt" | "gte" | "lt" | "lte" | "ne" }
+  DateOperator { "lt" | "gt" }
+  BoolOperator { "eq" | "ne" }
+
+  // Value types
+  SymbolValue { $[a-z0-9-_]+ }
+  IntValue { @digit+ }
+  BoolValue { "true" | "false" }
+
+  // String
+  StringChar { $[\u{20}\u{21}\u{23}-\u{5b}\u{5d}-\u{10ffff}] | "\\" StringEscape }
+  StringEscape  { $["\\\/bfnrt] | "u" Hex Hex Hex Hex }
+}
+
+@local tokens {
+  regexEnd[@name='/'] { RegexDelim }
+  regexEscape { "\\" _ }
+  @else regexContent
+}
+
+@local tokens {
+  blockCommentEnd { "*/" }
+  blockCommentNewline { LineTerminator }
+  @else blockCommentContent
+}
+
+@skip {} {
+  StringValue { '"' StringChar* '"' }
+  RegexContent { (regexContent | regexEscape)* }
+  RegexValue { RegexDelim RegexContent regexEnd }
+  BlockComment { "/*" (blockCommentContent | blockCommentNewline)* blockCommentEnd }
+}
+
+// Define non-token rules for constructing expressions
+@skip { whitespace | BlockComment | LineComment }
+@detectDelim
+
+
+// Expression
+@skip {} {
+IntExpression { IntOperator Colon IntValue }
+StringExpression { StringOperator Colon StringValue | RegexOperator Colon (RegexValue | StringValue) }
+DateExpression { DateOperator Colon StringValue }
+BoolExpression { BoolOperator Colon BoolValue }
+}
+PresetNameExpression { StringValue }
+PresetAliasExpression { SymbolValue }
+SourceNameExpression { StringValue }
+
+// Clause
+StringClause { StringValue }
+
+@skip {} {
+
+WsClause = ${
+    WsNamespace Dot WsStringFieldName Dot StringExpression
+  | WsNamespace Dot WsDateFieldName Dot DateExpression
+}
+
+StreamClause = ${
+    StreamNamespace Dot StreamIntFieldName Dot IntExpression
+  | StreamNamespace Dot StreamStringFieldName Dot StringExpression
+  | StreamNamespace Dot StreamBoolFieldName Dot BoolExpression 
+}
+
+}
+
+// Query
+Clause { WsClause | StreamClause }
+GroupQuery { LeftParen Query? RightParen }
+LogicalQuery { Query !and And Query | Query !or Or Query }
+Query { Clause | GroupQuery | LogicalQuery }
+
+@external propSource highlight from "./props.js"
