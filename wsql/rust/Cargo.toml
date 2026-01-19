@@ -1,0 +1,20 @@
+[package]
+name = "wsql"
+authors = ["Caido Labs Inc. <dev@caido.io>"]
+description = "Parser for the WSQL language"
+repository = "https://github.com/caido/httpql"
+license = "MIT"
+version = "0.8.0"
+edition = "2021"
+
+[dependencies]
+lazy_static = { version = "1" }
+thiserror = { version = "1" }
+pest = { version = "2" }
+pest_derive = { version = "2" }
+serde_json = { version = "1" }
+
+[dev-dependencies]
+regex = { version = "1.10" }
+rstest = { version = "0.18" }
+serde = { version = "1", features = ["derive"] }
