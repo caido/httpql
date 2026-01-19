@@ -1,0 +1,6 @@
+(
+    stream.tls.eq:true                AND
+             (stream.host.eq:"test.com"         OR ws.direction.eq:"client")
+             AND
+    ws.created_at.gt:"2026-01-14H12:00:00Z"
+)
