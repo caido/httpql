@@ -25,14 +25,18 @@
   And { "AND" | "and" }
   Or { "OR" | "or" }
 
+  // Namespaces
+  WsNamespace { "ws" }
+  StreamNamespace { "stream" }
+
   // Websocket field names
-  WsStringFieldName = { "direction" | "raw" | "format" }
-  WsDateFieldName   = { "created_at" }
+  WsStringFieldName { "direction" | "raw" | "format" }
+  WsDateFieldName   { "created_at" }
 
   // Stream field names
-  StreamStringFieldName = { "host" | "path" | "source" | "protocol" }
-  StreamIntFieldName    = { "port" }
-  StreamBoolFieldName   = { "tls" }
+  StreamStringFieldName { "host" | "path" | "source" | "protocol" }
+  StreamIntFieldName    { "port" }
+  StreamBoolFieldName   { "tls" }
 
   // Operators for string and integer types
   StringOperator { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike"}
@@ -91,12 +95,12 @@ StringClause { StringValue }
 
 @skip {} {
 
-WsClause = ${
+WsClause {
     WsNamespace Dot WsStringFieldName Dot StringExpression
   | WsNamespace Dot WsDateFieldName Dot DateExpression
 }
 
-StreamClause = ${
+StreamClause {
     StreamNamespace Dot StreamIntFieldName Dot IntExpression
   | StreamNamespace Dot StreamStringFieldName Dot StringExpression
   | StreamNamespace Dot StreamBoolFieldName Dot BoolExpression 
