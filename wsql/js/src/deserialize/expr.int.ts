@@ -1,7 +1,7 @@
 import type { SyntaxNode } from "@lezer/common";
 import { err, ok, type Result } from "neverthrow";
 
-import { type InvalidQuery, WSQLError } from "../errors.js";
+import { type WSQLError, InvalidQuery } from "../errors.js";
 import { terms } from "../parser/index.js";
 import { type ExprInt, OperatorInt } from "../primitives.js";
 import { getChildString, isPresent } from "../utils.js";
