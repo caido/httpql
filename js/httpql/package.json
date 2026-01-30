@@ -19,15 +19,12 @@
   },
   "scripts": {
     "build": "rm -rf dist/*; tsc -p tsconfig.build.json",
-    "generate": "lezer-generator ./httpql.grammar -o ./src/parser/parser.ts && pnpm lint",
-    "lint": "eslint src/ --fix",
-    "test": "vitest run",
+    "generate": "lezer-generator ./httpql.grammar -o ./src/parser/parser.ts",
     "typecheck": "tsc --noEmit"
   },
-  "eslint.workingDirectories": [
-    {
-      "directory": "js",
-      "changeProcessCWD": true
-    }
-  ]
+  "dependencies": {
+    "@lezer/highlight": "^1.2.0",
+    "@lezer/lr": "^1.4.0",
+    "neverthrow": "^6.1.0"
+  }
 }

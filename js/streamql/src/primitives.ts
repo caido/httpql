@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-restricted-types
 export type Maybe<T> = T | undefined | null;
 
 export type Query = {
