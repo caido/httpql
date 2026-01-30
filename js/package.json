@@ -10,7 +10,6 @@
     "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
-    "@lezer/common": "1.2.1",
     "@lezer/generator": "1.6.0",
     "@types/node": "25.0.10",
     "@caido/eslint-config": "0.8.0",
