@@ -1,6 +1,4 @@
 [workspace]
-edition=2021
-members = [
-    "httpql",
-    "streamql"
-]
+resolver = "3"
+edition = 2021
+members = ["httpql", "streamql"]
