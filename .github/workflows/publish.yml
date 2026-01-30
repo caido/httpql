@@ -26,8 +26,11 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v3
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Install Mise
+        uses: caido/action-mise-action@v3.2.0
+        with:
+          working_directory: .
+          version: ${{ vars.CI__MISE_VERSION }}
 
       - name: Get version
         id: meta
@@ -51,9 +54,16 @@ jobs:
           cargo login ${{ steps.auth.outputs.token }}
           cargo publish --no-verify
 
-  publish-httpql-js:
+  publish-js:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+
+    strategy:
+      max-parallel: 1
+      matrix:
+        package:
+          - httpql
+          - streamql
 
     steps:
       - name: Checkout project
@@ -66,55 +76,21 @@ jobs:
           version: ${{ vars.CI__MISE_VERSION }}
 
       - name: Install dependencies
-        working-directory: ./js/httpql
+        working-directory: ./js
         run: pnpm install
 
       - name: Build
-        working-directory: ./js/httpql
+        working-directory: ./js
         run: pnpm run build
 
       - name: Publish
-        working-directory: ./js/httpql
-        run: pnpm -r publish --access public
+        working-directory: ./js
+        run: pnpm --filter ${{ matrix.package }} -r publish --access public
 
       - name: Publish internal
-        working-directory: ./js/httpql
+        working-directory: ./js
         env:
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mv .npmrc.github .npmrc
-          pnpm -r publish --no-git-checks
-
-  publish-streamql-js:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v3
-
-      - name: Install Mise
-        uses: caido/action-mise-action@v3.2.0
-        with:
-          working_directory: .
-          version: ${{ vars.CI__MISE_VERSION }}
-
-      - name: Install dependencies
-        working-directory: ./js/streamql
-        run: pnpm install
-
-      - name: Build
-        working-directory: ./js/streamql
-        run: pnpm run build
-
-      - name: Publish
-        working-directory: ./js/streamql
-        run: pnpm -r publish --access public
-
-      - name: Publish internal
-        working-directory: ./js/streamql
-        env:
-          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mv .npmrc.github .npmrc
-          pnpm -r publish --no-git-checks
+          pnpm --filter ${{ matrix.package }} -r publish --no-git-checks
