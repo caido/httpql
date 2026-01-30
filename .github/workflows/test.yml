@@ -63,6 +63,10 @@ jobs:
         working-directory: ./js
         run: pnpm typecheck
 
+      - name: Run knip
+        working-directory: ./js
+        run: pnpm knip
+
       - name: Run tests
         working-directory: ./js
         run: pnpm test
