@@ -30,7 +30,7 @@ jobs:
         with:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
           ignore-unpublished-changes: true
-          path: ./httpql/rust
+          path: ./rust/httpql
 
   publish-js:
     runs-on: ubuntu-latest
@@ -47,19 +47,19 @@ jobs:
           version: ${{ vars.CI__MISE_VERSION }}
 
       - name: Install dependencies
-        working-directory: ./httpql/js
+        working-directory: ./js/httpql
         run: pnpm install
 
       - name: Build
-        working-directory: ./httpql/js
+        working-directory: ./js/httpql
         run: pnpm run build
 
       - name: Publish
-        working-directory: ./httpql/js
+        working-directory: ./js/httpql
         run: pnpm -r publish --access public
 
       - name: Publish internal
-        working-directory: ./httpql/js
+        working-directory: ./js/httpql
         env:
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

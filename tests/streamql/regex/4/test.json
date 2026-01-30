@@ -1,0 +1,5 @@
+{
+  "expect": "ok",
+  "input": "\"asd\"",
+  "result": true
+}

@@ -1,0 +1,5 @@
+{
+  "expect": "ok",
+  "input": "😊",
+  "result": true
+}

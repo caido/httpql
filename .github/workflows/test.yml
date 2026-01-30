@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-httpql-rust:
-    name: 'Test httpql rust'
+  test-rust:
+    name: 'Test rust'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -22,19 +22,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install rust toolchain
-        working-directory: ./httpql/rust
+        working-directory: ./rust
         run: rustup show
 
       - name: Run clippy
-        working-directory: ./httpql/rust
+        working-directory: ./rust
         run: cargo clippy
 
       - name: Run tests
-        working-directory: ./httpql/rust
+        working-directory: ./rust
         run: cargo test
 
-  test-httpql-js:
-    name: 'Test httpql javascript'
+  test-js:
+    name: 'Test javascript'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -52,71 +52,17 @@ jobs:
           version: 8
 
       - name: Install dependencies
-        working-directory: ./httpql/js
+        working-directory: ./js
         run: pnpm install
 
       - name: Run linter
-        working-directory: ./httpql/js
+        working-directory: ./js
         run: pnpm lint
 
       - name: Run typechecker
-        working-directory: ./httpql/js
+        working-directory: ./js
         run: pnpm typecheck
 
       - name: Run tests
-        working-directory: ./httpql/js
-        run: pnpm test
-
-  test-wsql-rust:
-    name: 'Test wsql rust'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-
-      - name: Install rust toolchain
-        working-directory: ./wsql/rust
-        run: rustup show
-
-      - name: Run clippy
-        working-directory: ./wsql/rust
-        run: cargo clippy
-
-      - name: Run tests
-        working-directory: ./wsql/rust
-        run: cargo test
-
-  test-wsql-js:
-    name: 'Test wsql javascript'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3.0.0
-        with:
-          version: 8
-
-      - name: Install dependencies
-        working-directory: ./wsql/js
-        run: pnpm install
-
-      - name: Run linter
-        working-directory: ./wsql/js
-        run: pnpm lint
-
-      - name: Run typechecker
-        working-directory: ./wsql/js
-        run: pnpm typecheck
-
-      - name: Run tests
-        working-directory: ./wsql/js
+        working-directory: ./js
         run: pnpm test
