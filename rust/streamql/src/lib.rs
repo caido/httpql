@@ -5,9 +5,9 @@ mod error;
 mod parser;
 mod primitives;
 
-pub struct HTTPQL;
+pub struct StreamQL;
 
-impl HTTPQL {
+impl StreamQL {
     pub fn parse(input: &str) -> Result<Query> {
         parser::parse(input)
     }
@@ -17,9 +17,9 @@ impl HTTPQL {
 mod tests {
     use regex::Regex;
     use rstest::rstest;
-    use serde::Deserialize;
 
     use super::*;
+    use serde::Deserialize;
 
     #[derive(Deserialize)]
     #[serde(tag = "expect", rename_all = "snake_case")]
@@ -33,25 +33,13 @@ mod tests {
     #[case(2)]
     #[case(3)]
     #[case(4)]
-    #[case(5)]
-    #[case(6)]
-    #[case(7)]
-    #[case(8)]
-    #[case(9)]
-    #[case(10)]
-    #[case(11)]
-    #[case(12)]
-    #[case(13)]
-    #[case(14)]
-    #[case(15)]
-    #[case(16)]
-    #[case(17)]
-    #[case(18)]
-    #[case(19)]
     fn test_ast(#[case] case: u32) {
-        let input = std::fs::read_to_string(format!("../tests/ast/{case}/input.httpql")).unwrap();
-        let output = std::fs::read_to_string(format!("../tests/ast/{case}/output.ast")).unwrap();
-        let query = HTTPQL::parse(&input).unwrap();
+        let input =
+            std::fs::read_to_string(format!("../../tests/streamql/ast/{case}/input.streamql"))
+                .unwrap();
+        let output =
+            std::fs::read_to_string(format!("../../tests/streamql/ast/{case}/output.ast")).unwrap();
+        let query = StreamQL::parse(&input).unwrap();
         assert_eq!(output.trim(), query.to_string().trim());
     }
 
@@ -63,8 +51,10 @@ mod tests {
     #[case(5)]
     #[case(6)]
     fn test_error(#[case] case: u32) {
-        let input = std::fs::read_to_string(format!("../tests/error/{case}/input.httpql")).unwrap();
-        assert!(HTTPQL::parse(&input).is_err());
+        let input =
+            std::fs::read_to_string(format!("../../tests/streamql/error/{case}/input.streamql"))
+                .unwrap();
+        assert!(StreamQL::parse(&input).is_err());
     }
 
     #[rstest]
@@ -77,19 +67,23 @@ mod tests {
     #[case(7)]
     #[case(8)]
     fn test_regex(#[case] case: u32) {
-        let input =
-            std::fs::read_to_string(format!("../tests/regex/{}/input.httpql", case)).unwrap();
+        let input = std::fs::read_to_string(format!(
+            "../../tests/streamql/regex/{}/input.streamql",
+            case
+        ))
+        .unwrap();
         let test = serde_json::from_str::<Test>(
-            &std::fs::read_to_string(format!("../tests/regex/{}/test.json", case)).unwrap(),
+            &std::fs::read_to_string(format!("../../tests/streamql/regex/{}/test.json", case))
+                .unwrap(),
         )
         .unwrap();
 
-        let query = HTTPQL::parse(&input);
+        let query = StreamQL::parse(&input);
         match test {
             Test::Err if query.is_err() => (),
             Test::Err => panic!("Expected error"),
             Test::Ok { input, result } => {
-                let expr = query.unwrap().request.unwrap().raw.unwrap();
+                let expr = query.unwrap().websocket.unwrap().raw.unwrap();
                 let regex = Regex::new(&expr.value).unwrap();
                 assert_eq!(regex.is_match(&input), result);
             }
@@ -100,19 +94,23 @@ mod tests {
     #[case(1)]
     #[case(2)]
     fn test_string(#[case] case: u32) {
-        let input =
-            std::fs::read_to_string(format!("../tests/string/{}/input.httpql", case)).unwrap();
+        let input = std::fs::read_to_string(format!(
+            "../../tests/streamql/string/{}/input.streamql",
+            case
+        ))
+        .unwrap();
         let test = serde_json::from_str::<Test>(
-            &std::fs::read_to_string(format!("../tests/string/{}/test.json", case)).unwrap(),
+            &std::fs::read_to_string(format!("../../tests/streamql/string/{}/test.json", case))
+                .unwrap(),
         )
         .unwrap();
 
-        let query = HTTPQL::parse(&input);
+        let query = StreamQL::parse(&input);
         match test {
             Test::Err if query.is_err() => (),
             Test::Err => panic!("Expected error"),
             Test::Ok { input, result } => {
-                let expr = query.unwrap().request.unwrap().raw.unwrap();
+                let expr = query.unwrap().websocket.unwrap().raw.unwrap();
                 assert_eq!(expr.value == input, result);
             }
         }

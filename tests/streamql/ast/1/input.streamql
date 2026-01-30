@@ -1,0 +1,6 @@
+(
+    ws.raw.cont:"pass" AND
+    ws.raw.ncont:"log" AND
+    ws.format.eq:"binary" AND
+    ws.direction.eq:"server"
+)

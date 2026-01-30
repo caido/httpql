@@ -1,0 +1,8 @@
+(
+    stream.path.nlike:"%about.html" OR 
+    (stream.path.like:"%whatsabout.html" AND
+    stream.source.eq:"automate" AND 
+    stream.port.gt:420 AND 
+    stream.tls.eq:false
+    )
+)

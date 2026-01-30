@@ -22,11 +22,11 @@ describe("httpql", () => {
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = fs.readFileSync(
-          `../tests/ast/${c}/input.httpql`,
+          `../../tests/httpql/ast/${c}/input.httpql`,
           "utf-8",
         );
         const output = fs
-          .readFileSync(`../tests/ast/${c}/output.ast`, "utf-8")
+          .readFileSync(`../../tests/httpql/ast/${c}/output.ast`, "utf-8")
           .trim();
 
         const query = deserialize(input)._unsafeUnwrap();
@@ -42,7 +42,7 @@ describe("httpql", () => {
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = fs.readFileSync(
-          `../tests/error/${c}/input.httpql`,
+          `../../tests/httpql/error/${c}/input.httpql`,
           "utf-8",
         );
         const query = deserialize(input);
@@ -56,11 +56,13 @@ describe("httpql", () => {
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = fs.readFileSync(
-          `../tests/regex/${c}/input.httpql`,
+          `../../tests/httpql/regex/${c}/input.httpql`,
           "utf-8",
         );
         const test: Test = JSON.parse(
-          fs.readFileSync(`../tests/regex/${c}/test.json`, "utf-8").trim(),
+          fs
+            .readFileSync(`../../tests/httpql/regex/${c}/test.json`, "utf-8")
+            .trim(),
         );
 
         const query = deserialize(input);
@@ -80,11 +82,13 @@ describe("httpql", () => {
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = fs.readFileSync(
-          `../tests/string/${c}/input.httpql`,
+          `../../tests/httpql/string/${c}/input.httpql`,
           "utf-8",
         );
         const test: Test = JSON.parse(
-          fs.readFileSync(`../tests/string/${c}/test.json`, "utf-8").trim(),
+          fs
+            .readFileSync(`../../tests/httpql/string/${c}/test.json`, "utf-8")
+            .trim(),
         );
 
         const query = deserialize(input);

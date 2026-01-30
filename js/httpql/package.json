@@ -1,0 +1,33 @@
+{
+  "name": "@caido/httpql",
+  "version": "0.8.0",
+  "description": "Parser for the HTTPQL language",
+  "author": "Caido Labs Inc. <dev@caido.io>",
+  "repository": "https://github.com/caido/httpql",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist/*; tsc -p tsconfig.build.json",
+    "generate": "lezer-generator ./httpql.grammar -o ./src/parser/parser.ts && pnpm lint",
+    "lint": "eslint src/ --fix",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "eslint.workingDirectories": [
+    {
+      "directory": "js",
+      "changeProcessCWD": true
+    }
+  ]
+}
