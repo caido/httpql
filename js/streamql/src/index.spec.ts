@@ -1,4 +1,6 @@
 import * as fs from "fs";
+import { join } from "path";
+import { fileURLToPath } from "url";
 
 import { describe, expect, it } from "vitest";
 
@@ -14,18 +16,21 @@ type Test =
       result: boolean;
     };
 
+const readFile = (path: string) => {
+  console.log(fileURLToPath(import.meta.url));
+  return fs.readFileSync(
+    join(fileURLToPath(import.meta.url), "../../../../tests/streamql", path),
+    "utf-8"
+  );
+}
+
 describe("streamql", () => {
   describe("ast", () => {
     const cases = [1, 2, 3, 4];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/streamql/ast/${c}/input.streamql`,
-          "utf-8",
-        );
-        const output = fs
-          .readFileSync(`../../tests/streamql/ast/${c}/output.ast`, "utf-8")
-          .trim();
+        const input = readFile(`ast/${c}/input.streamql`);
+        const output = readFile(`ast/${c}/output.ast`).trim();
 
         const query = deserialize(input)._unsafeUnwrap();
         const ast = serialize(query)._unsafeUnwrap();
@@ -39,10 +44,7 @@ describe("streamql", () => {
     const cases = [1, 2, 3, 4, 5, 6];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/streamql/error/${c}/input.streamql`,
-          "utf-8",
-        );
+        const input = readFile(`error/${c}/input.streamql`);
         const query = deserialize(input);
         expect(query.isErr()).toBe(true);
       });
@@ -53,14 +55,9 @@ describe("streamql", () => {
     const cases = [1, 2, 3, 4, 5, 6, 7, 8];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/streamql/regex/${c}/input.streamql`,
-          "utf-8",
-        );
+        const input = readFile(`regex/${c}/input.streamql`);
         const test: Test = JSON.parse(
-          fs
-            .readFileSync(`../../tests/streamql/regex/${c}/test.json`, "utf-8")
-            .trim(),
+          readFile(`regex/${c}/test.json`).trim(),
         );
 
         const query = deserialize(input);
@@ -79,14 +76,9 @@ describe("streamql", () => {
     const cases = [1, 2];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/streamql/string/${c}/input.streamql`,
-          "utf-8",
-        );
+        const input = readFile(`string/${c}/input.streamql`);
         const test: Test = JSON.parse(
-          fs
-            .readFileSync(`../../tests/streamql/string/${c}/test.json`, "utf-8")
-            .trim(),
+          readFile(`string/${c}/test.json`).trim(),
         );
 
         const query = deserialize(input);

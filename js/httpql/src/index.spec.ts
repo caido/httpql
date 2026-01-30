@@ -1,4 +1,6 @@
 import * as fs from "fs";
+import { join } from "path";
+import { fileURLToPath } from "url";
 
 import { describe, expect, it } from "vitest";
 
@@ -14,6 +16,13 @@ type Test =
       result: boolean;
     };
 
+const readFile = (path: string) => {
+  return fs.readFileSync(
+    join(fileURLToPath(import.meta.url), "../../../../tests/httpql", path),
+    "utf-8"
+  );
+}
+
 describe("httpql", () => {
   describe("ast", () => {
     const cases = [
@@ -21,13 +30,8 @@ describe("httpql", () => {
     ];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/httpql/ast/${c}/input.httpql`,
-          "utf-8",
-        );
-        const output = fs
-          .readFileSync(`../../tests/httpql/ast/${c}/output.ast`, "utf-8")
-          .trim();
+        const input = readFile(`ast/${c}/input.httpql`);
+        const output = readFile(`ast/${c}/output.ast`).trim();
 
         const query = deserialize(input)._unsafeUnwrap();
         const ast = serialize(query)._unsafeUnwrap();
@@ -41,10 +45,7 @@ describe("httpql", () => {
     const cases = [1, 2, 3, 4, 5, 6];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/httpql/error/${c}/input.httpql`,
-          "utf-8",
-        );
+        const input = readFile(`error/${c}/input.httpql`);
         const query = deserialize(input);
         expect(query.isErr()).toBe(true);
       });
@@ -55,14 +56,9 @@ describe("httpql", () => {
     const cases = [1, 2, 3, 4, 5, 6, 7, 8];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/httpql/regex/${c}/input.httpql`,
-          "utf-8",
-        );
+        const input = readFile(`regex/${c}/input.httpql`);
         const test: Test = JSON.parse(
-          fs
-            .readFileSync(`../../tests/httpql/regex/${c}/test.json`, "utf-8")
-            .trim(),
+          readFile(`regex/${c}/test.json`).trim(),
         );
 
         const query = deserialize(input);
@@ -81,14 +77,9 @@ describe("httpql", () => {
     const cases = [1, 2];
     for (const c of cases) {
       it(`Case ${c}`, () => {
-        const input = fs.readFileSync(
-          `../../tests/httpql/string/${c}/input.httpql`,
-          "utf-8",
-        );
+        const input = readFile(`string/${c}/input.httpql`);
         const test: Test = JSON.parse(
-          fs
-            .readFileSync(`../../tests/httpql/string/${c}/test.json`, "utf-8")
-            .trim(),
+          readFile(`string/${c}/test.json`).trim(),
         );
 
         const query = deserialize(input);
