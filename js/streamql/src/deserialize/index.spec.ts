@@ -244,4 +244,27 @@ describe("deserialize", () => {
       ],
     });
   });
+  it("should parse StreamQL preset alias expression", () => {
+    const query = "preset:my-preset";
+
+    const filter = deserialize(query)._unsafeUnwrap();
+
+    expect(filter).to.deep.equal({
+      preset: {
+        alias: "my-preset",
+      },
+    });
+  });
+
+  it("should parse StreamQL preset name expression", () => {
+    const query = 'preset:"My preset"';
+
+    const filter = deserialize(query)._unsafeUnwrap();
+
+    expect(filter).to.deep.equal({
+      preset: {
+        name: "My preset",
+      },
+    });
+  });
 });

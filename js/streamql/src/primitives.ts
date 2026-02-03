@@ -3,6 +3,7 @@ export type Maybe<T> = T | undefined | null;
 export type Query = {
   AND?: Maybe<[Query, Query]>;
   OR?: Maybe<[Query, Query]>;
+  preset?: Maybe<ExprPreset>;
   websocket?: Maybe<ClauseWs>;
   stream?: Maybe<ClauseStream>;
 };
@@ -27,6 +28,8 @@ export type ExprInt = {
   operator: OperatorInt;
   value: number;
 };
+
+export type ExprPreset = { alias: string } | { name: string };
 
 export type ExprString = {
   operator: OperatorString;
