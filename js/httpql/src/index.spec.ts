@@ -19,9 +19,9 @@ type Test =
 const readFile = (path: string) => {
   return fs.readFileSync(
     join(fileURLToPath(import.meta.url), "../../../../tests/httpql", path),
-    "utf-8"
+    "utf-8",
   );
-}
+};
 
 describe("httpql", () => {
   describe("ast", () => {
@@ -57,9 +57,7 @@ describe("httpql", () => {
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = readFile(`regex/${c}/input.httpql`);
-        const test: Test = JSON.parse(
-          readFile(`regex/${c}/test.json`).trim(),
-        );
+        const test: Test = JSON.parse(readFile(`regex/${c}/test.json`).trim());
 
         const query = deserialize(input);
         if (test.expect === "err") {
@@ -78,9 +76,7 @@ describe("httpql", () => {
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = readFile(`string/${c}/input.httpql`);
-        const test: Test = JSON.parse(
-          readFile(`string/${c}/test.json`).trim(),
-        );
+        const test: Test = JSON.parse(readFile(`string/${c}/test.json`).trim());
 
         const query = deserialize(input);
         if (test.expect === "err") {

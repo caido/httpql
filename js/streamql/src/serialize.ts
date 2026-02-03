@@ -7,6 +7,7 @@ import type {
   ExprBool,
   ExprDate,
   ExprInt,
+  ExprPreset,
   ExprString,
   Query,
 } from "./primitives.js";
@@ -19,6 +20,9 @@ export const serialize = (query: Query): Result<string, StreamQLError> => {
 const serializeClauseRequestResponse = (
   query: Query,
 ): Result<string, StreamQLError> => {
+  if (isPresent(query.preset)) {
+    return serializeExprPreset(query.preset);
+  }
   if (isPresent(query.stream)) {
     return serializeClauseStream(query.stream).map((str) => `stream.${str}`);
   }
@@ -88,6 +92,16 @@ const serializeClauseStream = (
   }
 
   return err(new InvalidQuery());
+};
+
+const serializeExprPreset = (
+  preset: ExprPreset,
+): Result<string, StreamQLError> => {
+  if ("alias" in preset) {
+    return ok(`preset:${preset.alias}`);
+  } else {
+    return ok(`preset:"${preset.name}"`);
+  }
 };
 
 const serializeExprInt = (value: ExprInt): Result<string, StreamQLError> => {
