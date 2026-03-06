@@ -24,9 +24,7 @@ export const deserializeClause = (
 
   const requestClause = node.getChild(terms.RequestClause);
   if (isPresent(requestClause)) {
-    return deserializeRequestClause(requestClause, doc).map((request) => ({
-      request,
-    }));
+    return deserializeRequestClause(requestClause, doc);
   }
 
   const responseClause = node.getChild(terms.ResponseClause);

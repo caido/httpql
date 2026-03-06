@@ -6,6 +6,8 @@ LeftParen  = _{ "(" }
 RightParen = _{ ")" }
 Dot        = _{ "." }
 Colon      = _{ ":" }
+LeftBracket  = _{ "[" }
+RightBracket = _{ "]" }
 
 // Logical operators
 And = { "AND" | "and" }
@@ -26,6 +28,8 @@ RequestStringFieldName = { "ext" | "host" | "method" | "path" | "query" | "raw" 
 RequestIntFieldName    = { "len" | "port" }
 RequestDateFieldName   = { "created_at" }
 RequestBoolFieldName   = { "tls" }
+RequestHeaderFieldName = _{ "header" }
+RequestHeaderSubfieldName = { "name" | "value" }
 
 // Response field names
 ResponseStringFieldName = { "raw" }
@@ -82,6 +86,8 @@ RequestClause = ${
   | RequestNamespace ~ Dot ~ RequestStringFieldName ~ Dot ~ StringExpression
   | RequestNamespace ~ Dot ~ RequestDateFieldName ~ Dot ~ DateExpression
   | RequestNamespace ~ Dot ~ RequestBoolFieldName ~ Dot ~ BoolExpression
+  | RequestNamespace ~ Dot ~ RequestHeaderFieldName ~ Dot ~ RequestHeaderSubfieldName ~ Dot ~ StringExpression
+  | RequestNamespace ~ Dot ~ RequestHeaderFieldName ~ LeftBracket ~ StringValue ~ RightBracket ~ Dot ~ StringExpression
 }
 
 ResponseClause = ${

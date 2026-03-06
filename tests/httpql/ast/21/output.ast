@@ -1,0 +1,1 @@
+(req.header.name.eq:"Content-Type" and req.header.value.cont:"json")

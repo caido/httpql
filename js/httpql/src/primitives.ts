@@ -18,6 +18,7 @@ export type ClauseRow = {
 export type ClauseRequest = {
   createdAt?: Maybe<ExprDate>;
   fileExtension?: Maybe<ExprString>;
+  header?: Maybe<ClauseRequestHeader>;
   host?: Maybe<ExprString>;
   isTLS?: Maybe<ExprBool>;
   length?: Maybe<ExprInt>;
@@ -26,6 +27,11 @@ export type ClauseRequest = {
   port?: Maybe<ExprInt>;
   query?: Maybe<ExprString>;
   raw?: Maybe<ExprString>;
+};
+
+export type ClauseRequestHeader = {
+  name?: Maybe<ExprString>;
+  value?: Maybe<ExprString>;
 };
 
 export type ClauseResponse = {

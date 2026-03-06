@@ -82,6 +82,7 @@ impl fmt::Display for ClauseResponse {
 pub struct ClauseRequest {
     pub created_at: Option<ExprDate>,
     pub file_extension: Option<ExprString>,
+    pub header: Option<ClauseHeaderRequest>,
     pub host: Option<ExprString>,
     pub is_tls: Option<ExprBool>,
     pub length: Option<ExprInt>,
@@ -92,6 +93,24 @@ pub struct ClauseRequest {
     pub raw: Option<ExprString>,
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct ClauseHeaderRequest {
+    pub name: Option<ExprString>,
+    pub value: Option<ExprString>,
+}
+
+impl fmt::Display for ClauseHeaderRequest {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(expr) = &self.name {
+            return write!(f, "name.{}", expr);
+        }
+        if let Some(expr) = &self.value {
+            return write!(f, "value.{}", expr);
+        }
+        Err(fmt::Error)
+    }
+}
+
 impl fmt::Display for ClauseRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if let Some(expr) = &self.created_at {
@@ -99,6 +118,9 @@ impl fmt::Display for ClauseRequest {
         }
         if let Some(expr) = &self.file_extension {
             return write!(f, "ext.{}", expr);
+        }
+        if let Some(expr) = &self.header {
+            return write!(f, "header.{}", expr);
         }
         if let Some(expr) = &self.host {
             return write!(f, "host.{}", expr);
