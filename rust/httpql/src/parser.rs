@@ -190,7 +190,7 @@ fn build_row_clause_ast(pair: Pair<Rule>) -> Result<ClauseRow> {
     Ok(clause)
 }
 
-fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
+fn build_request_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     let mut clause = ClauseRequest::default();
 
     let mut pair = pair.into_inner();
@@ -239,10 +239,68 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<ClauseRequest> {
             }
             t => unknown!("RequestBoolFieldName.{}", t),
         },
+        Rule::RequestHeaderSubfieldName => match field.as_str() {
+            "name" => {
+                clause.header = Some(ClauseHeaderRequest {
+                    name: Some(build_expr_string_ast(expr)?),
+                    ..Default::default()
+                });
+            }
+            "value" => {
+                clause.header = Some(ClauseHeaderRequest {
+                    value: Some(build_expr_string_ast(expr)?),
+                    ..Default::default()
+                });
+            }
+            t => unknown!("RequestHeaderSubfieldName.{}", t),
+        },
+        Rule::StringValue => {
+            let ParsedString {
+                value: header_name,
+                is_raw,
+            } = build_string_ast(field)?;
+            if is_raw {
+                invalid!("RequestClause.header_name");
+            }
+
+            let header_name_clause = Query {
+                request: Some(ClauseRequest {
+                    header: Some(ClauseHeaderRequest {
+                        name: Some(ExprString {
+                            value: header_name,
+                            operator: OperatorString::Eq,
+                            is_raw: false,
+                        }),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            };
+
+            let header_value_clause = Query {
+                request: Some(ClauseRequest {
+                    header: Some(ClauseHeaderRequest {
+                        value: Some(build_expr_string_ast(expr)?),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            };
+
+            return Ok(Query {
+                and: Some((Box::new(header_name_clause), Box::new(header_value_clause))),
+                ..Default::default()
+            });
+        }
         t => unknown!("RequestClause.field.{:?}", t),
     };
 
-    Ok(clause)
+    Ok(Query {
+        request: Some(clause),
+        ..Default::default()
+    })
 }
 
 fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
@@ -352,11 +410,7 @@ fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
             Ok(query)
         }
         Rule::RequestClause => {
-            let query = Query {
-                request: Some(build_request_clause_ast(pair)?),
-                ..Default::default()
-            };
-            Ok(query)
+            build_request_clause_ast(pair)
         }
         Rule::ResponseClause => {
             let query = Query {

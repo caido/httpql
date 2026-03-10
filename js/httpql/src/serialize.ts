@@ -74,6 +74,16 @@ const serializeClauseRequest = (
   if (isPresent(value.fileExtension)) {
     return serializeExprString(value.fileExtension).map((str) => `ext.${str}`);
   }
+  if (isPresent(value.header)) {
+    if (isPresent(value.header.name)) {
+      return serializeExprString(value.header.name).map((str) => `header.name.${str}`);
+    }
+    if (isPresent(value.header.value)) {
+      return serializeExprString(value.header.value).map(
+        (str) => `header.value.${str}`,
+      );
+    }
+  }
   if (isPresent(value.host)) {
     return serializeExprString(value.host).map((str) => `host.${str}`);
   }

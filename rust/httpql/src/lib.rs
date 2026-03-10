@@ -48,6 +48,8 @@ mod tests {
     #[case(17)]
     #[case(18)]
     #[case(19)]
+    #[case(20)]
+    #[case(21)]
     fn test_ast(#[case] case: u32) {
         let input =
             std::fs::read_to_string(format!("../../tests/httpql/ast/{case}/input.httpql")).unwrap();

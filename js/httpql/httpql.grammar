@@ -14,6 +14,8 @@
   RightParen { ")" }
   Dot { "." }
   Colon { ":" }
+  LeftBracket { "[" }
+  RightBracket { "]" }
   Hex  { $[0-9a-fA-F] }
   RegexDelim { "/" }
 
@@ -40,6 +42,8 @@
   RequestIntFieldName { "len" | "port" }
   RequestDateFieldName { "created_at" }
   RequestBoolFieldName { "tls" }
+  RequestHeaderFieldName { "header" }
+  RequestHeaderSubfieldName { "name" | "value" }
 
   // Response field names
   ResponseStringFieldName { "raw" }
@@ -107,7 +111,9 @@ RequestClause {
   RequestNamespace Dot RequestIntFieldName Dot IntExpression |
   RequestNamespace Dot RequestStringFieldName Dot StringExpression |
   RequestNamespace Dot RequestDateFieldName Dot DateExpression |
-  RequestNamespace Dot RequestBoolFieldName Dot BoolExpression
+  RequestNamespace Dot RequestBoolFieldName Dot BoolExpression |
+  RequestNamespace Dot RequestHeaderFieldName Dot RequestHeaderSubfieldName Dot StringExpression |
+  RequestNamespace Dot RequestHeaderFieldName LeftBracket StringValue RightBracket Dot StringExpression
 }
 
 ResponseClause {

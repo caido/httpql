@@ -4,18 +4,62 @@ import type { Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "../errors.js";
 import { terms } from "../parser/index.js";
-import type { ClauseRequest } from "../primitives.js";
-import { getChildString, isPresent } from "../utils.js";
+import { OperatorString, type Query } from "../primitives.js";
+import { getChildString, isAbsent, isPresent } from "../utils.js";
 
 import { deserializeBoolExpr } from "./expr.bool.js";
 import { deserializeDateExpr } from "./expr.date.js";
 import { deserializeIntExpr } from "./expr.int.js";
 import { deserializeStringExpr } from "./expr.string.js";
+import { deserializeString } from "./string.js";
 
 export const deserializeRequestClause = (
   node: SyntaxNode,
   doc: string,
-): Result<ClauseRequest, HTTPQLError> => {
+): Result<Query, HTTPQLError> => {
+  const headerShortExpr = (() => {
+    const headerNameResult = deserializeString(node, doc);
+    if (headerNameResult.isErr()) {
+      return;
+    }
+
+    const { value: headerName, isRaw } = headerNameResult.value;
+    if (isRaw) {
+      return;
+    }
+
+    const valueExprNode = node.getChild(terms.StringExpression);
+    if (isAbsent(valueExprNode)) return;
+
+    return deserializeStringExpr(valueExprNode, doc).map((valueExpr) => {
+      return {
+        AND: [
+          {
+            request: {
+              header: {
+                name: {
+                  operator: OperatorString.Eq,
+                  value: headerName,
+                  isRaw: false,
+                },
+              },
+            },
+          },
+          {
+            request: {
+              header: {
+                value: valueExpr,
+              },
+            },
+          },
+        ],
+      } satisfies Query;
+    });
+  })();
+  if (isPresent(headerShortExpr)) {
+    return headerShortExpr;
+  }
+
   const stringField = (() => {
     const child = getChildString(node, terms.RequestStringFieldName, doc);
 
@@ -33,6 +77,17 @@ export const deserializeRequestClause = (
           return "query";
         case "raw":
           return "raw";
+      }
+    }
+  })();
+  const headerSubfield = (() => {
+    const child = getChildString(node, terms.RequestHeaderSubfieldName, doc);
+    if (isPresent(child)) {
+      switch (child) {
+        case "name":
+          return "name";
+        case "value":
+          return "value";
       }
     }
   })();
@@ -95,7 +150,9 @@ export const deserializeRequestClause = (
   if (isPresent(stringField) && isPresent(stringFilter)) {
     return stringFilter.map((filter) => {
       return {
-        [stringField]: filter,
+        request: {
+          [stringField]: filter,
+        },
       };
     });
   }
@@ -103,7 +160,9 @@ export const deserializeRequestClause = (
   if (isPresent(intField) && isPresent(intFilter)) {
     return intFilter.map((filter) => {
       return {
-        [intField]: filter,
+        request: {
+          [intField]: filter,
+        },
       };
     });
   }
@@ -111,7 +170,9 @@ export const deserializeRequestClause = (
   if (isPresent(dateField) && isPresent(dateFilter)) {
     return dateFilter.map((filter) => {
       return {
-        [dateField]: filter,
+        request: {
+          [dateField]: filter,
+        },
       };
     });
   }
@@ -119,7 +180,21 @@ export const deserializeRequestClause = (
   if (isPresent(boolField) && isPresent(boolFilter)) {
     return boolFilter.map((filter) => {
       return {
-        [boolField]: filter,
+        request: {
+          [boolField]: filter,
+        },
+      };
+    });
+  }
+
+  if (isPresent(headerSubfield) && isPresent(stringFilter)) {
+    return stringFilter.map((filter) => {
+      return {
+        request: {
+          header: {
+            [headerSubfield]: filter,
+          },
+        },
       };
     });
   }
