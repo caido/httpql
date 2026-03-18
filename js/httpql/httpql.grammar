@@ -38,7 +38,7 @@
   RowIntFieldName { "id" }
 
   // Request field names
-  RequestStringFieldName { "ext" | "host" | "method" | "path" | "query" | "raw" }
+  RequestStringFieldName { "body" | "ext" | "host" | "method" | "path" | "query" | "raw" }
   RequestIntFieldName { "len" | "port" }
   RequestDateFieldName { "created_at" }
   RequestBoolFieldName { "tls" }
@@ -46,7 +46,7 @@
   RequestHeaderSubfieldName { "name" | "value" }
 
   // Response field names
-  ResponseStringFieldName { "raw" }
+  ResponseStringFieldName { "body" | "raw" }
   ResponseIntFieldName { "code" | "len" | "roundtrip" }
   ResponseHeaderFieldName { "header" }
   ResponseHeaderSubfieldName { "name" | "value" }

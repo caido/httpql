@@ -207,6 +207,9 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<Query> {
             t => unknown!("RequestIntFieldName.{}", t),
         },
         Rule::RequestStringFieldName => match field.as_str() {
+            "body" => {
+                clause.body = Some(build_expr_string_ast(expr)?);
+            }
             "ext" => {
                 clause.file_extension = Some(build_expr_string_ast(expr)?);
             }
@@ -323,6 +326,9 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<Query> {
             t => unknown!("ResponseIntFieldName.{}", t),
         },
         Rule::ResponseStringFieldName => match field.as_str() {
+            "body" => {
+                clause.body = Some(build_expr_string_ast(expr)?);
+            }
             "raw" => {
                 clause.raw = Some(build_expr_string_ast(expr)?);
             }

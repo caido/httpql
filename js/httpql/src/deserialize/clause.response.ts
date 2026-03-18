@@ -62,6 +62,8 @@ export const deserializeResponseClause = (
 
     if (isPresent(child)) {
       switch (child) {
+        case "body":
+          return "body";
         case "raw":
           return "raw";
       }

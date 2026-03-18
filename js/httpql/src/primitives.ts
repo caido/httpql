@@ -21,6 +21,7 @@ export type ClauseHeader = {
 };
 
 export type ClauseRequest = {
+  body?: Maybe<ExprString>;
   createdAt?: Maybe<ExprDate>;
   fileExtension?: Maybe<ExprString>;
   header?: Maybe<ClauseHeader>;
@@ -35,6 +36,7 @@ export type ClauseRequest = {
 };
 
 export type ClauseResponse = {
+  body?: Maybe<ExprString>;
   header?: Maybe<ClauseHeader>;
   length?: Maybe<ExprInt>;
   raw?: Maybe<ExprString>;

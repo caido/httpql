@@ -68,6 +68,9 @@ const serializeClauseRow = (value: ClauseRow): Result<string, HTTPQLError> => {
 const serializeClauseRequest = (
   value: ClauseRequest,
 ): Result<string, HTTPQLError> => {
+  if (isPresent(value.body)) {
+    return serializeExprString(value.body).map((str) => `body.${str}`);
+  }
   if (isPresent(value.createdAt)) {
     return serializeExprDate(value.createdAt).map((str) => `created_at.${str}`);
   }
@@ -114,6 +117,9 @@ const serializeClauseRequest = (
 const serializeClauseResponse = (
   value: ClauseResponse,
 ): Result<string, HTTPQLError> => {
+  if (isPresent(value.body)) {
+    return serializeExprString(value.body).map((str) => `body.${str}`);
+  }
   if (isPresent(value.header)) {
     if (isPresent(value.header.name)) {
       return serializeExprString(value.header.name).map((str) => `header.name.${str}`);

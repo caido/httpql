@@ -65,6 +65,8 @@ export const deserializeRequestClause = (
 
     if (isPresent(child)) {
       switch (child) {
+        case "body":
+          return "body";
         case "ext":
           return "fileExtension";
         case "host":
