@@ -21,8 +21,12 @@ export const highlight: NodePropSource = styleTags({
   RequestStringFieldName: tags.attributeName,
   RequestDateFieldName: tags.attributeName,
   RequestBoolFieldName: tags.attributeName,
+  RequestHeaderFieldName: tags.attributeName,
+  RequestHeaderSubfieldName: tags.attributeName,
   ResponseIntFieldName: tags.attributeName,
   ResponseStringFieldName: tags.attributeName,
+  ResponseHeaderFieldName: tags.attributeName,
+  ResponseHeaderSubfieldName: tags.attributeName,
   RowIntFieldName: tags.attributeName,
 
   // Values
