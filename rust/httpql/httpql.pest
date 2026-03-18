@@ -34,6 +34,8 @@ RequestHeaderSubfieldName = { "name" | "value" }
 // Response field names
 ResponseStringFieldName = { "raw" }
 ResponseIntFieldName    = { "code" | "len" | "roundtrip" }
+ResponseHeaderFieldName = _{ "header" }
+ResponseHeaderSubfieldName = { "name" | "value" }
 
 // Operators for string and integer types
 StringOperator = { "cont" | "ncont" | "eq" | "ne" | "like" | "nlike" }
@@ -93,6 +95,8 @@ RequestClause = ${
 ResponseClause = ${
     ResponseNamespace ~ Dot ~ ResponseIntFieldName ~ Dot ~ IntExpression
   | ResponseNamespace ~ Dot ~ ResponseStringFieldName ~ Dot ~ StringExpression
+  | ResponseNamespace ~ Dot ~ ResponseHeaderFieldName ~ Dot ~ ResponseHeaderSubfieldName ~ Dot ~ StringExpression
+  | ResponseNamespace ~ Dot ~ ResponseHeaderFieldName ~ LeftBracket ~ StringValue ~ RightBracket ~ Dot ~ StringExpression
 }
 
 PresetClause = ${

@@ -53,7 +53,26 @@ impl fmt::Display for ClauseRow {
 }
 
 #[derive(Clone, Debug, Default)]
+pub struct ClauseHeader {
+    pub name: Option<ExprString>,
+    pub value: Option<ExprString>,
+}
+
+impl fmt::Display for ClauseHeader {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(expr) = &self.name {
+            return write!(f, "name.{}", expr);
+        }
+        if let Some(expr) = &self.value {
+            return write!(f, "value.{}", expr);
+        }
+        Err(fmt::Error)
+    }
+}
+
+#[derive(Clone, Debug, Default)]
 pub struct ClauseResponse {
+    pub header: Option<ClauseHeader>,
     pub length: Option<ExprInt>,
     pub roundtrip_time: Option<ExprInt>,
     pub raw: Option<ExprString>,
@@ -62,6 +81,9 @@ pub struct ClauseResponse {
 
 impl fmt::Display for ClauseResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if let Some(expr) = &self.header {
+            return write!(f, "header.{}", expr);
+        }
         if let Some(expr) = &self.length {
             return write!(f, "len.{}", expr);
         }
@@ -82,7 +104,7 @@ impl fmt::Display for ClauseResponse {
 pub struct ClauseRequest {
     pub created_at: Option<ExprDate>,
     pub file_extension: Option<ExprString>,
-    pub header: Option<ClauseHeaderRequest>,
+    pub header: Option<ClauseHeader>,
     pub host: Option<ExprString>,
     pub is_tls: Option<ExprBool>,
     pub length: Option<ExprInt>,
@@ -91,24 +113,6 @@ pub struct ClauseRequest {
     pub port: Option<ExprInt>,
     pub query: Option<ExprString>,
     pub raw: Option<ExprString>,
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct ClauseHeaderRequest {
-    pub name: Option<ExprString>,
-    pub value: Option<ExprString>,
-}
-
-impl fmt::Display for ClauseHeaderRequest {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if let Some(expr) = &self.name {
-            return write!(f, "name.{}", expr);
-        }
-        if let Some(expr) = &self.value {
-            return write!(f, "value.{}", expr);
-        }
-        Err(fmt::Error)
-    }
 }
 
 impl fmt::Display for ClauseRequest {

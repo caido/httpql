@@ -15,10 +15,15 @@ export type ClauseRow = {
   id?: Maybe<ExprInt>;
 };
 
+export type ClauseHeader = {
+  name?: Maybe<ExprString>;
+  value?: Maybe<ExprString>;
+};
+
 export type ClauseRequest = {
   createdAt?: Maybe<ExprDate>;
   fileExtension?: Maybe<ExprString>;
-  header?: Maybe<ClauseRequestHeader>;
+  header?: Maybe<ClauseHeader>;
   host?: Maybe<ExprString>;
   isTLS?: Maybe<ExprBool>;
   length?: Maybe<ExprInt>;
@@ -29,12 +34,8 @@ export type ClauseRequest = {
   raw?: Maybe<ExprString>;
 };
 
-export type ClauseRequestHeader = {
-  name?: Maybe<ExprString>;
-  value?: Maybe<ExprString>;
-};
-
 export type ClauseResponse = {
+  header?: Maybe<ClauseHeader>;
   length?: Maybe<ExprInt>;
   raw?: Maybe<ExprString>;
   roundtripTime?: Maybe<ExprInt>;

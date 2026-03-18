@@ -241,13 +241,13 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<Query> {
         },
         Rule::RequestHeaderSubfieldName => match field.as_str() {
             "name" => {
-                clause.header = Some(ClauseHeaderRequest {
+                clause.header = Some(ClauseHeader {
                     name: Some(build_expr_string_ast(expr)?),
                     ..Default::default()
                 });
             }
             "value" => {
-                clause.header = Some(ClauseHeaderRequest {
+                clause.header = Some(ClauseHeader {
                     value: Some(build_expr_string_ast(expr)?),
                     ..Default::default()
                 });
@@ -265,7 +265,7 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<Query> {
 
             let header_name_clause = Query {
                 request: Some(ClauseRequest {
-                    header: Some(ClauseHeaderRequest {
+                    header: Some(ClauseHeader {
                         name: Some(ExprString {
                             value: header_name,
                             operator: OperatorString::Eq,
@@ -280,7 +280,7 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<Query> {
 
             let header_value_clause = Query {
                 request: Some(ClauseRequest {
-                    header: Some(ClauseHeaderRequest {
+                    header: Some(ClauseHeader {
                         value: Some(build_expr_string_ast(expr)?),
                         ..Default::default()
                     }),
@@ -303,7 +303,7 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     })
 }
 
-fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
+fn build_response_clause_ast(pair: Pair<Rule>) -> Result<Query> {
     let mut clause = ClauseResponse::default();
 
     let mut pair = pair.into_inner();
@@ -328,10 +328,68 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<ClauseResponse> {
             }
             t => unknown!("ResponseStringFieldName.{}", t),
         },
+        Rule::ResponseHeaderSubfieldName => match field.as_str() {
+            "name" => {
+                clause.header = Some(ClauseHeader {
+                    name: Some(build_expr_string_ast(expr)?),
+                    ..Default::default()
+                });
+            }
+            "value" => {
+                clause.header = Some(ClauseHeader {
+                    value: Some(build_expr_string_ast(expr)?),
+                    ..Default::default()
+                });
+            }
+            t => unknown!("ResponseHeaderSubfieldName.{}", t),
+        },
+        Rule::StringValue => {
+            let ParsedString {
+                value: header_name,
+                is_raw,
+            } = build_string_ast(field)?;
+            if is_raw {
+                invalid!("ResponseClause.header_name");
+            }
+
+            let header_name_clause = Query {
+                response: Some(ClauseResponse {
+                    header: Some(ClauseHeader {
+                        name: Some(ExprString {
+                            value: header_name,
+                            operator: OperatorString::Eq,
+                            is_raw: false,
+                        }),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            };
+
+            let header_value_clause = Query {
+                response: Some(ClauseResponse {
+                    header: Some(ClauseHeader {
+                        value: Some(build_expr_string_ast(expr)?),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            };
+
+            return Ok(Query {
+                and: Some((Box::new(header_name_clause), Box::new(header_value_clause))),
+                ..Default::default()
+            });
+        }
         t => unknown!("ResponseClause.field.{:?}", t),
     };
 
-    Ok(clause)
+    Ok(Query {
+        response: Some(clause),
+        ..Default::default()
+    })
 }
 
 fn build_string_clause_ast(pair: Pair<Rule>) -> Result<Query> {
@@ -413,11 +471,7 @@ fn build_clause_ast(pair: Pair<Rule>) -> Result<Query> {
             build_request_clause_ast(pair)
         }
         Rule::ResponseClause => {
-            let query = Query {
-                response: Some(build_response_clause_ast(pair)?),
-                ..Default::default()
-            };
-            Ok(query)
+            build_response_clause_ast(pair)
         }
         Rule::Query => build_query_ast(pair),
         Rule::StringClause => build_string_clause_ast(pair),

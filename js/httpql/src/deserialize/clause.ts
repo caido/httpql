@@ -29,9 +29,7 @@ export const deserializeClause = (
 
   const responseClause = node.getChild(terms.ResponseClause);
   if (isPresent(responseClause)) {
-    return deserializeResponseClause(responseClause, doc).map((response) => ({
-      response,
-    }));
+    return deserializeResponseClause(responseClause, doc);
   }
 
   const stringClause = node.getChild(terms.StringClause);

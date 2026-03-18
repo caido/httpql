@@ -114,6 +114,16 @@ const serializeClauseRequest = (
 const serializeClauseResponse = (
   value: ClauseResponse,
 ): Result<string, HTTPQLError> => {
+  if (isPresent(value.header)) {
+    if (isPresent(value.header.name)) {
+      return serializeExprString(value.header.name).map((str) => `header.name.${str}`);
+    }
+    if (isPresent(value.header.value)) {
+      return serializeExprString(value.header.value).map(
+        (str) => `header.value.${str}`,
+      );
+    }
+  }
   if (isPresent(value.length)) {
     return serializeExprInt(value.length).map((str) => `len.${str}`);
   }
