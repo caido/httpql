@@ -33,26 +33,16 @@ export const deserializeRequestClause = (
 
     return deserializeStringExpr(valueExprNode, doc).map((valueExpr) => {
       return {
-        AND: [
-          {
-            request: {
-              header: {
-                name: {
-                  operator: OperatorString.Eq,
-                  value: headerName,
-                  isRaw: false,
-                },
-              },
+        request: {
+          header: {
+            name: {
+              operator: OperatorString.Eq,
+              value: headerName,
+              isRaw: false,
             },
+            value: valueExpr,
           },
-          {
-            request: {
-              header: {
-                value: valueExpr,
-              },
-            },
-          },
-        ],
+        },
       } satisfies Query;
     });
   })();

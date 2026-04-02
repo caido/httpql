@@ -60,13 +60,20 @@ pub struct ClauseHeader {
 
 impl fmt::Display for ClauseHeader {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        if let Some(expr) = &self.name {
-            return write!(f, "name.{}", expr);
+        match (&self.name, &self.value) {
+            (Some(name), Some(value))
+                if matches!(name.operator, OperatorString::Eq) && !name.is_raw =>
+            {
+                write!(f, "[\"{}\"].{}", name.value, value)
+            }
+            (Some(name), None) => {
+                write!(f, ".name.{}", name)
+            }
+            (None, Some(value)) => {
+                write!(f, ".value.{}", value)
+            }
+            _ => Err(fmt::Error),
         }
-        if let Some(expr) = &self.value {
-            return write!(f, "value.{}", expr);
-        }
-        Err(fmt::Error)
     }
 }
 
@@ -86,7 +93,7 @@ impl fmt::Display for ClauseResponse {
             return write!(f, "body.{}", expr);
         }
         if let Some(expr) = &self.header {
-            return write!(f, "header.{}", expr);
+            return write!(f, "header{}", expr);
         }
         if let Some(expr) = &self.length {
             return write!(f, "len.{}", expr);
@@ -132,6 +139,11 @@ impl fmt::Display for ClauseRequest {
             return write!(f, "ext.{}", expr);
         }
         if let Some(expr) = &self.header {
+            if let (Some(name), Some(_)) = (&expr.name, &expr.value) {
+                if matches!(name.operator, OperatorString::Eq) && !name.is_raw {
+                    return write!(f, "header{}", expr);
+                }
+            }
             return write!(f, "header.{}", expr);
         }
         if let Some(expr) = &self.host {

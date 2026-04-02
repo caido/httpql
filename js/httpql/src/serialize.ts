@@ -1,17 +1,19 @@
 import { err, ok, Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "./errors.js";
-import type {
-  ClauseRequest,
-  ClauseResponse,
-  ClauseRow,
-  ExprBool,
-  ExprDate,
-  ExprInt,
-  ExprPreset,
-  ExprSource,
-  ExprString,
-  Query,
+import {
+  OperatorString,
+  type ClauseHeader,
+  type ClauseRequest,
+  type ClauseResponse,
+  type ClauseRow,
+  type ExprBool,
+  type ExprDate,
+  type ExprInt,
+  type ExprPreset,
+  type ExprSource,
+  type ExprString,
+  type Query,
 } from "./primitives.js";
 import { isPresent } from "./utils.js";
 
@@ -65,6 +67,28 @@ const serializeClauseRow = (value: ClauseRow): Result<string, HTTPQLError> => {
   return err(new InvalidQuery());
 };
 
+const serializeClauseHeader = (
+  value: ClauseHeader,
+): Result<string, HTTPQLError> => {
+  if (
+    isPresent(value.name) &&
+    isPresent(value.value) &&
+    value.name.operator === OperatorString.Eq &&
+    !value.name.isRaw
+  ) {
+    return serializeExprString(value.value).map(
+      (str) => `header[${JSON.stringify(value.name!.value)}].${str}`,
+    );
+  }
+  if (isPresent(value.name)) {
+    return serializeExprString(value.name).map((str) => `header.name.${str}`);
+  }
+  if (isPresent(value.value)) {
+    return serializeExprString(value.value).map((str) => `header.value.${str}`);
+  }
+  return err(new InvalidQuery());
+};
+
 const serializeClauseRequest = (
   value: ClauseRequest,
 ): Result<string, HTTPQLError> => {
@@ -78,14 +102,7 @@ const serializeClauseRequest = (
     return serializeExprString(value.fileExtension).map((str) => `ext.${str}`);
   }
   if (isPresent(value.header)) {
-    if (isPresent(value.header.name)) {
-      return serializeExprString(value.header.name).map((str) => `header.name.${str}`);
-    }
-    if (isPresent(value.header.value)) {
-      return serializeExprString(value.header.value).map(
-        (str) => `header.value.${str}`,
-      );
-    }
+    return serializeClauseHeader(value.header).map((str) => `header${str}`);
   }
   if (isPresent(value.host)) {
     return serializeExprString(value.host).map((str) => `host.${str}`);
@@ -121,14 +138,7 @@ const serializeClauseResponse = (
     return serializeExprString(value.body).map((str) => `body.${str}`);
   }
   if (isPresent(value.header)) {
-    if (isPresent(value.header.name)) {
-      return serializeExprString(value.header.name).map((str) => `header.name.${str}`);
-    }
-    if (isPresent(value.header.value)) {
-      return serializeExprString(value.header.value).map(
-        (str) => `header.value.${str}`,
-      );
-    }
+    return serializeClauseHeader(value.header).map((str) => `header${str}`);
   }
   if (isPresent(value.length)) {
     return serializeExprInt(value.length).map((str) => `len.${str}`);

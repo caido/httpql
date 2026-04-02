@@ -1,1 +1,1 @@
-(resp.header.name.eq:"Content-Type" and resp.header.value.cont:"json")
+resp.header["Content-Type"].cont:"json"
