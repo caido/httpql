@@ -139,12 +139,7 @@ impl fmt::Display for ClauseRequest {
             return write!(f, "ext.{}", expr);
         }
         if let Some(expr) = &self.header {
-            if let (Some(name), Some(_)) = (&expr.name, &expr.value) {
-                if matches!(name.operator, OperatorString::Eq) && !name.is_raw {
-                    return write!(f, "header{}", expr);
-                }
-            }
-            return write!(f, "header.{}", expr);
+            return write!(f, "header{}", expr);
         }
         if let Some(expr) = &self.host {
             return write!(f, "host.{}", expr);

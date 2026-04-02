@@ -77,14 +77,14 @@ const serializeClauseHeader = (
     !value.name.isRaw
   ) {
     return serializeExprString(value.value).map(
-      (str) => `header[${JSON.stringify(value.name!.value)}].${str}`,
+      (str) => `[${JSON.stringify(value.name!.value)}].${str}`,
     );
   }
   if (isPresent(value.name)) {
-    return serializeExprString(value.name).map((str) => `header.name.${str}`);
+    return serializeExprString(value.name).map((str) => `.name.${str}`);
   }
   if (isPresent(value.value)) {
-    return serializeExprString(value.value).map((str) => `header.value.${str}`);
+    return serializeExprString(value.value).map((str) => `.value.${str}`);
   }
   return err(new InvalidQuery());
 };
