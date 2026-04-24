@@ -213,6 +213,9 @@ fn build_request_clause_ast(pair: Pair<Rule>) -> Result<Query> {
             "ext" => {
                 clause.file_extension = Some(build_expr_string_ast(expr)?);
             }
+            "headers" => {
+                clause.headers = Some(build_expr_string_ast(expr)?);
+            }
             "host" => {
                 clause.host = Some(build_expr_string_ast(expr)?);
             }
@@ -305,6 +308,9 @@ fn build_response_clause_ast(pair: Pair<Rule>) -> Result<Query> {
         Rule::ResponseStringFieldName => match field.as_str() {
             "body" => {
                 clause.body = Some(build_expr_string_ast(expr)?);
+            }
+            "headers" => {
+                clause.headers = Some(build_expr_string_ast(expr)?);
             }
             "raw" => {
                 clause.raw = Some(build_expr_string_ast(expr)?);
@@ -489,6 +495,14 @@ mod tests {
     #[rstest]
     #[case("", "()")]
     #[case("   ", "()")]
+    #[case(
+        "req.headers.cont:\"Authorization: Bearer\"",
+        "req.headers.cont:\"Authorization: Bearer\""
+    )]
+    #[case(
+        "resp.headers.ncont:\"X-Frame-Options\"",
+        "resp.headers.ncont:\"X-Frame-Options\""
+    )]
     fn test_parse(#[case] input: String, #[case] output: String) {
         let query = parse(&input).unwrap();
         assert_eq!(output, query.to_string(),);

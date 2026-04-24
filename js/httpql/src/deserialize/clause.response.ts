@@ -54,6 +54,8 @@ export const deserializeResponseClause = (
       switch (child) {
         case "body":
           return "body";
+        case "headers":
+          return "headers";
         case "raw":
           return "raw";
       }

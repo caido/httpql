@@ -102,6 +102,38 @@ describe("deserialize", () => {
     });
   });
 
+  it("should parse HTTPQL request headers expression", () => {
+    const query = 'req.headers.cont:"Authorization: Bearer"';
+
+    const filter = deserialize(query)._unsafeUnwrap();
+
+    expect(filter).to.deep.equal({
+      request: {
+        headers: {
+          operator: OperatorString.Cont,
+          value: "Authorization: Bearer",
+          isRaw: false,
+        },
+      },
+    });
+  });
+
+  it("should parse HTTPQL response headers expression", () => {
+    const query = 'resp.headers.ncont:"X-Frame-Options"';
+
+    const filter = deserialize(query)._unsafeUnwrap();
+
+    expect(filter).to.deep.equal({
+      response: {
+        headers: {
+          operator: OperatorString.Ncont,
+          value: "X-Frame-Options",
+          isRaw: false,
+        },
+      },
+    });
+  });
+
   it("should parse HTTPQL preset alias expression", () => {
     const query = "preset:my-preset";
 

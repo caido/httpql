@@ -81,6 +81,7 @@ impl fmt::Display for ClauseHeader {
 pub struct ClauseResponse {
     pub body: Option<ExprString>,
     pub header: Option<ClauseHeader>,
+    pub headers: Option<ExprString>,
     pub length: Option<ExprInt>,
     pub roundtrip_time: Option<ExprInt>,
     pub raw: Option<ExprString>,
@@ -94,6 +95,9 @@ impl fmt::Display for ClauseResponse {
         }
         if let Some(expr) = &self.header {
             return write!(f, "header{}", expr);
+        }
+        if let Some(expr) = &self.headers {
+            return write!(f, "headers.{}", expr);
         }
         if let Some(expr) = &self.length {
             return write!(f, "len.{}", expr);
@@ -117,6 +121,7 @@ pub struct ClauseRequest {
     pub created_at: Option<ExprDate>,
     pub file_extension: Option<ExprString>,
     pub header: Option<ClauseHeader>,
+    pub headers: Option<ExprString>,
     pub host: Option<ExprString>,
     pub is_tls: Option<ExprBool>,
     pub length: Option<ExprInt>,
@@ -140,6 +145,9 @@ impl fmt::Display for ClauseRequest {
         }
         if let Some(expr) = &self.header {
             return write!(f, "header{}", expr);
+        }
+        if let Some(expr) = &self.headers {
+            return write!(f, "headers.{}", expr);
         }
         if let Some(expr) = &self.host {
             return write!(f, "host.{}", expr);

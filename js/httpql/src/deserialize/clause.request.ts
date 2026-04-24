@@ -59,6 +59,8 @@ export const deserializeRequestClause = (
           return "body";
         case "ext":
           return "fileExtension";
+        case "headers":
+          return "headers";
         case "host":
           return "host";
         case "method":

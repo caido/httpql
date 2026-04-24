@@ -1,0 +1,1 @@
+resp.headers.regex:/Set-Cookie:.*HttpOnly/

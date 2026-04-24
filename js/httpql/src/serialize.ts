@@ -104,6 +104,9 @@ const serializeClauseRequest = (
   if (isPresent(value.header)) {
     return serializeClauseHeader(value.header).map((str) => `header${str}`);
   }
+  if (isPresent(value.headers)) {
+    return serializeExprString(value.headers).map((str) => `headers.${str}`);
+  }
   if (isPresent(value.host)) {
     return serializeExprString(value.host).map((str) => `host.${str}`);
   }
@@ -139,6 +142,9 @@ const serializeClauseResponse = (
   }
   if (isPresent(value.header)) {
     return serializeClauseHeader(value.header).map((str) => `header${str}`);
+  }
+  if (isPresent(value.headers)) {
+    return serializeExprString(value.headers).map((str) => `headers.${str}`);
   }
   if (isPresent(value.length)) {
     return serializeExprInt(value.length).map((str) => `len.${str}`);
