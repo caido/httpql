@@ -26,7 +26,7 @@ const readFile = (path: string) => {
 
 describe("streamql", () => {
   describe("ast", () => {
-    const cases = [1, 2, 3, 4];
+    const cases = [1, 2, 3, 4, 5];
     for (const c of cases) {
       it(`Case ${c}`, () => {
         const input = readFile(`ast/${c}/input.streamql`);

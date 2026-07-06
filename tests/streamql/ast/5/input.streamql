@@ -1,0 +1,1 @@
+ws.len.gte:1212 AND stream.port.lt:8080

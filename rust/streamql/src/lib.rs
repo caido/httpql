@@ -33,6 +33,7 @@ mod tests {
     #[case(2)]
     #[case(3)]
     #[case(4)]
+    #[case(5)]
     fn test_ast(#[case] case: u32) {
         let input =
             std::fs::read_to_string(format!("../../tests/streamql/ast/{case}/input.streamql"))

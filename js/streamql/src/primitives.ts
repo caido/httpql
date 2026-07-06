@@ -14,6 +14,7 @@ export type ClauseWs = {
   raw?: Maybe<ExprString>;
   direction?: Maybe<ExprString>;
   format?: Maybe<ExprString>;
+  len?: Maybe<ExprInt>;
 };
 
 export type ClauseStream = {

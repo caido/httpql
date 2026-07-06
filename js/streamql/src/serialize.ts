@@ -65,6 +65,9 @@ const serializeClauseWs = (value: ClauseWs): Result<string, StreamQLError> => {
   if (isPresent(value.format)) {
     return serializeExprString(value.format).map((str) => `format.${str}`);
   }
+  if (isPresent(value.len)) {
+    return serializeExprInt(value.len).map((str) => `len.${str}`);
+  }
 
   return err(new InvalidQuery());
 };
