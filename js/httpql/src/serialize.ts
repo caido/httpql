@@ -2,7 +2,6 @@ import { err, ok, Result } from "neverthrow";
 
 import { type HTTPQLError, InvalidQuery } from "./errors.js";
 import {
-  OperatorString,
   type ClauseHeader,
   type ClauseRequest,
   type ClauseResponse,
@@ -13,6 +12,7 @@ import {
   type ExprPreset,
   type ExprSource,
   type ExprString,
+  OperatorString,
   type Query,
 } from "./primitives.js";
 import { isPresent } from "./utils.js";

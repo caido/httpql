@@ -103,6 +103,29 @@ describe("deserialize", () => {
     });
   });
 
+  it("should parse StreamQL ws len expression", () => {
+    const query = "ws.len.gte:1212";
+
+    const filter = deserialize(query)._unsafeUnwrap();
+
+    expect(filter).to.deep.equal({
+      websocket: {
+        len: {
+          operator: OperatorInt.Gte,
+          value: 1212,
+        },
+      },
+    });
+  });
+
+  it("should fail given a quoted ws len value", () => {
+    const query = 'ws.len.lt:"12"';
+
+    const result = deserialize(query);
+
+    expect(result.isErr()).to.be.true;
+  });
+
   it("should parse StreamQL AND expression", () => {
     const query = 'stream.host.cont:"test.com" AND ws.direction.eq:"client"';
 

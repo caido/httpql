@@ -8,6 +8,7 @@ import type { ClauseWs } from "../primitives.js";
 import { getChildString, isPresent } from "../utils.js";
 
 import { deserializeDateExpr } from "./expr.date.js";
+import { deserializeIntExpr } from "./expr.int.js";
 import { deserializeStringExpr } from "./expr.string.js";
 
 export const deserializeWsClause = (
@@ -40,6 +41,17 @@ export const deserializeWsClause = (
     }
   })();
 
+  const intField = (() => {
+    const child = getChildString(node, terms.WsIntFieldName, doc);
+
+    if (isPresent(child)) {
+      switch (child) {
+        case "len":
+          return "len";
+      }
+    }
+  })();
+
   const stringFilter = (() => {
     const child = node.getChild(terms.StringExpression);
     if (isPresent(child)) return deserializeStringExpr(child, doc);
@@ -48,6 +60,11 @@ export const deserializeWsClause = (
   const dateFilter = (() => {
     const child = node.getChild(terms.DateExpression);
     if (isPresent(child)) return deserializeDateExpr(child, doc);
+  })();
+
+  const intFilter = (() => {
+    const child = node.getChild(terms.IntExpression);
+    if (isPresent(child)) return deserializeIntExpr(child, doc);
   })();
 
   if (isPresent(stringField) && isPresent(stringFilter)) {
@@ -62,6 +79,14 @@ export const deserializeWsClause = (
     return dateFilter.map((filter) => {
       return {
         [dateField]: filter,
+      };
+    });
+  }
+
+  if (isPresent(intField) && isPresent(intFilter)) {
+    return intFilter.map((filter) => {
+      return {
+        [intField]: filter,
       };
     });
   }
